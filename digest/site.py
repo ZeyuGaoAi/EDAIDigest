@@ -247,6 +247,21 @@ def _shared_styles() -> str:
       gap: 12px;
       margin-top: 18px;
     }
+    .source-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .source-item {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .source-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -304,6 +319,22 @@ def _build_archive_page(
     status_html = "".join(
         f'<span class="chip">{escape(row["status"])}: {row["count"]}</span>' for row in by_status
     )
+    source_html = """
+      <div class="source-list">
+        <div class="source-item">
+          <strong>arXiv</strong>
+          Preprints focused on cancer screening, liquid biopsy, and related AI methods.
+        </div>
+        <div class="source-item">
+          <strong>PubMed</strong>
+          Broad published-paper search covering early detection, screening, early diagnosis, and AI in cancer.
+        </div>
+        <div class="source-item">
+          <strong>Top journal watchlist via PubMed</strong>
+          Targeted monitoring of Nature, Science, Cell, Lancet, JAMA, and selected subjournals including Nature Medicine, Nature Cancer, Nature Biomedical Engineering, Cancer Cell, Lancet Oncology, and JAMA Oncology.
+        </div>
+      </div>
+    """
     drafts_html = "".join(
         f"""
         <details class="draft-card" {"open" if index == 0 else ""}>
@@ -338,6 +369,12 @@ def _build_archive_page(
       <div class="stats">{stats_html}</div>
       <div class="status-row">{status_html}</div>
       <p class="muted">Last generated: {generated_at}</p>
+    </section>
+
+    <section class="panel">
+      <h2>Paper Sources</h2>
+      <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
+      {source_html}
     </section>
 
     <section class="panel">
