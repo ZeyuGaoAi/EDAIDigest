@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cambridge AI for Early Cancer Digest</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --paper: #fffdf8;
+      --ink: #16212b;
+      --muted: #5b6470;
+      --accent: #a33d2f;
+      --accent-soft: #f3ddd7;
+      --line: #d9d0c3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #f7e0cf 0, transparent 28%),
+        radial-gradient(circle at top right, #dbe9e1 0, transparent 24%),
+        var(--bg);
+    }
+    a { color: var(--accent); }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+    .hero {
+      background: rgba(255, 253, 248, 0.82);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 30px rgba(22, 33, 43, 0.06);
+    }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      background: var(--accent-soft);
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 { margin: 0 0 12px; line-height: 1.08; }
+    h1 { font-size: clamp(2rem, 4vw, 4.2rem); max-width: 12ch; }
+    p { line-height: 1.6; }
+    .muted, .subtext { color: var(--muted); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .stat {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .stat-value {
+      display: block;
+      margin-top: 8px;
+      font-size: 32px;
+      font-weight: 700;
+    }
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #efe8dc;
+      border: 1px solid var(--line);
+      font-size: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 20px;
+      margin-top: 22px;
+    }
+    .panel {
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(22, 33, 43, 0.05);
+    }
+    .draft-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .draft-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .draft-card summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      font-weight: 700;
+    }
+    .draft-card summary::-webkit-details-marker { display: none; }
+    .draft-body {
+      border-top: 1px solid var(--line);
+      padding: 18px 16px 8px;
+    }
+    .draft-body ul { margin: 0 0 16px 18px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 12px 0 16px;
+    }
+    .controls input, .controls select {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      font: inherit;
+      min-width: 180px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr {
+        border-top: 1px solid var(--line);
+        padding: 12px 0;
+      }
+      td {
+        border: 0;
+        padding: 4px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Cambridge-initiated digest</span>
+      <h1>AI for Early Cancer History Page</h1>
+      <p class="muted">A public-facing archive of historical items and daily digest drafts. Generated from the local review database and draft files.</p>
+      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">12</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">1</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">40</span></div></div>
+      <div class="status-row"><span class="chip">drafted: 5</span><span class="chip">new: 48</span></div>
+      <p class="muted">Last generated: 2026-04-16 11:53 UTC</p>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Daily Digest Archive</h2>
+        <p class="muted">Each section below reflects a saved draft from the daily workflow.</p>
+        <div class="draft-list">
+        <details class="draft-card" open>
+          <summary>
+            <span>2026-04-16</span>
+            <span>AI for Early Cancer Digest - 2026-04-16</span>
+          </summary>
+          <div class="draft-body"><h2>AI for Early Cancer Digest - 2026-04-16</h2>
+<p><strong>Subject:</strong> AI for Early Cancer Digest | 2026-04-16</p>
+<p>Intro:</p>
+<p>A short editor note goes here.</p>
+<h3>Papers</h3>
+<h4>PBE-UNet: A light weight Progressive Boundary-Enhanced U-Net with Scale-Aware Aggregation for Ultrasound Image Segmentation</h4>
+<p><strong>Source:</strong> arXiv - Cancer Screening ML</p>
+<p><strong>Summary:</strong> Accurate lesion segmentation in ultrasound images is essential for preventive screening and clinical diagnosis, yet remains challenging due to low contrast, blurry boundaries, and significant scale variations. Although existing deep learning-based methods have achieved remarkable performance, these methods still struggle with scale variations and indistinct tumor boundaries. To address these challenges, we propose a progressive boundary enhanced U-Net (PBE-UNet). Specially, we first introduce a scale-aware aggregation module (SAAM) that dynamically adjusts its receptive field to capture robust multi-scale contextual information. Then, we propose a boundary-guided feature enhancement (BGFE) module to enhance the feature representations. We find that there are large gaps between the narrow boundary and the wide segmentation error areas. Unlike existing methods that treat boundaries as static masks, the BGFE module progressively expands the narrow boundary prediction into broader spatial attention maps. Thus, broader spatial attention maps could effectively cover the wider segmentation error regions and enhance the model&#x27;s focus on these challenging areas. We conduct expensive experiments on four benchmark ultrasound datasets, BUSI, Dataset B, TN3K, and BP. The experimental results how that our proposed PBE-UNet outperforms state-of-the-art ultrasound image segmentation methods. The code is at <a href="https://github.com/cruelMouth/PBE-UNet." target="_blank" rel="noreferrer">https://github.com/cruelMouth/PBE-UNet.</a></p>
+<p><strong>Why it matters:</strong> mentions an early detection or screening context; includes an AI or machine learning angle; is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://arxiv.org/abs/2604.13791v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2604.13791v1</a></p>
+<h4>LoGo-MR: Screening Breast MRI for Cancer Risk Prediction by Efficient Omni-Slice Modeling</h4>
+<p><strong>Source:</strong> arXiv - Cancer Screening ML</p>
+<p><strong>Summary:</strong> Efficient and explainable breast cancer (BC) risk prediction is critical for large-scale population-based screening. Breast MRI provides functional information for personalized risk assessment. Yet effective modeling remains challenging as fully 3D CNNs capture volumetric context at high computational cost, whereas lightweight 2D CNNs fail to model inter-slice continuity. Importantly, breast MRI modeling for shor- and long-term BC risk stratification remains underexplored. In this study, we propose LoGo-MR, a 2.5D local-global structural modeling framework for five-year BC risk prediction. Aligned with clinical interpretation, our framework first employs neighbor-slice encoding to capture subtle local cues linked to short-term risk. It then integrates transformer-enhanced multiple-instance learning (MIL) to model distributed global patterns related to long-term risk and provide interpretable slice importance. We further apply this framework across axial, sagittal, and coronal planes as LoGo3-MR to capture complementary volumetric information. This multi-plane formulation enables voxel-level risk saliency mapping, which may assist radiologists in localizing risk-relevant regions during breast MRI interpretation. Evaluated on a large breast MRI screening cohort (~7.5K), our method outperforms 2D/3D baselines and existing SOTA MIL methods, achieving AUCs of 0.77-0.69 for 1- to 5-year prediction and improving C-index by ~6% over 3D CNNs. LoGo3-MR further improves overall performance with interpretable localization across three planes, and validation across seven backbones shows consistent gains. These results highlight the clinical potential of efficient MRI-based BC risk stratification for large-scale screening. Code will be released publicly.</p>
+<p><strong>Why it matters:</strong> mentions an early detection or screening context; is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://arxiv.org/abs/2604.11348v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2604.11348v1</a></p>
+<h3>Funding</h3>
+<p>_No shortlisted items yet._</p>
+<h3>Jobs</h3>
+<p>_No shortlisted items yet._</p></div>
+        </details>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Historical Item Database</h2>
+        <p class="muted">Search by title or source, or filter by category and status.</p>
+        <div class="controls">
+          <input id="search" type="search" placeholder="Search titles or sources">
+          <select id="category">
+            <option value="">All categories</option>
+            <option value="paper">Papers</option>
+            <option value="funding">Funding</option>
+            <option value="job">Jobs</option>
+          </select>
+          <select id="status">
+            <option value="">All statuses</option>
+            <option value="new">new</option>
+            <option value="reviewed">reviewed</option>
+            <option value="drafted">drafted</option>
+            <option value="approved">approved</option>
+            <option value="sent">sent</option>
+            <option value="rejected">rejected</option>
+          </select>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Source</th>
+              <th>Item</th>
+              <th>Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            
+        <tr data-category="job" data-status="new">
+          <td>2026-04-16 00:00 UTC</td>
+          <td><span class="chip">job</span></td>
+          <td>Manual Jobs Watchlist</td>
+          <td>
+            <a href="https://example.org/job-posting" target="_blank" rel="noreferrer">Example placeholder: add an AI-for-screening job here</a>
+            <div class="subtext">Use this file for jobs you want in the digest before a site-specific scraper exists.</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="drafted">
+          <td>2026-04-15 16:56 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.14082v1" target="_blank" rel="noreferrer">Generative design of inorganic materials</a>
+            <div class="subtext">Materials discovery is fundamental to advance next-generation technologies as well as for sustainable and circular economy. Beyond computational screening, generative models are efficient at finding materials with desire</div>
+          </td>
+          <td>0.0</td>
+          <td>drafted</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="drafted">
+          <td>2026-04-15 15:03 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13951v1" target="_blank" rel="noreferrer">Quantum Machine Learning for Colorectal Cancer Data: Anastomotic Leak Classification and Risk Factors</a>
+            <div class="subtext">This study evaluates colorectal risk factors and compares classical models against Quantum Neural Networks (QNNs) for anastomotic leak prediction. Analyzing clinical data with 14\% leak prevalence, we tested ZZFeatureMap</div>
+          </td>
+          <td>0.0</td>
+          <td>drafted</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-15 14:10 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/15/research-is-beautiful-the-best-of-the-rest-4/" target="_blank" rel="noreferrer">Research is Beautiful – the best of the rest</a>
+            <div class="subtext">&lt;p&gt;After a difficult time picking a winner, here are a few of our top picks from the rest of March’s entries...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/04/15/research-is-beautiful-the-best-of-the-</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="drafted">
+          <td>2026-04-15 12:31 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13791v1" target="_blank" rel="noreferrer">PBE-UNet: A light weight Progressive Boundary-Enhanced U-Net with Scale-Aware Aggregation for Ultrasound Image Segmentation</a>
+            <div class="subtext">Accurate lesion segmentation in ultrasound images is essential for preventive screening and clinical diagnosis, yet remains challenging due to low contrast, blurry boundaries, and significant scale variations. Although e</div>
+          </td>
+          <td>7.0</td>
+          <td>drafted</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-15 09:26 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13659v1" target="_blank" rel="noreferrer">Ion-Specific Anomalous Water Diffusion in Aqueous Electrolytes: A Machine-Learned Many-Body Force Field Study with MACE</a>
+            <div class="subtext">The dynamics of water in electrolyte solutions exhibits a striking, ion-specific anomaly: the diffusion coefficient of water is enhanced relative to the neat liquid in chaotropic CsI solutions, yet suppressed in kosmotro</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-15 07:29 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13568v1" target="_blank" rel="noreferrer">ZoomSpec: A Physics-Guided Coarse-to-Fine Framework for Wideband Spectrum Sensing</a>
+            <div class="subtext">Wideband spectrum sensing for low-altitude monitoring is critical yet challenging due to heterogeneous protocols,large bandwidths, and non-stationary SNR. Existing data-driven approaches treat spectrograms as natural ima</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-15 07:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/15/teenagers-young-adults-vivo-biobank-future-cancer-research/" target="_blank" rel="noreferrer">The young people powering the future of cancer research</a>
+            <div class="subtext">&lt;p&gt;By contributing to the VIVO Biobank, teenagers and young adults like Cory and Aleesha-Marie are powering lifechanging discoveries.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/04/15/teenagers-young-</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="drafted">
+          <td>2026-04-14 22:26 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13328v1" target="_blank" rel="noreferrer">Multi-Task LLM with LoRA Fine-Tuning for Automated Cancer Staging and Biomarker Extraction</a>
+            <div class="subtext">Pathology reports serve as the definitive record for breast cancer staging, yet their unstructured format impedes large-scale data curation. While Large Language Models (LLMs) offer semantic reasoning, their deployment i</div>
+          </td>
+          <td>3.0</td>
+          <td>drafted</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 13:07 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12699v1" target="_blank" rel="noreferrer">Transferable excited-state dynamics enable screening of fluorescent protein chromophores</a>
+            <div class="subtext">Transferable excited-state dynamics offer a route to efficient screening of photophysical behavior across molecular systems, but conventional nonadiabatic simulations remain prohibitively expensive. Here we introduce X-M</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 10:52 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12574v1" target="_blank" rel="noreferrer">Cross-Modal Knowledge Distillation for PET-Free Amyloid-Beta Detection from MRI</a>
+            <div class="subtext">Detecting amyloid-$β$ (A$β$) positivity is crucial for early diagnosis of Alzheimer&#x27;s disease but typically requires PET imaging, which is costly, invasive, and not widely accessible, limiting its use for population-leve</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 09:28 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12505v1" target="_blank" rel="noreferrer">Data-driven Learning of LPV Surrogate Models of Fuel Sloshing</a>
+            <div class="subtext">This paper aims to enhance the efficiency of validation and verification campaigns involving fuel sloshing phenomena. Our first contribution is the development of an open-source, high-fidelity and computationally efficie</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 09:26 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12498v1" target="_blank" rel="noreferrer">Lit2Vec: A Reproducible Workflow for Building a Legally Screened Chemistry Corpus from S2ORC for Downstream Retrieval and Text Mining</a>
+            <div class="subtext">We present Lit2Vec, a reproducible workflow for constructing and validating a chemistry corpus from the Semantic Scholar Open Research Corpus using conservative, metadata-based license screening. Using this workflow, we </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 06:38 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12351v1" target="_blank" rel="noreferrer">Fundus Image-based Glaucoma Screening via Retinal Knowledge-Oriented Dynamic Multi-Level Feature Integration</a>
+            <div class="subtext">Automated diagnosis based on color fundus photography is essential for large-scale glaucoma screening. However, existing deep learning models are typically data-driven and lack explicit integration of retinal anatomical </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 01:16 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12178v1" target="_blank" rel="noreferrer">Mitigating S-RAHA: An On-device Framework to Prevent Forwarding of Re-Captured Images</a>
+            <div class="subtext">Protecting sensitive visual content from unauthorized redistribution is a growing challenge for privacy focused mobile applications, including dating platforms. Screenshot prevention mechanisms, rely on server side monit</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-14 00:11 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12152v1" target="_blank" rel="noreferrer">Domain-Specific Latent Representations Improve the Fidelity of Diffusion-Based Medical Image Super-Resolution</a>
+            <div class="subtext">Latent diffusion models for medical image super-resolution universally inherit variational autoencoders designed for natural photographs. We show that this default choice, not the diffusion architecture, is the dominant </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 22:19 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12100v1" target="_blank" rel="noreferrer">PC-MIL: Decoupling Feature Resolution from Supervision Scale in Whole-Slide Learning</a>
+            <div class="subtext">Whole-slide image (WSI) classification in computational pathology is commonly formulated as slide-level Multiple Instance Learning (MIL) with a single global bag representation. However, slide-level MIL is fundamentally </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 21:27 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.12075v1" target="_blank" rel="noreferrer">OpenTME: An Open Dataset of AI-powered H&amp;E Tumor Microenvironment Profiles from TCGA</a>
+            <div class="subtext">The tumor microenvironment (TME) plays a central role in cancer progression, treatment response, and patient outcomes, yet large-scale, consistent, and quantitative TME characterization from routine hematoxylin and eosin</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 18:17 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11929v2" target="_blank" rel="noreferrer">Fast and principled equation discovery from chaos to climate</a>
+            <div class="subtext">Our ability to predict, control, and ultimately understand complex systems rests on discovering the equations that govern their dynamics. Identifying these equations directly from noisy, limited observations has therefor</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 18:02 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11909v1" target="_blank" rel="noreferrer">Thermodynamic Liquid Manifold Networks: Physics-Bounded Deep Learning for Solar Forecasting in Autonomous Off-Grid Microgrids</a>
+            <div class="subtext">The stable operation of autonomous off-grid photovoltaic systems requires solar forecasting algorithms that respect atmospheric thermodynamics. Contemporary deep learning models consistently exhibit critical anomalies, p</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 13:45 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11477v1" target="_blank" rel="noreferrer">OOM-RL: Out-of-Money Reinforcement Learning Market-Driven Alignment for LLM-Based Multi-Agent Systems</a>
+            <div class="subtext">The alignment of Multi-Agent Systems (MAS) for autonomous software engineering is constrained by evaluator epistemic uncertainty. Current paradigms, such as Reinforcement Learning from Human Feedback (RLHF) and AI Feedba</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="drafted">
+          <td>2026-04-13 11:46 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11348v1" target="_blank" rel="noreferrer">LoGo-MR: Screening Breast MRI for Cancer Risk Prediction by Efficient Omni-Slice Modeling</a>
+            <div class="subtext">Efficient and explainable breast cancer (BC) risk prediction is critical for large-scale population-based screening. Breast MRI provides functional information for personalized risk assessment. Yet effective modeling rem</div>
+          </td>
+          <td>4.0</td>
+          <td>drafted</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 11:34 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11334v1" target="_blank" rel="noreferrer">Dynamic Summary Generation for Interpretable Multimodal Depression Detection</a>
+            <div class="subtext">Depression remains widely underdiagnosed and undertreated because stigma and subjective symptom ratings hinder reliable screening. To address this challenge, we propose a coarse-to-fine, multi-stage framework that levera</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 11:17 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11314v1" target="_blank" rel="noreferrer">Fidelity-informed neural pulse compilation of a continuous family of quantum gates with uncertainty-margin analysis</a>
+            <div class="subtext">We develop a fidelity-informed neural pulse-compilation framework for a continuous family of single-qubit gates on a three-qubit liquid-state nuclear magnetic resonance (NMR) processor. Instead of decomposing each target</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 10:28 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11272v1" target="_blank" rel="noreferrer">AbLWR:A Context-Aware Listwise Ranking Framework for Antibody-Antigen Binding Affinity Prediction via Positive-Unlabeled Learning</a>
+            <div class="subtext">Accurate prediction of antibody-antigen binding affinity is fundamental to therapeutic design, yet remains constrained by severe label sparsity and the complexity of antigenic variations. In this paper, we propose AbLWR </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 08:26 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11165v2" target="_blank" rel="noreferrer">Cost-optimal Sequential Testing via Doubly Robust Q-learning</a>
+            <div class="subtext">Clinical decision-making often involves selecting tests that are costly, invasive, or time-consuming, motivating individualized, sequential strategies for what to measure and when to stop ascertaining. We study the probl</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 05:11 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.11003v1" target="_blank" rel="noreferrer">Sanity Checks for Agentic Data Science</a>
+            <div class="subtext">Agentic data science (ADS) pipelines have grown rapidly in both capability and adoption, with systems such as OpenAI Codex now able to directly analyze datasets and produce answers to statistical questions. However, thes</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 03:20 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.10941v1" target="_blank" rel="noreferrer">Generative Design for Direct-to-Chip Liquid Cooling for Data Centers</a>
+            <div class="subtext">Rapid growth in artificial intelligence (AI) workloads is driving up data center power densities, increasing the need for advanced thermal management. Direct-to-chip liquid cooling can remove heat efficiently at the sour</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-13 01:32 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.10887v1" target="_blank" rel="noreferrer">A Lightweight Universal Machine-Learning Interatomic Potential via Knowledge Distillation for Scalable Atomistic Simulations</a>
+            <div class="subtext">We introduce a lightweight universal machine-learning interatomic potential (uMLIP), SevenNet-Nano, based on the graph neural network architecture SevenNet and enabled by a knowledge-distillation framework. The model inh</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-12 18:23 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Cancer Screening ML</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.10765v1" target="_blank" rel="noreferrer">Lung Cancer Detection Using Deep Learning</a>
+            <div class="subtext">Lung cancer, the second leading cause of cancer-related deaths, is primarily linked to long-term tobacco smoking (85% of cases). Surprisingly, 10-15% of cases occur in non-smokers. In 2020, approximately 2 million people</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-12 10:09 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.10561v1" target="_blank" rel="noreferrer">Location of the liquid-vapor critical point in aluminum</a>
+            <div class="subtext">The precise location of the liquid-vapor critical point (CP) in aluminum has remained elusive for decades, with reported critical temperatures spanning nearly 4000~K. Here we resolve this long-standing uncertainty by com</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-11 18:29 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.10313v1" target="_blank" rel="noreferrer">Electrode Design for a Cavallo High Voltage Multiplier in a Cryogenic nEDM Experiment</a>
+            <div class="subtext">The Cavallo multiplier [http://archive.org/details/b28771035_0003] is an electrostatic inductance machine that can generate low-noise high voltages electrically isolated from its voltage input, making it ideally suited f</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-09 19:04 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.08711v1" target="_blank" rel="noreferrer">Deep Learning-Based Tracking and Lineage Reconstruction of Ligament Breakup</a>
+            <div class="subtext">The disintegration of liquid sheets into ligaments and droplets involves highly transient, multi-scale dynamics that are difficult to quantify from high-speed shadowgraphy images. Identifying droplets, ligaments, and blo</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-09 18:48 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.08702v1" target="_blank" rel="noreferrer">Topological invariant of periodic many body wavefunction from charge pumping simulation</a>
+            <div class="subtext">Many-body topological quantum states host exotic quantum phenomena and lie at the forefront of developing next-generation quantum technologies. Recently emerged neural network wavefunction methods have established themse</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-08 15:40 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.07219v1" target="_blank" rel="noreferrer">Robust Hybrid Beamforming with Liquid Crystal Antennas and Liquid Neural Networks</a>
+            <div class="subtext">Sub-terahertz (sub-THz) multi-user multiple-input multiple-output (MU-MIMO) systems unlock immense bandwidth for 6G wireless communications. However, practical deployment of wireless systems in sub-THz bands faces critic</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-08 07:24 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/08/breakthrough-international-trial-launches-to-tackle-young-peoples-cancers/" target="_blank" rel="noreferrer">Breakthrough international trial launches to tackle young people’s cancers</a>
+            <div class="subtext">&lt;p&gt;A pioneering trial from Cancer Grand Challenges team NexTGen is testing whether their cutting-edge new therapy can help treat children and young people with solid tumours by harnessing the immune system.&lt;/p&gt;
+&lt;p&gt;The po</div>
+          </td>
+          <td>2.5</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-03 23:37 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.03516v2" target="_blank" rel="noreferrer">Airborne Minnaert-Like Resonance of an Air-Filled Elasto-Bubble</a>
+            <div class="subtext">Deep-subwavelength acoustic resonators are key building blocks of acoustic metamaterials, yet achieving bubble-like resonances in air remains challenging because the Minnaert mechanism relies on the inertia of a surround</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-03 14:20 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.03059v2" target="_blank" rel="noreferrer">The Darkside-20k Data Acquisition System</a>
+            <div class="subtext">DarkSide-20k is a WIMP search experiment using liquid argon as a target, designed to perform a background-free search for dark matter with unprecedented sensitivity, and is currently under construction at INFN Laboratori</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-03 13:20 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.03027v1" target="_blank" rel="noreferrer">Dataset Distillation for Machine Learning Force Field in Phase Transition Regime</a>
+            <div class="subtext">Machine learning force field (MLFF) has emerged as a powerful data-driven tool for atomistic simulations, enabling large-scale and complex atomic systems to be simulated with accuracy comparable to \textit{ab initio} met</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-03 05:02 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.02732v1" target="_blank" rel="noreferrer">Noble-Gas Solubility in Solid and Fluid Metallic Hydrogen</a>
+            <div class="subtext">Metallic hydrogen dominates the deep interiors of giant planets, where trace elements interact with dense quantum matter under extreme pressure. We investigate the thermodynamic stability of noble-gas impurities (He, Ne,</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-02 22:53 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.13085v1" target="_blank" rel="noreferrer">Adaptive Memory Crystallization for Autonomous AI Agent Learning in Dynamic Environments</a>
+            <div class="subtext">Autonomous AI agents operating in dynamic environments face a persistent challenge: acquiring new capabilities without erasing prior knowledge. We present Adaptive Memory Crystallization (AMC), a memory architecture for </div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-02 15:16 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.02149v1" target="_blank" rel="noreferrer">AEGIS: Adversarial Entropy-Guided Immune System -- Thermodynamic State Space Models for Zero-Day Network Evasion Detection</a>
+            <div class="subtext">As TLS 1.3 encryption limits traditional Deep Packet Inspection (DPI), the security community has pivoted to Euclidean Transformer-based classifiers (e.g., ET-BERT) for encrypted traffic analysis. However, these models r</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-02 15:12 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.02139v1" target="_blank" rel="noreferrer">Application of parametric Shallow Recurrent Decoder Network to magnetohydrodynamic flows in liquid metal blankets of fusion reactors</a>
+            <div class="subtext">Magnetohydrodynamic (MHD) phenomena play a pivotal role in the design and operation of nuclear fusion systems, where electrically conducting fluids (such as liquid metals or molten salts employed in reactor blankets) int</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="paper" data-status="new">
+          <td>2026-04-02 08:14 UTC</td>
+          <td><span class="chip">paper</span></td>
+          <td>arXiv - Liquid Biopsy AI</td>
+          <td>
+            <a href="https://arxiv.org/abs/2604.01751v1" target="_blank" rel="noreferrer">Sound propagation in striped supersolid cold gases at zero temperature</a>
+            <div class="subtext">We present a unified hydrodynamic approach for the sound propagation in the stripe phases realized in ultracold dipolar gas and spin-orbit-coupled BEC platforms at zero temperature. Despite the deep difference of the two</div>
+          </td>
+          <td>0.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-02 07:50 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/02/can-you-trust-cancer-advice-online-that-cancer-conversation-season-4-ep-7/" target="_blank" rel="noreferrer">Can you trust cancer advice online? That Cancer Conversation Season 4: Ep.7</a>
+            <div class="subtext">&lt;p&gt;In this episode, we explore the rise of cancer misinformation and why false claims about “miracle cures” spread so quickly on social media. &lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/04/02/can-yo</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-02 07:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/02/bowelbabe-fund-celebrates-raising-20m-by-announcing-the-bowelbabe-vaccine/" target="_blank" rel="noreferrer">Bowelbabe Fund celebrates raising £20m by announcing the Bowelbabe Vaccine</a>
+            <div class="subtext">&lt;p&gt;The Bowelbabe Fund has raised more that £20 million and has announced the next wave of funded projects, including the Bowelbabe Vaccine.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/04/02/bowelbabe-</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-04-01 08:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/04/01/why-we-wont-be-funding-open-access-publishing-any-more/" target="_blank" rel="noreferrer">Why we won’t be funding open access publishing any more</a>
+            <div class="subtext">&lt;p&gt;The open access movement was bold and promising, but ultimately disappointing. Now is the time to stop and call for a new way to make publishing work…&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/04</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-31 07:32 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/31/study-inspired-by-sarah-harding-identifies-early-breast-cancer-in-manchester-mum/" target="_blank" rel="noreferrer">Study inspired by Sarah Harding identifies early breast cancer in Manchester mum</a>
+            <div class="subtext">&lt;p&gt;Sarah Harding&#x27;s dying wish was to help researchers find new ways of spotting breast cancer sooner. BCAN-RAY is doing just that.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/03/31/study-inspired-by-s</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-25 09:32 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/25/latest-winner-in-our-research-is-beautiful-competition/" target="_blank" rel="noreferrer">Latest winner in our Research is Beautiful competition</a>
+            <div class="subtext">&lt;p&gt;Our relaunched Research is Beautiful image competition continues to inspire with some fantastic entries – here’s the successful image for March!&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/03/25/la</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-19 06:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/19/a-new-way-to-prevent-cancer-precision-prevention-super-avoiders-and-evolutions-naked-mole-rat-experiment-that-cancer-conversation-season-4-ep-5/" target="_blank" rel="noreferrer">A new way to prevent cancer? That Cancer Conversation Season 4: Ep.6</a>
+            <div class="subtext">&lt;p&gt;In this episode, we&#x27;re exploring the future of cancer prevention. We dive into the surprising clues hidden in the animal kingdom, the mystery of human “super avoiders,” and the cutting-edge research that could make ca</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-18 10:52 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/18/a-chat-with-charlie-a-fond-farewell-to-cruks-chief-clinician/" target="_blank" rel="noreferrer">A chat with Charlie: A fond farewell to CRUK’s Chief Clinician</a>
+            <div class="subtext">&lt;p&gt;As his tenure as CRUK’s Chief Clinician comes to an end – we caught up with Professor Charles Swanton to talk legacy and conceptual shifts…&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/03/18/a-chat-</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-18 09:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/18/scientists-find-a-way-to-use-immunotherapy-to-treat-brain-tumours-in-children/" target="_blank" rel="noreferrer">Using the brain’s immune system to stop children’s brain tumours</a>
+            <div class="subtext">&lt;p&gt;A discovery at the Cancer Research UK Cambridge Institute could lead to an immunotherapy for treating multiple types of brain tumours in children and young people.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchu</div>
+          </td>
+          <td>2.5</td>
+          <td>new</td>
+        </tr>
+        
+        <tr data-category="funding" data-status="new">
+          <td>2026-03-15 16:00 UTC</td>
+          <td><span class="chip">funding</span></td>
+          <td>Cancer Research UK News</td>
+          <td>
+            <a href="https://news.cancerresearchuk.org/2026/03/15/cancer-waiting-times-latest-updates-and-analysis/" target="_blank" rel="noreferrer">Cancer waiting times: Latest updates and analysis</a>
+            <div class="subtext">&lt;p&gt;Get the latest updates and analysis on NHS cancer waiting times in England, and learn what it means for people affected by cancer&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&quot;https://news.cancerresearchuk.org/2026/03/15/cancer-waiting-ti</div>
+          </td>
+          <td>2.0</td>
+          <td>new</td>
+        </tr>
+        
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+  <script>
+    const search = document.getElementById('search');
+    const category = document.getElementById('category');
+    const status = document.getElementById('status');
+    const rows = Array.from(document.querySelectorAll('#rows tr'));
+
+    function applyFilters() {
+      const q = search.value.trim().toLowerCase();
+      const c = category.value;
+      const s = status.value;
+
+      rows.forEach((row) => {
+        const text = row.innerText.toLowerCase();
+        const show =
+          (!q || text.includes(q)) &&
+          (!c || row.dataset.category === c) &&
+          (!s || row.dataset.status === s);
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    search.addEventListener('input', applyFilters);
+    category.addEventListener('change', applyFilters);
+    status.addEventListener('change', applyFilters);
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "arXiv - Cancer Screening ML",
+    "category": "paper",
+    "kind": "rss",
+    "url": "https://export.arxiv.org/api/query?search_query=all:(cancer%20screening)%20AND%20all:(machine%20learning%20OR%20artificial%20intelligence)&start=0&max_results=20&sortBy=submittedDate&sortOrder=descending"
+  },
+  {
+    "name": "arXiv - Liquid Biopsy AI",
+    "category": "paper",
+    "kind": "rss",
+    "url": "https://export.arxiv.org/api/query?search_query=all:(liquid%20biopsy)%20AND%20all:(machine%20learning%20OR%20deep%20learning)&start=0&max_results=20&sortBy=submittedDate&sortOrder=descending"
+  },
+  {
+    "name": "Cancer Research UK News",
+    "category": "funding",
+    "kind": "rss",
+    "url": "https://news.cancerresearchuk.org/feed/"
+  },
+  {
+    "name": "Manual Jobs Watchlist",
+    "category": "job",
+    "kind": "manual",
+    "path": "manual_jobs.json"
+  }
+]

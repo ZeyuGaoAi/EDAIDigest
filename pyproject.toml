@@ -1,0 +1,10 @@
+[project]
+name = "ai-early-cancer-digest"
+version = "0.1.0"
+description = "Local pipeline for an AI-in-early-cancer daily digest"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
