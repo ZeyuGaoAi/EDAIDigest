@@ -34,6 +34,35 @@
     "url": "https://news.cancerresearchuk.org/feed/"
   },
   {
+    "name": "UKRI Opportunities",
+    "category": "funding",
+    "kind": "rss",
+    "url": "https://www.ukri.org/opportunity/feed/"
+  },
+  {
+    "name": "NIH Funding Opportunities",
+    "category": "funding",
+    "kind": "rss",
+    "url": "https://grants.nih.gov/grants/guide/newsfeed/fundingopps.xml"
+  },
+  {
+    "name": "University of Cambridge Research Jobs",
+    "category": "job",
+    "kind": "html_links",
+    "url": "https://www.cam.ac.uk/jobs/term/research",
+    "include_regex": "/jobs/(?!term/)[a-z0-9-]+",
+    "exclude_regex": "/jobs/(term/|browse|life|how-to|why-cambridge|relocating|search|college/)",
+    "max_items": 40
+  },
+  {
+    "name": "jobs.ac.uk - Cancer AI Jobs",
+    "category": "job",
+    "kind": "html_links",
+    "url": "https://www.jobs.ac.uk/search/?keywords=cancer+artificial+intelligence",
+    "include_regex": "/job/[A-Z0-9]+/",
+    "max_items": 30
+  },
+  {
     "name": "Manual Jobs Watchlist",
     "category": "job",
     "kind": "manual",

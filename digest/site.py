@@ -319,7 +319,7 @@ def _build_archive_page(
     status_html = "".join(
         f'<span class="chip">{escape(row["status"])}: {row["count"]}</span>' for row in by_status
     )
-    source_html = """
+    paper_source_html = """
       <div class="source-list">
         <div class="source-item">
           <strong>arXiv</strong>
@@ -332,6 +332,38 @@ def _build_archive_page(
         <div class="source-item">
           <strong>Top journal watchlist via PubMed</strong>
           Targeted monitoring of Nature, Science, Cell, Lancet, JAMA, and selected subjournals including Nature Medicine, Nature Cancer, Nature Biomedical Engineering, Cancer Cell, Lancet Oncology, and JAMA Oncology.
+        </div>
+      </div>
+    """
+    funding_source_html = """
+      <div class="source-list">
+        <div class="source-item">
+          <strong>Cancer Research UK News</strong>
+          Cancer Research UK news feed, used as an early signal for relevant funding and researcher-facing announcements.
+        </div>
+        <div class="source-item">
+          <strong>UKRI Opportunities</strong>
+          Official UK Research and Innovation opportunities feed.
+        </div>
+        <div class="source-item">
+          <strong>NIH Funding Opportunities</strong>
+          Official NIH Guide for Grants and Contracts RSS feed.
+        </div>
+      </div>
+    """
+    job_source_html = """
+      <div class="source-list">
+        <div class="source-item">
+          <strong>University of Cambridge Research Jobs</strong>
+          Official Cambridge research-vacancies page.
+        </div>
+        <div class="source-item">
+          <strong>jobs.ac.uk cancer and AI search</strong>
+          Search-driven academic jobs board feed focused on cancer and AI keywords.
+        </div>
+        <div class="source-item">
+          <strong>Manual watchlist</strong>
+          Curated additions for roles we want to include before a dedicated scraper exists.
         </div>
       </div>
     """
@@ -374,7 +406,19 @@ def _build_archive_page(
     <section class="panel">
       <h2>Paper Sources</h2>
       <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
-      {source_html}
+      {paper_source_html}
+    </section>
+
+    <section class="panel">
+      <h2>Funding Sources</h2>
+      <p class="muted">Funding opportunities currently come from official grant feeds and researcher-facing funding announcements.</p>
+      {funding_source_html}
+    </section>
+
+    <section class="panel">
+      <h2>Job Sources</h2>
+      <p class="muted">Job opportunities combine official institutional pages, targeted academic search pages, and a small manual watchlist.</p>
+      {job_source_html}
     </section>
 
     <section class="panel">

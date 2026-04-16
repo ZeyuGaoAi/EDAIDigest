@@ -101,6 +101,8 @@ The scheduled automation should:
 ## Notes on source quality
 
 - The default `paper` sources now mix arXiv preprints, broad PubMed indexed published papers, and a curated PubMed query targeting top journal families such as Nature, Science, Cell, Lancet, and JAMA.
+- `funding` now includes live feeds from Cancer Research UK news, UKRI opportunities, and the NIH Guide for Grants and Contracts.
+- `job` now includes a Cambridge research-vacancies page scrape, a jobs.ac.uk cancer-and-AI search scrape, and the manual watchlist.
 - The default `funding` feed currently uses Cancer Research UK news as a placeholder source stream.
 - The default `job` source is [data/manual_jobs.json](/Users/gao05/Documents/Playground/ai-early-cancer-digest/data/manual_jobs.json) so the pipeline can already run before a site-specific scraper is added.
 - Heuristic relevance is intentionally strict for `paper` items to avoid false positives like generic AI screening papers that are unrelated to cancer.

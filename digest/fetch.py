@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+from html.parser import HTMLParser
 import json
+import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
@@ -24,9 +26,12 @@ class Source:
     category: str
     url: str | None = None
     path: str | None = None
+    include_regex: str | None = None
+    exclude_regex: str | None = None
     term: str | None = None
     retmax: int = 20
     sort: str = "pub date"
+    max_items: int = 20
     kind: str = "rss"
 
 
@@ -79,6 +84,34 @@ def _request_text(url: str) -> str:
     request = Request(url, headers={"User-Agent": USER_AGENT})
     with urlopen(request, timeout=30) as response:
         return response.read().decode("utf-8")
+
+
+class AnchorParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.anchors: list[tuple[str, str]] = []
+        self._current_href: str | None = None
+        self._current_text: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag != "a":
+            return
+        attr_map = dict(attrs)
+        self._current_href = attr_map.get("href")
+        self._current_text = []
+
+    def handle_data(self, data: str) -> None:
+        if self._current_href is not None:
+            self._current_text.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag != "a" or self._current_href is None:
+            return
+        text = " ".join(" ".join(self._current_text).split())
+        if self._current_href and text:
+            self.anchors.append((self._current_href, text))
+        self._current_href = None
+        self._current_text = []
 
 
 def _child_text(element: ET.Element, path: str) -> str | None:
@@ -250,6 +283,41 @@ def fetch_manual_file(source: Source, config_path: Path) -> list[dict[str, Any]]
     return items
 
 
+def fetch_html_links(source: Source) -> list[dict[str, Any]]:
+    if not source.url:
+        raise ValueError(f"Source {source.name} does not define a URL")
+
+    parser = AnchorParser()
+    parser.feed(_request_text(source.url))
+
+    include = re.compile(source.include_regex) if source.include_regex else None
+    exclude = re.compile(source.exclude_regex) if source.exclude_regex else None
+
+    seen: set[str] = set()
+    items: list[dict[str, Any]] = []
+    for href, text in parser.anchors:
+        absolute_url = urljoin(source.url, href)
+        haystack = f"{href} {absolute_url} {text}"
+        if include and not include.search(haystack):
+            continue
+        if exclude and exclude.search(haystack):
+            continue
+        if absolute_url in seen:
+            continue
+        seen.add(absolute_url)
+        items.append(
+            {
+                "title": text,
+                "summary": None,
+                "url": absolute_url,
+                "published_at": None,
+            }
+        )
+        if len(items) >= source.max_items:
+            break
+    return items
+
+
 def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> int:
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
@@ -302,6 +370,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
         try:
             if source.kind == "rss":
                 items = fetch_feed(source)
+            elif source.kind == "html_links":
+                items = fetch_html_links(source)
             elif source.kind == "pubmed":
                 items = fetch_pubmed(source)
             elif source.kind == "manual":
