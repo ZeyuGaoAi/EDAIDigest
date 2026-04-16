@@ -100,7 +100,7 @@ The scheduled automation should:
 
 ## Notes on source quality
 
-- The default `paper` feeds are live and validated.
+- The default `paper` sources now mix arXiv preprints with PubMed indexed published papers.
 - The default `funding` feed currently uses Cancer Research UK news as a placeholder source stream.
 - The default `job` source is [data/manual_jobs.json](/Users/gao05/Documents/Playground/ai-early-cancer-digest/data/manual_jobs.json) so the pipeline can already run before a site-specific scraper is added.
 - Heuristic relevance is intentionally strict for `paper` items to avoid false positives like generic AI screening papers that are unrelated to cancer.

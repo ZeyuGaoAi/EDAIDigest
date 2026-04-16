@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
@@ -23,6 +24,9 @@ class Source:
     category: str
     url: str | None = None
     path: str | None = None
+    term: str | None = None
+    retmax: int = 20
+    sort: str = "pub date"
     kind: str = "rss"
 
 
@@ -71,6 +75,71 @@ def _entry_link(entry: ET.Element) -> str | None:
     return None
 
 
+def _request_text(url: str) -> str:
+    request = Request(url, headers={"User-Agent": USER_AGENT})
+    with urlopen(request, timeout=30) as response:
+        return response.read().decode("utf-8")
+
+
+def _child_text(element: ET.Element, path: str) -> str | None:
+    child = element.find(path)
+    if child is None:
+        return None
+    value = "".join(child.itertext()).strip()
+    return value or None
+
+
+def _date_node_to_string(date_node: ET.Element) -> str | None:
+    medline = _child_text(date_node, "MedlineDate")
+    if medline:
+        return medline
+    year = _child_text(date_node, "Year")
+    month = _child_text(date_node, "Month") or "01"
+    day = _child_text(date_node, "Day") or "01"
+    if not year:
+        return None
+    month_map = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
+    month = month_map.get(month, month.zfill(2))
+    day = day.zfill(2)
+    return f"{year}-{month}-{day}"
+
+
+def _pubmed_date(article: ET.Element) -> str | None:
+    # Prefer electronic / indexing dates over future journal issue dates.
+    article_date = article.find(".//ArticleDate")
+    if article_date is not None:
+        value = _date_node_to_string(article_date)
+        if value:
+            return value
+
+    for status in ("pubmed", "entrez", "medline", "pmc-release"):
+        date_node = article.find(f".//PubMedPubDate[@PubStatus='{status}']")
+        if date_node is not None:
+            value = _date_node_to_string(date_node)
+            if value:
+                return value
+
+    pub_date = article.find(".//PubDate")
+    if pub_date is not None:
+        value = _date_node_to_string(pub_date)
+        if value:
+            return value
+    return None
+
+
 def fetch_feed(source: Source) -> list[dict[str, Any]]:
     if not source.url:
         raise ValueError(f"Source {source.name} does not define a URL")
@@ -105,6 +174,55 @@ def fetch_feed(source: Source) -> list[dict[str, Any]]:
                 "summary": summary,
                 "url": link,
                 "published_at": published_at,
+            }
+        )
+    return items
+
+
+def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
+    if not source.term:
+        raise ValueError(f"Source {source.name} does not define a PubMed search term")
+
+    search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + urlencode(
+        {
+            "db": "pubmed",
+            "term": source.term,
+            "retmax": source.retmax,
+            "sort": source.sort,
+            "retmode": "xml",
+        }
+    )
+    search_root = ET.fromstring(_request_text(search_url))
+    pmids = [node.text.strip() for node in search_root.findall("./IdList/Id") if node.text]
+    if not pmids:
+        return []
+
+    fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + urlencode(
+        {
+            "db": "pubmed",
+            "id": ",".join(pmids),
+            "retmode": "xml",
+        }
+    )
+    fetch_root = ET.fromstring(_request_text(fetch_url))
+    items: list[dict[str, Any]] = []
+    for article in fetch_root.findall("./PubmedArticle"):
+        pmid = _child_text(article, ".//PMID")
+        title = _child_text(article, ".//ArticleTitle")
+        abstract_parts = [
+            "".join(node.itertext()).strip()
+            for node in article.findall(".//Abstract/AbstractText")
+            if "".join(node.itertext()).strip()
+        ]
+        summary = " ".join(abstract_parts) or None
+        if not pmid or not title:
+            continue
+        items.append(
+            {
+                "title": title,
+                "summary": summary,
+                "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
+                "published_at": _pubmed_date(article),
             }
         )
     return items
@@ -184,6 +302,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
         try:
             if source.kind == "rss":
                 items = fetch_feed(source)
+            elif source.kind == "pubmed":
+                items = fetch_pubmed(source)
             elif source.kind == "manual":
                 items = fetch_manual_file(source, config_path)
             else:

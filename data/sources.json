@@ -6,6 +6,14 @@
     "url": "https://export.arxiv.org/api/query?search_query=all:(cancer%20screening)%20AND%20all:(machine%20learning%20OR%20artificial%20intelligence)&start=0&max_results=20&sortBy=submittedDate&sortOrder=descending"
   },
   {
+    "name": "PubMed - Early Cancer AI",
+    "category": "paper",
+    "kind": "pubmed",
+    "term": "((\"early detection\"[Title/Abstract] OR screening[Title/Abstract] OR \"early diagnosis\"[Title/Abstract] OR \"liquid biopsy\"[Title/Abstract]) AND (cancer[Title/Abstract] OR oncology[Title/Abstract] OR neoplasm*[Title/Abstract] OR carcinoma[Title/Abstract]) AND (\"artificial intelligence\"[Title/Abstract] OR \"machine learning\"[Title/Abstract] OR \"deep learning\"[Title/Abstract] OR \"computer vision\"[Title/Abstract]))",
+    "retmax": 20,
+    "sort": "pub date"
+  },
+  {
     "name": "arXiv - Liquid Biopsy AI",
     "category": "paper",
     "kind": "rss",
