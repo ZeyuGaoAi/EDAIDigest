@@ -33,6 +33,7 @@ This repo deliberately avoids direct API calls to OpenAI. The automation uses Co
 - [data/sources.json](/Users/gao05/Documents/Playground/ai-early-cancer-digest/data/sources.json)
 - [drafts](/Users/gao05/Documents/Playground/ai-early-cancer-digest/drafts)
 - [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html)
+- [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html)
 
 ## Local commands
 
@@ -93,7 +94,7 @@ The scheduled automation should:
    - top funding calls
    - top jobs
    - a short editor note
-4. Refresh the static site in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html)
+4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html)
 5. Keep factual statements tied to the linked sources
 6. Avoid sending anything automatically
 
@@ -112,7 +113,7 @@ The one thing that must be updated after a move is the Codex automation `cwd`. O
 
 ## Publishing on GitHub Pages
 
-The generated public page lives at [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html). This is designed for GitHub Pages using the `main` branch and the `/docs` folder, which avoids requiring a workflow token scope.
+The generated public pages live at [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) for the digest archive and [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html) for the historical item database. This is designed for GitHub Pages using the `main` branch and the `/docs` folder, which avoids requiring a workflow token scope.
 
 Typical flow:
 
