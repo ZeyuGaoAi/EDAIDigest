@@ -14,6 +14,14 @@
     "sort": "pub date"
   },
   {
+    "name": "PubMed - Top Journals",
+    "category": "paper",
+    "kind": "pubmed",
+    "term": "((\"early detection\"[Title/Abstract] OR screening[Title/Abstract] OR \"early diagnosis\"[Title/Abstract] OR \"liquid biopsy\"[Title/Abstract] OR biomarker*[Title/Abstract] OR imaging[Title/Abstract]) AND (cancer[Title/Abstract] OR oncology[Title/Abstract] OR neoplasm*[Title/Abstract] OR carcinoma[Title/Abstract]) AND (\"artificial intelligence\"[Title/Abstract] OR \"machine learning\"[Title/Abstract] OR \"deep learning\"[Title/Abstract] OR \"computer vision\"[Title/Abstract])) AND (\"Nature\"[Journal] OR \"Nature Medicine\"[Journal] OR \"Nature Cancer\"[Journal] OR \"Nature Biomedical Engineering\"[Journal] OR \"Nature Biotechnology\"[Journal] OR \"Nature Communications\"[Journal] OR \"Science\"[Journal] OR \"Science Advances\"[Journal] OR \"Science Translational Medicine\"[Journal] OR \"Cell\"[Journal] OR \"Cancer Cell\"[Journal] OR \"Cell Reports Medicine\"[Journal] OR \"Med (N Y)\"[Journal] OR \"Lancet\"[Journal] OR \"Lancet Oncology\"[Journal] OR \"Lancet Digital Health\"[Journal] OR \"JAMA\"[Journal] OR \"JAMA Oncology\"[Journal] OR \"JAMA Network Open\"[Journal])",
+    "retmax": 30,
+    "sort": "pub date"
+  },
+  {
     "name": "arXiv - Liquid Biopsy AI",
     "category": "paper",
     "kind": "rss",
