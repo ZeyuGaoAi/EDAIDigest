@@ -330,6 +330,10 @@ def _build_archive_page(
           Broad published-paper search covering early detection, screening, early diagnosis, and AI in cancer.
         </div>
         <div class="source-item">
+          <strong>medRxiv</strong>
+          Recent oncology preprints from medRxiv, filtered locally for AI and early cancer relevance.
+        </div>
+        <div class="source-item">
           <strong>Top journal watchlist via PubMed</strong>
           Targeted monitoring of Nature, Science, Cell, Lancet, JAMA, and selected subjournals including Nature Medicine, Nature Cancer, Nature Biomedical Engineering, Cancer Cell, Lancet Oncology, and JAMA Oncology.
         </div>

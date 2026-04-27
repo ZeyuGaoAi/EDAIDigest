@@ -22,6 +22,15 @@
     "sort": "pub date"
   },
   {
+    "name": "medRxiv - Oncology AI",
+    "category": "paper",
+    "kind": "biorxiv_api",
+    "server": "medrxiv",
+    "recent_days": 14,
+    "api_category": "oncology",
+    "max_items": 50
+  },
+  {
     "name": "arXiv - Liquid Biopsy AI",
     "category": "paper",
     "kind": "rss",

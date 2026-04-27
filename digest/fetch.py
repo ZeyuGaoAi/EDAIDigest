@@ -5,7 +5,7 @@ from html.parser import HTMLParser
 import json
 import re
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
@@ -29,6 +29,9 @@ class Source:
     include_regex: str | None = None
     exclude_regex: str | None = None
     term: str | None = None
+    server: str | None = None
+    recent_days: int | None = None
+    api_category: str | None = None
     retmax: int = 20
     sort: str = "pub date"
     max_items: int = 20
@@ -261,6 +264,41 @@ def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
     return items
 
 
+def fetch_biorxiv_api(source: Source) -> list[dict[str, Any]]:
+    if not source.server or not source.recent_days:
+        raise ValueError(f"Source {source.name} does not define a server and recent_days")
+
+    end_date = datetime.now(UTC).date()
+    start_date = end_date - timedelta(days=source.recent_days)
+    params: dict[str, str] = {}
+    if source.api_category:
+        params["category"] = source.api_category
+    query = f"?{urlencode(params)}" if params else ""
+    url = (
+        f"https://api.biorxiv.org/details/{source.server}/{start_date.isoformat()}/{end_date.isoformat()}/0/json{query}"
+    )
+    payload = json.loads(_request_text(url))
+    collection = payload.get("collection", [])
+
+    items: list[dict[str, Any]] = []
+    for entry in collection:
+        title = _text_or_none(entry.get("title"))
+        doi = _text_or_none(entry.get("doi"))
+        if not title or not doi:
+            continue
+        items.append(
+            {
+                "title": title,
+                "summary": _text_or_none(entry.get("abstract")),
+                "url": f"https://www.medrxiv.org/content/{doi}v{entry.get('version', '1')}",
+                "published_at": _text_or_none(entry.get("date")),
+            }
+        )
+        if len(items) >= source.max_items:
+            break
+    return items
+
+
 def fetch_manual_file(source: Source, config_path: Path) -> list[dict[str, Any]]:
     if not source.path:
         raise ValueError(f"Source {source.name} does not define a path")
@@ -372,6 +410,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_feed(source)
             elif source.kind == "html_links":
                 items = fetch_html_links(source)
+            elif source.kind == "biorxiv_api":
+                items = fetch_biorxiv_api(source)
             elif source.kind == "pubmed":
                 items = fetch_pubmed(source)
             elif source.kind == "manual":
