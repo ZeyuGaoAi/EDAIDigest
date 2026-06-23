@@ -301,7 +301,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
-      <p class="muted">Last generated: 2026-06-23 09:53 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 10:10 UTC</p>
     </section>
 
     <section class="panel">
@@ -580,49 +580,49 @@ Link: {link}</textarea>
 ]</textarea>
 
       <div class="button-row">
-        <button id="save-settings" type="button">Save settings.json</button>
-        <button id="save-sources" type="button">Save sources.json</button>
+        <button id="save-settings" type="button">Download settings.json</button>
+        <button id="save-sources" type="button">Download sources.json</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
-      <p id="config-status" class="status-line"></p>
+      <p id="config-status" class="status-line">Downloads must replace the matching files in data/ before future digest runs use them.</p>
       <script type="application/json" id="settings-json-data">{
-  &quot;cadence&quot;: {
-    &quot;paper&quot;: {
-      &quot;lookback_days&quot;: 7,
-      &quot;frequency&quot;: &quot;weekly&quot;,
-      &quot;min_score&quot;: 3.5
+  "cadence": {
+    "paper": {
+      "lookback_days": 7,
+      "frequency": "weekly",
+      "min_score": 3.5
     },
-    &quot;funding&quot;: {
-      &quot;lookback_days&quot;: 30,
-      &quot;frequency&quot;: &quot;monthly&quot;,
-      &quot;min_score&quot;: 3.5
+    "funding": {
+      "lookback_days": 30,
+      "frequency": "monthly",
+      "min_score": 3.5
     },
-    &quot;job&quot;: {
-      &quot;lookback_days&quot;: 30,
-      &quot;frequency&quot;: &quot;monthly&quot;,
-      &quot;min_score&quot;: 2.0
+    "job": {
+      "lookback_days": 30,
+      "frequency": "monthly",
+      "min_score": 2.0
     }
   },
-  &quot;scope&quot;: {
-    &quot;paper&quot;: &quot;AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.&quot;,
-    &quot;funding&quot;: &quot;Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.&quot;,
-    &quot;job&quot;: &quot;Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.&quot;
+  "scope": {
+    "paper": "AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.",
+    "funding": "Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.",
+    "job": "Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer."
   },
-  &quot;workflow&quot;: {
-    &quot;trigger&quot;: &quot;Manual trigger while the scope is still being refined.&quot;,
-    &quot;review&quot;: &quot;AI drafts the digest; a human reviews before anything is sent.&quot;
+  "workflow": {
+    "trigger": "Manual trigger while the scope is still being refined.",
+    "review": "AI drafts the digest; a human reviews before anything is sent."
   },
-  &quot;email_template&quot;: {
-    &quot;subject_prefix&quot;: &quot;AI for Early Cancer Digest&quot;,
-    &quot;preheader&quot;: &quot;Selected updates on AI for early cancer detection, screening, funding, and jobs.&quot;,
-    &quot;editor_note&quot;: &quot;Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.&quot;,
-    &quot;body_template&quot;: &quot;## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}&quot;,
-    &quot;empty_text&quot;: &quot;_No shortlisted items yet._&quot;,
-    &quot;item_templates&quot;: {
-      &quot;paper&quot;: &quot;### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}&quot;,
-      &quot;funding&quot;: &quot;### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}&quot;,
-      &quot;job&quot;: &quot;### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}&quot;
+  "email_template": {
+    "subject_prefix": "AI for Early Cancer Digest",
+    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
+    "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
+    "body_template": "## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}",
+    "empty_text": "_No shortlisted items yet._",
+    "item_templates": {
+      "paper": "### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}",
+      "funding": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+      "job": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}"
     }
   }
 }</script>
@@ -725,7 +725,7 @@ Link: {link}</textarea>
               const writable = await handle.createWritable();
               await writable.write(text);
               await writable.close();
-              configStatus.textContent = `Saved ${filename}. Commit and push the updated file for GitHub Pages / future runs.`;
+              configStatus.textContent = `Saved ${filename}. Replace data/${filename}, then rerun the digest build.`;
               return;
             } catch (error) {
               if (error.name === 'AbortError') {
@@ -735,7 +735,7 @@ Link: {link}</textarea>
             }
           }
           downloadJson(filename, payload);
-          configStatus.textContent = `Downloaded ${filename}. Replace data/${filename} with it before the next run.`;
+          configStatus.textContent = `Downloaded ${filename}. Replace data/${filename}, then rerun the digest build.`;
         }
 
         document.getElementById('save-settings').addEventListener('click', async () => {

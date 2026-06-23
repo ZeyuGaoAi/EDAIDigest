@@ -54,6 +54,10 @@ def _json_for_html(payload) -> str:
     return escape(json.dumps(payload, indent=2))
 
 
+def _json_for_script(payload) -> str:
+    return json.dumps(payload, indent=2).replace("<", "\\u003c").replace(">", "\\u003e")
+
+
 def _source_detail(source: dict) -> str:
     kind = source.get("kind", "rss")
     if kind == "pubmed":
@@ -178,13 +182,13 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       <textarea id="sources-json" class="json-editor">{_json_for_html(sources)}</textarea>
 
       <div class="button-row">
-        <button id="save-settings" type="button">Save settings.json</button>
-        <button id="save-sources" type="button">Save sources.json</button>
+        <button id="save-settings" type="button">Download settings.json</button>
+        <button id="save-sources" type="button">Download sources.json</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
-      <p id="config-status" class="status-line"></p>
-      <script type="application/json" id="settings-json-data">{_json_for_html(settings)}</script>
+      <p id="config-status" class="status-line">Downloads must replace the matching files in data/ before future digest runs use them.</p>
+      <script type="application/json" id="settings-json-data">{_json_for_script(settings)}</script>
       <script>
         const settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
         const sourceEditor = document.getElementById('sources-json');
@@ -284,7 +288,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               const writable = await handle.createWritable();
               await writable.write(text);
               await writable.close();
-              configStatus.textContent = `Saved ${{filename}}. Commit and push the updated file for GitHub Pages / future runs.`;
+              configStatus.textContent = `Saved ${{filename}}. Replace data/${{filename}}, then rerun the digest build.`;
               return;
             }} catch (error) {{
               if (error.name === 'AbortError') {{
@@ -294,7 +298,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             }}
           }}
           downloadJson(filename, payload);
-          configStatus.textContent = `Downloaded ${{filename}}. Replace data/${{filename}} with it before the next run.`;
+          configStatus.textContent = `Downloaded ${{filename}}. Replace data/${{filename}}, then rerun the digest build.`;
         }}
 
         document.getElementById('save-settings').addEventListener('click', async () => {{
