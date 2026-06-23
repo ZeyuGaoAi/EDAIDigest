@@ -15,7 +15,23 @@ DEFAULT_EMAIL_TEMPLATE = {
     "subject_prefix": "AI for Early Cancer Digest",
     "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
     "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
+    "body_template": "## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}",
+    "empty_text": "_No shortlisted items yet._",
+    "item_templates": {
+        "paper": "### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}",
+        "funding": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+        "job": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+    },
 }
+
+
+class _SafeDict(dict):
+    def __missing__(self, key: str) -> str:
+        return "{" + key + "}"
+
+
+def _format_template(template: str, values: dict[str, object]) -> str:
+    return template.format_map(_SafeDict({key: "" if value is None else value for key, value in values.items()}))
 
 
 def _category_cutoff(category: str, lookback_days: dict[str, int]) -> str:
@@ -132,6 +148,10 @@ def generate_template_draft(
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
     min_scores = min_scores or DEFAULT_MIN_SCORES
     email_template = {**DEFAULT_EMAIL_TEMPLATE, **(email_template or {})}
+    item_templates = {
+        **DEFAULT_EMAIL_TEMPLATE["item_templates"],
+        **email_template.get("item_templates", {}),
+    }
     category_filter_sql, category_params = _category_filter_sql(lookback_days)
     date_slug = datetime.now(UTC).date().isoformat()
     draft_path = drafts_dir / f"{date_slug}.md"
@@ -168,44 +188,53 @@ def generate_template_draft(
         email_template["preheader"],
         "",
         "Editor note:",
-        email_template["editor_note"].format(
-            date=date_slug,
-            paper_days=lookback_days["paper"],
-            funding_days=lookback_days["funding"],
-            job_days=lookback_days["job"],
-        ),
+        _format_template(email_template["editor_note"], {
+            "date": date_slug,
+            "paper_days": lookback_days["paper"],
+            "funding_days": lookback_days["funding"],
+            "job_days": lookback_days["job"],
+        }),
         "",
     ]
+
+    rendered_sections: dict[str, str] = {}
     for category in ("paper", "funding", "job"):
-        label = category.title() + ("s" if category != "funding" else "")
-        lines.append(f"## {label}")
-        lines.append("")
         if not grouped.get(category):
-            lines.append("_No shortlisted items yet._")
-            lines.append("")
+            rendered_sections[category] = email_template["empty_text"]
             continue
+        rendered_items: list[str] = []
         for row in grouped[category]:
-            if category == "paper":
-                lines.extend(
-                    [
-                        f"### {row['title']}",
-                        f"Published in: {row['venue'] or row['source']}",
-                        f"DOI / ID: {_paper_identifier(row['source'], row['url'])}",
-                        f"HTML: {row['url']}",
-                        "",
-                    ]
+            rendered_items.append(
+                _format_template(
+                    item_templates[category],
+                    {
+                        "title": row["title"],
+                        "source": row["source"],
+                        "venue": row["venue"] or row["source"],
+                        "doi_or_id": _paper_identifier(row["source"], row["url"]),
+                        "html": row["url"],
+                        "link": row["url"],
+                        "summary": _clean_summary(row["summary"]),
+                        "why_relevant": row["why_relevant"],
+                    },
                 )
-                continue
-            lines.extend(
-                [
-                    f"### {row['title']}",
-                    f"Source: {row['source']}",
-                    f"Summary: {_clean_summary(row['summary'])}",
-                    f"Why it matters: {row['why_relevant']}",
-                    f"Link: {row['url']}",
-                    "",
-                ]
             )
+        rendered_sections[category] = "\n\n".join(rendered_items)
+
+    lines.append(
+        _format_template(
+            email_template["body_template"],
+            {
+                "date": date_slug,
+                "paper_days": lookback_days["paper"],
+                "funding_days": lookback_days["funding"],
+                "job_days": lookback_days["job"],
+                "papers": rendered_sections["paper"],
+                "funding": rendered_sections["funding"],
+                "jobs": rendered_sections["job"],
+            },
+        )
+    )
     draft_path.write_text("\n".join(lines))
     if selected_ids:
         with connect(db_path) as conn:

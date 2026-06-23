@@ -124,6 +124,11 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
     subject_prefix = escape(str(_settings_value(settings, ("email_template", "subject_prefix"))))
     preheader = escape(str(_settings_value(settings, ("email_template", "preheader"))))
     editor_note = escape(str(_settings_value(settings, ("email_template", "editor_note"))))
+    body_template = escape(str(_settings_value(settings, ("email_template", "body_template"))))
+    empty_text = escape(str(_settings_value(settings, ("email_template", "empty_text"))))
+    paper_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "paper"))))
+    funding_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "funding"))))
+    job_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "job"))))
 
     return f"""
       <div class="config-grid">
@@ -146,6 +151,26 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           <textarea id="preheader">{preheader}</textarea>
           <label for="editor-note">Editor Note</label>
           <textarea id="editor-note">{editor_note}</textarea>
+          <label for="empty-text">Empty Section Text</label>
+          <input id="empty-text" value="{empty_text}">
+        </div>
+      </div>
+
+      <label for="body-template">Email Body Template</label>
+      <textarea id="body-template" class="json-editor">{body_template}</textarea>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Paper Item Template</h3>
+          <textarea id="paper-item-template" class="json-editor">{paper_template}</textarea>
+        </div>
+        <div class="config-card">
+          <h3>Funding Item Template</h3>
+          <textarea id="funding-item-template" class="json-editor">{funding_template}</textarea>
+        </div>
+        <div class="config-card">
+          <h3>Job Item Template</h3>
+          <textarea id="job-item-template" class="json-editor">{job_template}</textarea>
         </div>
       </div>
 
@@ -187,6 +212,13 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             subject_prefix: document.getElementById('subject-prefix').value.trim(),
             preheader: document.getElementById('preheader').value.trim(),
             editor_note: document.getElementById('editor-note').value.trim(),
+            body_template: document.getElementById('body-template').value.trim(),
+            empty_text: document.getElementById('empty-text').value.trim(),
+            item_templates: {{
+              paper: document.getElementById('paper-item-template').value.trim(),
+              funding: document.getElementById('funding-item-template').value.trim(),
+              job: document.getElementById('job-item-template').value.trim(),
+            }},
           }};
           return next;
         }}
@@ -214,6 +246,12 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             document.getElementById('subject-prefix').value = draft.email_template.subject_prefix || '';
             document.getElementById('preheader').value = draft.email_template.preheader || '';
             document.getElementById('editor-note').value = draft.email_template.editor_note || '';
+            document.getElementById('body-template').value = draft.email_template.body_template || '';
+            document.getElementById('empty-text').value = draft.email_template.empty_text || '';
+            const itemTemplates = draft.email_template.item_templates || {{}};
+            document.getElementById('paper-item-template').value = itemTemplates.paper || '';
+            document.getElementById('funding-item-template').value = itemTemplates.funding || '';
+            document.getElementById('job-item-template').value = itemTemplates.job || '';
           }}
         }}
 
@@ -724,33 +762,24 @@ def _build_archive_page(
         workflow_trigger=escape(workflow.get("trigger", "")),
         workflow_review=escape(workflow.get("review", "")),
     )
-    template_html = """Subject: {subject_prefix} | YYYY-MM-DD
-Preheader: {preheader}
+    configured_item_templates = email_template.get("item_templates", {})
+    template_html = f"""Subject: {email_template.get("subject_prefix", "AI for Early Cancer Digest")} | YYYY-MM-DD
+Preheader: {email_template.get("preheader", "")}
 
 Editor note:
-{editor_note}
+{email_template.get("editor_note", "")}
 
-Papers
-- Title
-- Published in
-- DOI / ID
-- HTML
+Body template:
+{email_template.get("body_template", "")}
 
-Funding
-- Title
-- Source
-- One-line note
-- Link
+Paper item template:
+{configured_item_templates.get("paper", "")}
 
-Jobs
-- Title
-- Source
-- One-line note
-- Link""".format(
-        subject_prefix=email_template.get("subject_prefix", "AI for Early Cancer Digest"),
-        preheader=email_template.get("preheader", ""),
-        editor_note=email_template.get("editor_note", ""),
-    )
+Funding item template:
+{configured_item_templates.get("funding", "")}
+
+Job item template:
+{configured_item_templates.get("job", "")}"""
     config_editor_html = _build_config_editor(settings, sources)
     drafts_html = "".join(
         f"""

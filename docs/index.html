@@ -301,7 +301,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
-      <p class="muted">Last generated: 2026-06-23 09:46 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 09:53 UTC</p>
     </section>
 
     <section class="panel">
@@ -359,23 +359,38 @@ Preheader: Selected updates on AI for early cancer detection, screening, funding
 Editor note:
 Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.
 
-Papers
-- Title
-- Published in
-- DOI / ID
-- HTML
+Body template:
+## Papers
 
-Funding
-- Title
-- Source
-- One-line note
-- Link
+{papers}
 
-Jobs
-- Title
-- Source
-- One-line note
-- Link</pre>
+## Funding
+
+{funding}
+
+## Jobs
+
+{jobs}
+
+Paper item template:
+### {title}
+Published in: {venue}
+DOI / ID: {doi_or_id}
+HTML: {html}
+
+Funding item template:
+### {title}
+Source: {source}
+Summary: {summary}
+Why it matters: {why_relevant}
+Link: {link}
+
+Job item template:
+### {title}
+Source: {source}
+Summary: {summary}
+Why it matters: {why_relevant}
+Link: {link}</pre>
     </section>
 
     <section class="panel">
@@ -438,6 +453,47 @@ Jobs
           <textarea id="preheader">Selected updates on AI for early cancer detection, screening, funding, and jobs.</textarea>
           <label for="editor-note">Editor Note</label>
           <textarea id="editor-note">Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.</textarea>
+          <label for="empty-text">Empty Section Text</label>
+          <input id="empty-text" value="_No shortlisted items yet._">
+        </div>
+      </div>
+
+      <label for="body-template">Email Body Template</label>
+      <textarea id="body-template" class="json-editor">## Papers
+
+{papers}
+
+## Funding
+
+{funding}
+
+## Jobs
+
+{jobs}</textarea>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Paper Item Template</h3>
+          <textarea id="paper-item-template" class="json-editor">### {title}
+Published in: {venue}
+DOI / ID: {doi_or_id}
+HTML: {html}</textarea>
+        </div>
+        <div class="config-card">
+          <h3>Funding Item Template</h3>
+          <textarea id="funding-item-template" class="json-editor">### {title}
+Source: {source}
+Summary: {summary}
+Why it matters: {why_relevant}
+Link: {link}</textarea>
+        </div>
+        <div class="config-card">
+          <h3>Job Item Template</h3>
+          <textarea id="job-item-template" class="json-editor">### {title}
+Source: {source}
+Summary: {summary}
+Why it matters: {why_relevant}
+Link: {link}</textarea>
         </div>
       </div>
 
@@ -560,7 +616,14 @@ Jobs
   &quot;email_template&quot;: {
     &quot;subject_prefix&quot;: &quot;AI for Early Cancer Digest&quot;,
     &quot;preheader&quot;: &quot;Selected updates on AI for early cancer detection, screening, funding, and jobs.&quot;,
-    &quot;editor_note&quot;: &quot;Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.&quot;
+    &quot;editor_note&quot;: &quot;Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.&quot;,
+    &quot;body_template&quot;: &quot;## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}&quot;,
+    &quot;empty_text&quot;: &quot;_No shortlisted items yet._&quot;,
+    &quot;item_templates&quot;: {
+      &quot;paper&quot;: &quot;### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}&quot;,
+      &quot;funding&quot;: &quot;### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}&quot;,
+      &quot;job&quot;: &quot;### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}&quot;
+    }
   }
 }</script>
       <script>
@@ -590,6 +653,13 @@ Jobs
             subject_prefix: document.getElementById('subject-prefix').value.trim(),
             preheader: document.getElementById('preheader').value.trim(),
             editor_note: document.getElementById('editor-note').value.trim(),
+            body_template: document.getElementById('body-template').value.trim(),
+            empty_text: document.getElementById('empty-text').value.trim(),
+            item_templates: {
+              paper: document.getElementById('paper-item-template').value.trim(),
+              funding: document.getElementById('funding-item-template').value.trim(),
+              job: document.getElementById('job-item-template').value.trim(),
+            },
           };
           return next;
         }
@@ -617,6 +687,12 @@ Jobs
             document.getElementById('subject-prefix').value = draft.email_template.subject_prefix || '';
             document.getElementById('preheader').value = draft.email_template.preheader || '';
             document.getElementById('editor-note').value = draft.email_template.editor_note || '';
+            document.getElementById('body-template').value = draft.email_template.body_template || '';
+            document.getElementById('empty-text').value = draft.email_template.empty_text || '';
+            const itemTemplates = draft.email_template.item_templates || {};
+            document.getElementById('paper-item-template').value = itemTemplates.paper || '';
+            document.getElementById('funding-item-template').value = itemTemplates.funding || '';
+            document.getElementById('job-item-template').value = itemTemplates.job || '';
           }
         }
 

@@ -37,6 +37,13 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "subject_prefix": "AI for Early Cancer Digest",
         "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
         "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
+        "body_template": "## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}",
+        "empty_text": "_No shortlisted items yet._",
+        "item_templates": {
+            "paper": "### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}",
+            "funding": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+            "job": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+        },
     },
 }
 
