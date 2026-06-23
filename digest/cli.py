@@ -3,25 +3,40 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from digest.config import DB_PATH, DRAFTS_DIR, REVIEW_QUEUE_PATH, SITE_DIR, SOURCES_PATH
+from digest.config import DB_PATH, DRAFTS_DIR, REVIEW_QUEUE_PATH, SETTINGS_PATH, SITE_DIR, SOURCES_PATH
 from digest.db import init_db
-from digest.drafts import DEFAULT_LOOKBACK_DAYS, export_review_queue, generate_template_draft, set_status
+from digest.drafts import export_review_queue, generate_template_draft, set_status
 from digest.fetch import ingest
+from digest.settings import load_settings, lookback_days_from_settings, min_scores_from_settings
 from digest.site import build_site
 
 
 def add_lookback_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--paper-days", type=int, default=DEFAULT_LOOKBACK_DAYS["paper"])
-    parser.add_argument("--funding-days", type=int, default=DEFAULT_LOOKBACK_DAYS["funding"])
-    parser.add_argument("--job-days", type=int, default=DEFAULT_LOOKBACK_DAYS["job"])
+    parser.add_argument("--paper-days", type=int)
+    parser.add_argument("--funding-days", type=int)
+    parser.add_argument("--job-days", type=int)
 
 
-def lookback_config(args: argparse.Namespace) -> dict[str, int]:
-    return {
-        "paper": args.paper_days,
-        "funding": args.funding_days,
-        "job": args.job_days,
-    }
+def add_settings_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--settings", type=Path, default=SETTINGS_PATH)
+
+
+def lookback_config(args: argparse.Namespace, settings: dict) -> dict[str, int]:
+    config = lookback_days_from_settings(settings)
+    for category in ("paper", "funding", "job"):
+        value = getattr(args, f"{category}_days", None)
+        if value is not None:
+            config[category] = value
+    return config
+
+
+def min_score_config(args: argparse.Namespace, settings: dict) -> dict[str, float]:
+    config = min_scores_from_settings(settings)
+    min_score = getattr(args, "min_score", None)
+    if min_score is not None:
+        config["paper"] = min_score
+        config["funding"] = min_score
+    return config
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -36,25 +51,30 @@ def build_parser() -> argparse.ArgumentParser:
 
     queue_parser = subparsers.add_parser("export-review")
     queue_parser.add_argument("--output", type=Path, default=REVIEW_QUEUE_PATH)
+    add_settings_arg(queue_parser)
     add_lookback_args(queue_parser)
-    queue_parser.add_argument("--min-score", type=float, default=3.5)
+    queue_parser.add_argument("--min-score", type=float)
 
     draft_parser = subparsers.add_parser("generate-draft")
     draft_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
+    add_settings_arg(draft_parser)
     add_lookback_args(draft_parser)
     draft_parser.add_argument("--per-category", type=int, default=3)
 
     site_parser = subparsers.add_parser("build-site")
     site_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
     site_parser.add_argument("--site-dir", type=Path, default=SITE_DIR)
+    add_settings_arg(site_parser)
+    site_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
 
     daily_parser = subparsers.add_parser("run-daily")
     daily_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
+    add_settings_arg(daily_parser)
     daily_parser.add_argument("--review-output", type=Path, default=REVIEW_QUEUE_PATH)
     daily_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
     daily_parser.add_argument("--site-dir", type=Path, default=SITE_DIR)
     add_lookback_args(daily_parser)
-    daily_parser.add_argument("--min-score", type=float, default=3.5)
+    daily_parser.add_argument("--min-score", type=float)
     daily_parser.add_argument("--per-category", type=int, default=3)
 
     status_parser = subparsers.add_parser("set-status")
@@ -84,25 +104,52 @@ def main() -> int:
         return 0
 
     if args.command == "export-review":
-        path = export_review_queue(args.db, args.output, lookback_config(args), args.min_score)
+        settings = load_settings(args.settings)
+        path = export_review_queue(
+            args.db,
+            args.output,
+            lookback_config(args, settings),
+            min_score_config(args, settings),
+        )
         print(path)
         return 0
 
     if args.command == "generate-draft":
-        path = generate_template_draft(args.db, args.drafts_dir, lookback_config(args), args.per_category)
+        settings = load_settings(args.settings)
+        path = generate_template_draft(
+            args.db,
+            args.drafts_dir,
+            lookback_config(args, settings),
+            min_score_config(args, settings),
+            settings.get("email_template", {}),
+            args.per_category,
+        )
         print(path)
         return 0
 
     if args.command == "build-site":
-        path = build_site(args.db, args.drafts_dir, args.site_dir)
+        path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print(path)
         return 0
 
     if args.command == "run-daily":
+        settings = load_settings(args.settings)
         stats, errors = ingest(args.db, args.sources)
-        review_path = export_review_queue(args.db, args.review_output, lookback_config(args), args.min_score)
-        draft_path = generate_template_draft(args.db, args.drafts_dir, lookback_config(args), args.per_category)
-        site_path = build_site(args.db, args.drafts_dir, args.site_dir)
+        review_path = export_review_queue(
+            args.db,
+            args.review_output,
+            lookback_config(args, settings),
+            min_score_config(args, settings),
+        )
+        draft_path = generate_template_draft(
+            args.db,
+            args.drafts_dir,
+            lookback_config(args, settings),
+            min_score_config(args, settings),
+            settings.get("email_template", {}),
+            args.per_category,
+        )
+        site_path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print("Ingest:")
         for source_name, count in stats.items():
             print(f"  {source_name}: {count} items processed")

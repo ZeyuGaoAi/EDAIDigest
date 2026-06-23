@@ -3,10 +3,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from html import escape
 from html import unescape
+import json
 from pathlib import Path
 import re
 
 from digest.db import connect
+from digest.settings import load_settings
 
 
 def _format_timestamp(value: str | None) -> str:
@@ -37,6 +39,269 @@ def _clean_text(text: str | None, limit: int = 220) -> str:
     if len(cleaned) <= limit:
         return cleaned
     return f"{cleaned[: limit - 3].rstrip()}..."
+
+
+def _load_sources(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text())
+    if not isinstance(payload, list):
+        raise ValueError(f"Sources file must contain a JSON list: {path}")
+    return payload
+
+
+def _json_for_html(payload) -> str:
+    return escape(json.dumps(payload, indent=2))
+
+
+def _source_detail(source: dict) -> str:
+    kind = source.get("kind", "rss")
+    if kind == "pubmed":
+        return f"PubMed query, retmax {source.get('retmax', 20)}."
+    if kind == "biorxiv_api":
+        return f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
+    if kind == "html_links":
+        return f"HTML link scraper: {source.get('url', 'configured URL')}."
+    if kind == "manual":
+        return f"Manual file: {source.get('path', 'configured path')}."
+    return f"RSS/feed source: {source.get('url', 'configured URL')}."
+
+
+def _sources_html(sources: list[dict], category: str) -> str:
+    rows = []
+    for source in sources:
+        if source.get("category") != category:
+            continue
+        rows.append(
+            f"""
+            <div class="source-item">
+              <strong>{escape(source.get("name", "Unnamed source"))}</strong>
+              {escape(_source_detail(source))}
+            </div>
+            """
+        )
+    return '<div class="source-list">' + "".join(rows) + "</div>"
+
+
+def _settings_value(settings: dict, path: tuple[str, ...], default: str = ""):
+    value = settings
+    for key in path:
+        if not isinstance(value, dict):
+            return default
+        value = value.get(key)
+    return default if value is None else value
+
+
+def _clean_generated_html(text: str) -> str:
+    return "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+
+
+def _build_config_editor(settings: dict, sources: list[dict]) -> str:
+    cards = []
+    for category, label in (("paper", "Papers"), ("funding", "Funding"), ("job", "Jobs")):
+        lookback_days = escape(str(_settings_value(settings, ("cadence", category, "lookback_days"))))
+        frequency = escape(str(_settings_value(settings, ("cadence", category, "frequency"))))
+        min_score = escape(str(_settings_value(settings, ("cadence", category, "min_score"))))
+        scope = escape(str(_settings_value(settings, ("scope", category))))
+        cards.append(
+            f"""
+            <div class="config-card" data-category="{category}">
+              <h3>{label}</h3>
+              <label for="{category}-days">Lookback Days</label>
+              <input id="{category}-days" data-field="lookback_days" type="number" min="1" step="1" value="{lookback_days}">
+              <label for="{category}-frequency">Update Frequency</label>
+              <input id="{category}-frequency" data-field="frequency" value="{frequency}">
+              <label for="{category}-score">Minimum Score</label>
+              <input id="{category}-score" data-field="min_score" type="number" min="0" step="0.1" value="{min_score}">
+              <label for="{category}-scope">Scope</label>
+              <textarea id="{category}-scope" data-scope="{category}">{scope}</textarea>
+            </div>
+            """
+        )
+
+    workflow_trigger = escape(str(_settings_value(settings, ("workflow", "trigger"))))
+    workflow_review = escape(str(_settings_value(settings, ("workflow", "review"))))
+    subject_prefix = escape(str(_settings_value(settings, ("email_template", "subject_prefix"))))
+    preheader = escape(str(_settings_value(settings, ("email_template", "preheader"))))
+    editor_note = escape(str(_settings_value(settings, ("email_template", "editor_note"))))
+
+    return f"""
+      <div class="config-grid">
+        {''.join(cards)}
+      </div>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Workflow</h3>
+          <label for="workflow-trigger">Trigger</label>
+          <input id="workflow-trigger" value="{workflow_trigger}">
+          <label for="workflow-review">Review</label>
+          <input id="workflow-review" value="{workflow_review}">
+        </div>
+        <div class="config-card">
+          <h3>Email Template</h3>
+          <label for="subject-prefix">Subject Prefix</label>
+          <input id="subject-prefix" value="{subject_prefix}">
+          <label for="preheader">Preheader</label>
+          <textarea id="preheader">{preheader}</textarea>
+          <label for="editor-note">Editor Note</label>
+          <textarea id="editor-note">{editor_note}</textarea>
+        </div>
+      </div>
+
+      <label for="sources-json">Sources JSON</label>
+      <textarea id="sources-json" class="json-editor">{_json_for_html(sources)}</textarea>
+
+      <div class="button-row">
+        <button id="save-settings" type="button">Save settings.json</button>
+        <button id="save-sources" type="button">Save sources.json</button>
+        <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
+        <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
+      </div>
+      <p id="config-status" class="status-line"></p>
+      <script type="application/json" id="settings-json-data">{_json_for_html(settings)}</script>
+      <script>
+        const settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
+        const sourceEditor = document.getElementById('sources-json');
+        const configStatus = document.getElementById('config-status');
+
+        function collectSettings() {{
+          const next = JSON.parse(JSON.stringify(settingsSeed));
+          next.cadence = next.cadence || {{}};
+          next.scope = next.scope || {{}};
+          document.querySelectorAll('.config-card[data-category]').forEach((card) => {{
+            const category = card.dataset.category;
+            next.cadence[category] = next.cadence[category] || {{}};
+            card.querySelectorAll('[data-field]').forEach((input) => {{
+              const field = input.dataset.field;
+              next.cadence[category][field] = field === 'frequency' ? input.value.trim() : Number(input.value);
+            }});
+            const scope = card.querySelector('[data-scope]');
+            next.scope[category] = scope.value.trim();
+          }});
+          next.workflow = {{
+            trigger: document.getElementById('workflow-trigger').value.trim(),
+            review: document.getElementById('workflow-review').value.trim(),
+          }};
+          next.email_template = {{
+            subject_prefix: document.getElementById('subject-prefix').value.trim(),
+            preheader: document.getElementById('preheader').value.trim(),
+            editor_note: document.getElementById('editor-note').value.trim(),
+          }};
+          return next;
+        }}
+
+        function applySettingsDraft(draft) {{
+          document.querySelectorAll('.config-card[data-category]').forEach((card) => {{
+            const category = card.dataset.category;
+            const cadence = (draft.cadence && draft.cadence[category]) || {{}};
+            card.querySelectorAll('[data-field]').forEach((input) => {{
+              const field = input.dataset.field;
+              if (cadence[field] !== undefined) {{
+                input.value = cadence[field];
+              }}
+            }});
+            const scope = card.querySelector('[data-scope]');
+            if (draft.scope && draft.scope[category] !== undefined) {{
+              scope.value = draft.scope[category];
+            }}
+          }});
+          if (draft.workflow) {{
+            document.getElementById('workflow-trigger').value = draft.workflow.trigger || '';
+            document.getElementById('workflow-review').value = draft.workflow.review || '';
+          }}
+          if (draft.email_template) {{
+            document.getElementById('subject-prefix').value = draft.email_template.subject_prefix || '';
+            document.getElementById('preheader').value = draft.email_template.preheader || '';
+            document.getElementById('editor-note').value = draft.email_template.editor_note || '';
+          }}
+        }}
+
+        function parseSources() {{
+          const parsed = JSON.parse(sourceEditor.value);
+          if (!Array.isArray(parsed)) {{
+            throw new Error('sources.json must be a JSON array');
+          }}
+          return parsed;
+        }}
+
+        function downloadJson(filename, payload) {{
+          const blob = new Blob([JSON.stringify(payload, null, 2) + '\\n'], {{ type: 'application/json' }});
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+        }}
+
+        async function saveJson(filename, payload) {{
+          const text = JSON.stringify(payload, null, 2) + '\\n';
+          if ('showSaveFilePicker' in window) {{
+            try {{
+              const handle = await window.showSaveFilePicker({{
+                suggestedName: filename,
+                types: [{{ description: 'JSON', accept: {{ 'application/json': ['.json'] }} }}],
+              }});
+              const writable = await handle.createWritable();
+              await writable.write(text);
+              await writable.close();
+              configStatus.textContent = `Saved ${{filename}}. Commit and push the updated file for GitHub Pages / future runs.`;
+              return;
+            }} catch (error) {{
+              if (error.name === 'AbortError') {{
+                configStatus.textContent = 'Save cancelled.';
+                return;
+              }}
+            }}
+          }}
+          downloadJson(filename, payload);
+          configStatus.textContent = `Downloaded ${{filename}}. Replace data/${{filename}} with it before the next run.`;
+        }}
+
+        document.getElementById('save-settings').addEventListener('click', async () => {{
+          await saveJson('settings.json', collectSettings());
+        }});
+
+        document.getElementById('save-sources').addEventListener('click', async () => {{
+          try {{
+            await saveJson('sources.json', parseSources());
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('save-browser-draft').addEventListener('click', () => {{
+          try {{
+            localStorage.setItem('edaidigest.settingsDraft', JSON.stringify(collectSettings()));
+            localStorage.setItem('edaidigest.sourcesDraft', sourceEditor.value);
+            configStatus.textContent = 'Browser draft saved locally.';
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('reset-browser-draft').addEventListener('click', () => {{
+          localStorage.removeItem('edaidigest.settingsDraft');
+          localStorage.removeItem('edaidigest.sourcesDraft');
+          configStatus.textContent = 'Browser draft cleared. Reload to restore committed values.';
+        }});
+
+        const settingsDraft = localStorage.getItem('edaidigest.settingsDraft');
+        const sourcesDraft = localStorage.getItem('edaidigest.sourcesDraft');
+        if (settingsDraft) {{
+          try {{
+            applySettingsDraft(JSON.parse(settingsDraft));
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }}
+        if (sourcesDraft) {{
+          sourceEditor.value = sourcesDraft;
+          configStatus.textContent = 'Loaded browser draft. Save JSON files to use these values in future runs.';
+        }}
+      </script>
+    """
 
 
 def _markdown_to_html(text: str) -> str:
@@ -282,6 +547,68 @@ def _shared_styles() -> str:
       white-space: pre-wrap;
       font: 13px/1.55 "Courier New", Courier, monospace;
     }
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .config-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 14px;
+    }
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      margin: 12px 0 6px;
+      text-transform: uppercase;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: var(--ink);
+      font: inherit;
+      padding: 9px 10px;
+    }
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+    .json-editor {
+      min-height: 260px;
+      font: 13px/1.45 "Courier New", Courier, monospace;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      padding: 9px 14px;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+    .status-line {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -330,6 +657,8 @@ def _build_archive_page(
     by_category,
     by_status,
     generated_at: str,
+    settings: dict,
+    sources: list[dict],
 ) -> str:
     stats_html = "".join(
         f'<div class="stat"><span class="stat-label">{escape(row["category"].title())}</span>'
@@ -339,99 +668,67 @@ def _build_archive_page(
     status_html = "".join(
         f'<span class="chip">{escape(row["status"])}: {row["count"]}</span>' for row in by_status
     )
-    paper_source_html = """
-      <div class="source-list">
-        <div class="source-item">
-          <strong>arXiv</strong>
-          Preprints focused on cancer screening, liquid biopsy, and related AI methods.
-        </div>
-        <div class="source-item">
-          <strong>PubMed</strong>
-          Broad published-paper search covering early detection, screening, early diagnosis, and AI in cancer.
-        </div>
-        <div class="source-item">
-          <strong>medRxiv</strong>
-          Recent oncology preprints from medRxiv, filtered locally for AI and early cancer relevance.
-        </div>
-        <div class="source-item">
-          <strong>Top journal watchlist via PubMed</strong>
-          Targeted monitoring of Nature, Science, Cell, Lancet, JAMA, and selected subjournals including Nature Medicine, Nature Cancer, Nature Biomedical Engineering, Cancer Cell, Lancet Oncology, and JAMA Oncology.
-        </div>
-      </div>
-    """
-    funding_source_html = """
-      <div class="source-list">
-        <div class="source-item">
-          <strong>Cancer Research UK News</strong>
-          Cancer Research UK news feed, used as an early signal for relevant funding and researcher-facing announcements.
-        </div>
-        <div class="source-item">
-          <strong>UKRI Opportunities</strong>
-          Official UK Research and Innovation opportunities feed.
-        </div>
-        <div class="source-item">
-          <strong>NIH Funding Opportunities</strong>
-          Official NIH Guide for Grants and Contracts RSS feed.
-        </div>
-      </div>
-    """
-    job_source_html = """
-      <div class="source-list">
-        <div class="source-item">
-          <strong>University of Cambridge Research Jobs</strong>
-          Official Cambridge research-vacancies page.
-        </div>
-        <div class="source-item">
-          <strong>jobs.ac.uk cancer and AI search</strong>
-          Search-driven academic jobs board feed focused on cancer and AI keywords.
-        </div>
-        <div class="source-item">
-          <strong>Manual watchlist</strong>
-          Curated additions for roles we want to include before a dedicated scraper exists.
-        </div>
-      </div>
-    """
+    paper_source_html = _sources_html(sources, "paper")
+    funding_source_html = _sources_html(sources, "funding")
+    job_source_html = _sources_html(sources, "job")
+    cadence = settings.get("cadence", {})
+    scope = settings.get("scope", {})
+    workflow = settings.get("workflow", {})
+    email_template = settings.get("email_template", {})
     workflow_html = """
       <div class="source-list">
         <div class="source-item">
           <strong>Paper definition</strong>
-          Relevant papers on AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.
+          {paper_scope}
         </div>
         <div class="source-item">
           <strong>Funding definition</strong>
-          Relevant calls, programmes, and announcements that may matter to researchers building AI for early cancer detection.
+          {funding_scope}
         </div>
         <div class="source-item">
           <strong>Job definition</strong>
-          Relevant roles in academia or research organisations spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.
+          {job_scope}
         </div>
       </div>
-    """
+    """.format(
+        paper_scope=escape(scope.get("paper", "")),
+        funding_scope=escape(scope.get("funding", "")),
+        job_scope=escape(scope.get("job", "")),
+    )
     cadence_html = """
       <div class="source-list">
         <div class="source-item">
           <strong>Papers</strong>
-          Search window: past 7 days. Intended update rhythm: weekly.
+          Search window: past {paper_days} days. Intended update rhythm: {paper_frequency}.
         </div>
         <div class="source-item">
           <strong>Funding</strong>
-          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+          Search window: past {funding_days} days. Intended update rhythm: {funding_frequency}.
         </div>
         <div class="source-item">
           <strong>Jobs</strong>
-          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+          Search window: past {job_days} days. Intended update rhythm: {job_frequency}.
         </div>
         <div class="source-item">
           <strong>Workflow</strong>
-          Manual trigger ingests new items, refreshes the review queue, drafts the digest, and rebuilds the backup site.
+          {workflow_trigger} {workflow_review}
         </div>
       </div>
-    """
-    template_html = """Subject: AI for Early Cancer Digest | YYYY-MM-DD
-Preheader: Selected updates on AI for early cancer detection, screening, funding, and jobs.
+    """.format(
+        paper_days=escape(str(_settings_value(settings, ("cadence", "paper", "lookback_days"), 7))),
+        paper_frequency=escape(str(_settings_value(settings, ("cadence", "paper", "frequency"), "weekly"))),
+        funding_days=escape(str(_settings_value(settings, ("cadence", "funding", "lookback_days"), 30))),
+        funding_frequency=escape(str(_settings_value(settings, ("cadence", "funding", "frequency"), "monthly"))),
+        job_days=escape(str(_settings_value(settings, ("cadence", "job", "lookback_days"), 30))),
+        job_frequency=escape(str(_settings_value(settings, ("cadence", "job", "frequency"), "monthly"))),
+        workflow_trigger=escape(workflow.get("trigger", "")),
+        workflow_review=escape(workflow.get("review", "")),
+    )
+    template_html = """Subject: {subject_prefix} | YYYY-MM-DD
+Preheader: {preheader}
 
 Editor note:
-One short sentence from the reviewer.
+{editor_note}
 
 Papers
 - Title
@@ -449,7 +746,12 @@ Jobs
 - Title
 - Source
 - One-line note
-- Link"""
+- Link""".format(
+        subject_prefix=email_template.get("subject_prefix", "AI for Early Cancer Digest"),
+        preheader=email_template.get("preheader", ""),
+        editor_note=email_template.get("editor_note", ""),
+    )
+    config_editor_html = _build_config_editor(settings, sources)
     drafts_html = "".join(
         f"""
         <details class="draft-card" {"open" if index == 0 else ""}>
@@ -502,6 +804,12 @@ Jobs
       <h2>Email Template</h2>
       <p class="muted">Current draft structure for reviewer-facing email generation.</p>
       <pre class="template-block">{escape(template_html)}</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Editable Configuration</h2>
+      <p class="muted">Update cadence, scope, email copy, and source definitions here. The exported JSON files are the inputs used by future digest runs.</p>
+      {config_editor_html}
     </section>
 
     <section class="panel">
@@ -639,8 +947,16 @@ def _build_items_page(items, generated_at: str) -> str:
 """
 
 
-def build_site(db_path: Path, drafts_dir: Path, site_dir: Path) -> Path:
+def build_site(
+    db_path: Path,
+    drafts_dir: Path,
+    site_dir: Path,
+    settings_path: Path,
+    sources_path: Path,
+) -> Path:
     site_dir.mkdir(parents=True, exist_ok=True)
+    settings = load_settings(settings_path)
+    sources = _load_sources(sources_path)
 
     with connect(db_path) as conn:
         items = conn.execute(
@@ -672,7 +988,11 @@ def build_site(db_path: Path, drafts_dir: Path, site_dir: Path) -> Path:
     generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
     index_path = site_dir / "index.html"
-    index_path.write_text(_build_archive_page(drafts, by_category, by_status, generated_at))
-    (site_dir / "items.html").write_text(_build_items_page(items, generated_at))
+    index_path.write_text(
+        _clean_generated_html(_build_archive_page(drafts, by_category, by_status, generated_at, settings, sources))
+    )
+    (site_dir / "items.html").write_text(_clean_generated_html(_build_items_page(items, generated_at)))
+    (site_dir / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
+    (site_dir / "sources.json").write_text(json.dumps(sources, indent=2) + "\n")
     (site_dir / ".nojekyll").write_text("")
     return index_path

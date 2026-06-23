@@ -11,6 +11,11 @@ from digest.db import connect
 VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected")
 DEFAULT_LOOKBACK_DAYS = {"paper": 7, "funding": 30, "job": 30}
 DEFAULT_MIN_SCORES = {"paper": 3.5, "funding": 3.5, "job": 2.0}
+DEFAULT_EMAIL_TEMPLATE = {
+    "subject_prefix": "AI for Early Cancer Digest",
+    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
+    "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
+}
 
 
 def _category_cutoff(category: str, lookback_days: dict[str, int]) -> str:
@@ -61,10 +66,10 @@ def export_review_queue(
     db_path: Path,
     output_path: Path,
     lookback_days: dict[str, int] | None = None,
-    min_score: float = 3.5,
+    min_scores: dict[str, float] | None = None,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
-    min_scores = {**DEFAULT_MIN_SCORES, "paper": min_score, "funding": min_score}
+    min_scores = min_scores or DEFAULT_MIN_SCORES
     category_filter_sql, category_params = _category_filter_sql(lookback_days)
     with connect(db_path) as conn:
         rows = conn.execute(
@@ -83,7 +88,7 @@ def export_review_queue(
         "# Review Queue",
         "",
         "This file is intended for the Codex automation and the human reviewer.",
-        "Papers use a 7-day window; funding and jobs use a 30-day window by default.",
+        f"Papers use a {lookback_days['paper']}-day window; funding and jobs use {lookback_days['funding']}- and {lookback_days['job']}-day windows respectively.",
         "",
     ]
     grouped = {"paper": [], "funding": [], "job": []}
@@ -120,10 +125,13 @@ def generate_template_draft(
     db_path: Path,
     drafts_dir: Path,
     lookback_days: dict[str, int] | None = None,
+    min_scores: dict[str, float] | None = None,
+    email_template: dict[str, str] | None = None,
     per_category: int = 3,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
-    min_scores = DEFAULT_MIN_SCORES
+    min_scores = min_scores or DEFAULT_MIN_SCORES
+    email_template = {**DEFAULT_EMAIL_TEMPLATE, **(email_template or {})}
     category_filter_sql, category_params = _category_filter_sql(lookback_days)
     date_slug = datetime.now(UTC).date().isoformat()
     draft_path = drafts_dir / f"{date_slug}.md"
@@ -154,13 +162,18 @@ def generate_template_draft(
     lines = [
         f"# AI for Early Cancer Digest - {date_slug}",
         "",
-        f"Subject: AI for Early Cancer Digest | {date_slug}",
+        f"Subject: {email_template['subject_prefix']} | {date_slug}",
         "",
         "Preheader:",
-        "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
+        email_template["preheader"],
         "",
         "Editor note:",
-        "Draft for review. This issue covers papers from the past 7 days, plus funding and jobs from the past 30 days.",
+        email_template["editor_note"].format(
+            date=date_slug,
+            paper_days=lookback_days["paper"],
+            funding_days=lookback_days["funding"],
+            job_days=lookback_days["job"],
+        ),
         "",
     ]
     for category in ("paper", "funding", "job"):

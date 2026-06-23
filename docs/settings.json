@@ -1,0 +1,33 @@
+{
+  "cadence": {
+    "paper": {
+      "lookback_days": 7,
+      "frequency": "weekly",
+      "min_score": 3.5
+    },
+    "funding": {
+      "lookback_days": 30,
+      "frequency": "monthly",
+      "min_score": 3.5
+    },
+    "job": {
+      "lookback_days": 30,
+      "frequency": "monthly",
+      "min_score": 2.0
+    }
+  },
+  "scope": {
+    "paper": "AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.",
+    "funding": "Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.",
+    "job": "Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer."
+  },
+  "workflow": {
+    "trigger": "Manual trigger while the scope is still being refined.",
+    "review": "AI drafts the digest; a human reviews before anything is sent."
+  },
+  "email_template": {
+    "subject_prefix": "AI for Early Cancer Digest",
+    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
+    "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days."
+  }
+}

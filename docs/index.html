@@ -191,6 +191,68 @@
       white-space: pre-wrap;
       font: 13px/1.55 "Courier New", Courier, monospace;
     }
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .config-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 14px;
+    }
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      margin: 12px 0 6px;
+      text-transform: uppercase;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: var(--ink);
+      font: inherit;
+      padding: 9px 10px;
+    }
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+    .json-editor {
+      min-height: 260px;
+      font: 13px/1.45 "Courier New", Courier, monospace;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      padding: 9px 14px;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+    .status-line {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -228,45 +290,45 @@
       <span class="eyebrow">Cambridge-initiated digest</span>
       <h1>Digest Setup</h1>
       <p class="muted">This page acts as the setup reference for the Cambridge AI for Early Cancer Digest and as a lightweight backup of the generated archive.</p>
-      
+
     <nav class="nav">
       <a class="active" href="./index.html">Daily Digest Archive</a>
       <a class="" href="./items.html">Historical Item Database</a>
     </nav>
-    
+
       <div class="hero-links">
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
-      <p class="muted">Last generated: 2026-06-23 09:34 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 09:46 UTC</p>
     </section>
 
     <section class="panel">
       <h2>Scope Definition</h2>
       <p class="muted">The current setup keeps three item types and a deliberately short review workflow.</p>
-      
+
       <div class="source-list">
         <div class="source-item">
           <strong>Paper definition</strong>
-          Relevant papers on AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.
+          AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.
         </div>
         <div class="source-item">
           <strong>Funding definition</strong>
-          Relevant calls, programmes, and announcements that may matter to researchers building AI for early cancer detection.
+          Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.
         </div>
         <div class="source-item">
           <strong>Job definition</strong>
-          Relevant roles in academia or research organisations spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.
+          Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.
         </div>
       </div>
-    
+
     </section>
 
     <section class="panel">
       <h2>Update Cadence</h2>
       <p class="muted">Papers are reviewed on a weekly window; funding and jobs stay broader and slower.</p>
-      
+
       <div class="source-list">
         <div class="source-item">
           <strong>Papers</strong>
@@ -274,18 +336,18 @@
         </div>
         <div class="source-item">
           <strong>Funding</strong>
-          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+          Search window: past 30 days. Intended update rhythm: monthly.
         </div>
         <div class="source-item">
           <strong>Jobs</strong>
-          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+          Search window: past 30 days. Intended update rhythm: monthly.
         </div>
         <div class="source-item">
           <strong>Workflow</strong>
-          Manual trigger ingests new items, refreshes the review queue, drafts the digest, and rebuilds the backup site.
+          Manual trigger while the scope is still being refined. AI drafts the digest; a human reviews before anything is sent.
         </div>
       </div>
-    
+
     </section>
 
     <section class="panel">
@@ -295,7 +357,7 @@
 Preheader: Selected updates on AI for early cancer detection, screening, funding, and jobs.
 
 Editor note:
-One short sentence from the reviewer.
+Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.
 
 Papers
 - Title
@@ -317,70 +379,405 @@ Jobs
     </section>
 
     <section class="panel">
-      <h2>Paper Sources</h2>
-      <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
-      
-      <div class="source-list">
-        <div class="source-item">
-          <strong>arXiv</strong>
-          Preprints focused on cancer screening, liquid biopsy, and related AI methods.
+      <h2>Editable Configuration</h2>
+      <p class="muted">Update cadence, scope, email copy, and source definitions here. The exported JSON files are the inputs used by future digest runs.</p>
+
+      <div class="config-grid">
+
+            <div class="config-card" data-category="paper">
+              <h3>Papers</h3>
+              <label for="paper-days">Lookback Days</label>
+              <input id="paper-days" data-field="lookback_days" type="number" min="1" step="1" value="7">
+              <label for="paper-frequency">Update Frequency</label>
+              <input id="paper-frequency" data-field="frequency" value="weekly">
+              <label for="paper-score">Minimum Score</label>
+              <input id="paper-score" data-field="min_score" type="number" min="0" step="0.1" value="3.5">
+              <label for="paper-scope">Scope</label>
+              <textarea id="paper-scope" data-scope="paper">AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.</textarea>
+            </div>
+
+            <div class="config-card" data-category="funding">
+              <h3>Funding</h3>
+              <label for="funding-days">Lookback Days</label>
+              <input id="funding-days" data-field="lookback_days" type="number" min="1" step="1" value="30">
+              <label for="funding-frequency">Update Frequency</label>
+              <input id="funding-frequency" data-field="frequency" value="monthly">
+              <label for="funding-score">Minimum Score</label>
+              <input id="funding-score" data-field="min_score" type="number" min="0" step="0.1" value="3.5">
+              <label for="funding-scope">Scope</label>
+              <textarea id="funding-scope" data-scope="funding">Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.</textarea>
+            </div>
+
+            <div class="config-card" data-category="job">
+              <h3>Jobs</h3>
+              <label for="job-days">Lookback Days</label>
+              <input id="job-days" data-field="lookback_days" type="number" min="1" step="1" value="30">
+              <label for="job-frequency">Update Frequency</label>
+              <input id="job-frequency" data-field="frequency" value="monthly">
+              <label for="job-score">Minimum Score</label>
+              <input id="job-score" data-field="min_score" type="number" min="0" step="0.1" value="2.0">
+              <label for="job-scope">Scope</label>
+              <textarea id="job-scope" data-scope="job">Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.</textarea>
+            </div>
+
+      </div>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Workflow</h3>
+          <label for="workflow-trigger">Trigger</label>
+          <input id="workflow-trigger" value="Manual trigger while the scope is still being refined.">
+          <label for="workflow-review">Review</label>
+          <input id="workflow-review" value="AI drafts the digest; a human reviews before anything is sent.">
         </div>
-        <div class="source-item">
-          <strong>PubMed</strong>
-          Broad published-paper search covering early detection, screening, early diagnosis, and AI in cancer.
-        </div>
-        <div class="source-item">
-          <strong>medRxiv</strong>
-          Recent oncology preprints from medRxiv, filtered locally for AI and early cancer relevance.
-        </div>
-        <div class="source-item">
-          <strong>Top journal watchlist via PubMed</strong>
-          Targeted monitoring of Nature, Science, Cell, Lancet, JAMA, and selected subjournals including Nature Medicine, Nature Cancer, Nature Biomedical Engineering, Cancer Cell, Lancet Oncology, and JAMA Oncology.
+        <div class="config-card">
+          <h3>Email Template</h3>
+          <label for="subject-prefix">Subject Prefix</label>
+          <input id="subject-prefix" value="AI for Early Cancer Digest">
+          <label for="preheader">Preheader</label>
+          <textarea id="preheader">Selected updates on AI for early cancer detection, screening, funding, and jobs.</textarea>
+          <label for="editor-note">Editor Note</label>
+          <textarea id="editor-note">Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.</textarea>
         </div>
       </div>
-    
+
+      <label for="sources-json">Sources JSON</label>
+      <textarea id="sources-json" class="json-editor">[
+  {
+    &quot;name&quot;: &quot;arXiv - Cancer Screening ML&quot;,
+    &quot;category&quot;: &quot;paper&quot;,
+    &quot;kind&quot;: &quot;rss&quot;,
+    &quot;url&quot;: &quot;https://export.arxiv.org/api/query?search_query=all:(cancer%20screening)%20AND%20all:(machine%20learning%20OR%20artificial%20intelligence)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending&quot;
+  },
+  {
+    &quot;name&quot;: &quot;PubMed - Early Cancer AI&quot;,
+    &quot;category&quot;: &quot;paper&quot;,
+    &quot;kind&quot;: &quot;pubmed&quot;,
+    &quot;term&quot;: &quot;((\&quot;early detection\&quot;[Title/Abstract] OR screening[Title/Abstract] OR \&quot;early diagnosis\&quot;[Title/Abstract] OR \&quot;liquid biopsy\&quot;[Title/Abstract]) AND (cancer[Title/Abstract] OR oncology[Title/Abstract] OR neoplasm*[Title/Abstract] OR carcinoma[Title/Abstract]) AND (\&quot;artificial intelligence\&quot;[Title/Abstract] OR \&quot;machine learning\&quot;[Title/Abstract] OR \&quot;deep learning\&quot;[Title/Abstract] OR \&quot;computer vision\&quot;[Title/Abstract]))&quot;,
+    &quot;retmax&quot;: 20,
+    &quot;sort&quot;: &quot;pub date&quot;
+  },
+  {
+    &quot;name&quot;: &quot;PubMed - Top Journals&quot;,
+    &quot;category&quot;: &quot;paper&quot;,
+    &quot;kind&quot;: &quot;pubmed&quot;,
+    &quot;term&quot;: &quot;((\&quot;early detection\&quot;[Title/Abstract] OR screening[Title/Abstract] OR \&quot;early diagnosis\&quot;[Title/Abstract] OR \&quot;liquid biopsy\&quot;[Title/Abstract] OR biomarker*[Title/Abstract] OR imaging[Title/Abstract]) AND (cancer[Title/Abstract] OR oncology[Title/Abstract] OR neoplasm*[Title/Abstract] OR carcinoma[Title/Abstract]) AND (\&quot;artificial intelligence\&quot;[Title/Abstract] OR \&quot;machine learning\&quot;[Title/Abstract] OR \&quot;deep learning\&quot;[Title/Abstract] OR \&quot;computer vision\&quot;[Title/Abstract])) AND (\&quot;Nature\&quot;[Journal] OR \&quot;Nature Medicine\&quot;[Journal] OR \&quot;Nature Cancer\&quot;[Journal] OR \&quot;Nature Biomedical Engineering\&quot;[Journal] OR \&quot;Nature Biotechnology\&quot;[Journal] OR \&quot;Nature Communications\&quot;[Journal] OR \&quot;Science\&quot;[Journal] OR \&quot;Science Advances\&quot;[Journal] OR \&quot;Science Translational Medicine\&quot;[Journal] OR \&quot;Cell\&quot;[Journal] OR \&quot;Cancer Cell\&quot;[Journal] OR \&quot;Cell Reports Medicine\&quot;[Journal] OR \&quot;Med (N Y)\&quot;[Journal] OR \&quot;Lancet\&quot;[Journal] OR \&quot;Lancet Oncology\&quot;[Journal] OR \&quot;Lancet Digital Health\&quot;[Journal] OR \&quot;JAMA\&quot;[Journal] OR \&quot;JAMA Oncology\&quot;[Journal] OR \&quot;JAMA Network Open\&quot;[Journal])&quot;,
+    &quot;retmax&quot;: 30,
+    &quot;sort&quot;: &quot;pub date&quot;
+  },
+  {
+    &quot;name&quot;: &quot;medRxiv - Oncology AI&quot;,
+    &quot;category&quot;: &quot;paper&quot;,
+    &quot;kind&quot;: &quot;biorxiv_api&quot;,
+    &quot;server&quot;: &quot;medrxiv&quot;,
+    &quot;recent_days&quot;: 14,
+    &quot;api_category&quot;: &quot;oncology&quot;,
+    &quot;max_items&quot;: 50
+  },
+  {
+    &quot;name&quot;: &quot;arXiv - Liquid Biopsy AI&quot;,
+    &quot;category&quot;: &quot;paper&quot;,
+    &quot;kind&quot;: &quot;rss&quot;,
+    &quot;url&quot;: &quot;https://export.arxiv.org/api/query?search_query=all:(liquid%20biopsy)%20AND%20all:(machine%20learning%20OR%20deep%20learning)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending&quot;
+  },
+  {
+    &quot;name&quot;: &quot;Cancer Research UK News&quot;,
+    &quot;category&quot;: &quot;funding&quot;,
+    &quot;kind&quot;: &quot;rss&quot;,
+    &quot;url&quot;: &quot;https://news.cancerresearchuk.org/feed/&quot;
+  },
+  {
+    &quot;name&quot;: &quot;UKRI Opportunities&quot;,
+    &quot;category&quot;: &quot;funding&quot;,
+    &quot;kind&quot;: &quot;rss&quot;,
+    &quot;url&quot;: &quot;https://www.ukri.org/opportunity/feed/&quot;
+  },
+  {
+    &quot;name&quot;: &quot;NIH Funding Opportunities&quot;,
+    &quot;category&quot;: &quot;funding&quot;,
+    &quot;kind&quot;: &quot;rss&quot;,
+    &quot;url&quot;: &quot;https://grants.nih.gov/grants/guide/newsfeed/fundingopps.xml&quot;
+  },
+  {
+    &quot;name&quot;: &quot;University of Cambridge Research Jobs&quot;,
+    &quot;category&quot;: &quot;job&quot;,
+    &quot;kind&quot;: &quot;html_links&quot;,
+    &quot;url&quot;: &quot;https://www.cam.ac.uk/jobs/term/research&quot;,
+    &quot;include_regex&quot;: &quot;/jobs/(?!term/)[a-z0-9-]+&quot;,
+    &quot;exclude_regex&quot;: &quot;/jobs/(term/|browse|life|how-to|why-cambridge|relocating|search|college/)&quot;,
+    &quot;max_items&quot;: 40
+  },
+  {
+    &quot;name&quot;: &quot;jobs.ac.uk - Cancer AI Jobs&quot;,
+    &quot;category&quot;: &quot;job&quot;,
+    &quot;kind&quot;: &quot;html_links&quot;,
+    &quot;url&quot;: &quot;https://www.jobs.ac.uk/search/?keywords=cancer+artificial+intelligence&quot;,
+    &quot;include_regex&quot;: &quot;/job/[A-Z0-9]+/&quot;,
+    &quot;max_items&quot;: 30
+  },
+  {
+    &quot;name&quot;: &quot;Manual Jobs Watchlist&quot;,
+    &quot;category&quot;: &quot;job&quot;,
+    &quot;kind&quot;: &quot;manual&quot;,
+    &quot;path&quot;: &quot;manual_jobs.json&quot;
+  }
+]</textarea>
+
+      <div class="button-row">
+        <button id="save-settings" type="button">Save settings.json</button>
+        <button id="save-sources" type="button">Save sources.json</button>
+        <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
+        <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
+      </div>
+      <p id="config-status" class="status-line"></p>
+      <script type="application/json" id="settings-json-data">{
+  &quot;cadence&quot;: {
+    &quot;paper&quot;: {
+      &quot;lookback_days&quot;: 7,
+      &quot;frequency&quot;: &quot;weekly&quot;,
+      &quot;min_score&quot;: 3.5
+    },
+    &quot;funding&quot;: {
+      &quot;lookback_days&quot;: 30,
+      &quot;frequency&quot;: &quot;monthly&quot;,
+      &quot;min_score&quot;: 3.5
+    },
+    &quot;job&quot;: {
+      &quot;lookback_days&quot;: 30,
+      &quot;frequency&quot;: &quot;monthly&quot;,
+      &quot;min_score&quot;: 2.0
+    }
+  },
+  &quot;scope&quot;: {
+    &quot;paper&quot;: &quot;AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.&quot;,
+    &quot;funding&quot;: &quot;Calls, programmes, and announcements relevant to researchers building AI for early cancer detection.&quot;,
+    &quot;job&quot;: &quot;Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.&quot;
+  },
+  &quot;workflow&quot;: {
+    &quot;trigger&quot;: &quot;Manual trigger while the scope is still being refined.&quot;,
+    &quot;review&quot;: &quot;AI drafts the digest; a human reviews before anything is sent.&quot;
+  },
+  &quot;email_template&quot;: {
+    &quot;subject_prefix&quot;: &quot;AI for Early Cancer Digest&quot;,
+    &quot;preheader&quot;: &quot;Selected updates on AI for early cancer detection, screening, funding, and jobs.&quot;,
+    &quot;editor_note&quot;: &quot;Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.&quot;
+  }
+}</script>
+      <script>
+        const settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
+        const sourceEditor = document.getElementById('sources-json');
+        const configStatus = document.getElementById('config-status');
+
+        function collectSettings() {
+          const next = JSON.parse(JSON.stringify(settingsSeed));
+          next.cadence = next.cadence || {};
+          next.scope = next.scope || {};
+          document.querySelectorAll('.config-card[data-category]').forEach((card) => {
+            const category = card.dataset.category;
+            next.cadence[category] = next.cadence[category] || {};
+            card.querySelectorAll('[data-field]').forEach((input) => {
+              const field = input.dataset.field;
+              next.cadence[category][field] = field === 'frequency' ? input.value.trim() : Number(input.value);
+            });
+            const scope = card.querySelector('[data-scope]');
+            next.scope[category] = scope.value.trim();
+          });
+          next.workflow = {
+            trigger: document.getElementById('workflow-trigger').value.trim(),
+            review: document.getElementById('workflow-review').value.trim(),
+          };
+          next.email_template = {
+            subject_prefix: document.getElementById('subject-prefix').value.trim(),
+            preheader: document.getElementById('preheader').value.trim(),
+            editor_note: document.getElementById('editor-note').value.trim(),
+          };
+          return next;
+        }
+
+        function applySettingsDraft(draft) {
+          document.querySelectorAll('.config-card[data-category]').forEach((card) => {
+            const category = card.dataset.category;
+            const cadence = (draft.cadence && draft.cadence[category]) || {};
+            card.querySelectorAll('[data-field]').forEach((input) => {
+              const field = input.dataset.field;
+              if (cadence[field] !== undefined) {
+                input.value = cadence[field];
+              }
+            });
+            const scope = card.querySelector('[data-scope]');
+            if (draft.scope && draft.scope[category] !== undefined) {
+              scope.value = draft.scope[category];
+            }
+          });
+          if (draft.workflow) {
+            document.getElementById('workflow-trigger').value = draft.workflow.trigger || '';
+            document.getElementById('workflow-review').value = draft.workflow.review || '';
+          }
+          if (draft.email_template) {
+            document.getElementById('subject-prefix').value = draft.email_template.subject_prefix || '';
+            document.getElementById('preheader').value = draft.email_template.preheader || '';
+            document.getElementById('editor-note').value = draft.email_template.editor_note || '';
+          }
+        }
+
+        function parseSources() {
+          const parsed = JSON.parse(sourceEditor.value);
+          if (!Array.isArray(parsed)) {
+            throw new Error('sources.json must be a JSON array');
+          }
+          return parsed;
+        }
+
+        function downloadJson(filename, payload) {
+          const blob = new Blob([JSON.stringify(payload, null, 2) + '\n'], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+
+        async function saveJson(filename, payload) {
+          const text = JSON.stringify(payload, null, 2) + '\n';
+          if ('showSaveFilePicker' in window) {
+            try {
+              const handle = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+              });
+              const writable = await handle.createWritable();
+              await writable.write(text);
+              await writable.close();
+              configStatus.textContent = `Saved ${filename}. Commit and push the updated file for GitHub Pages / future runs.`;
+              return;
+            } catch (error) {
+              if (error.name === 'AbortError') {
+                configStatus.textContent = 'Save cancelled.';
+                return;
+              }
+            }
+          }
+          downloadJson(filename, payload);
+          configStatus.textContent = `Downloaded ${filename}. Replace data/${filename} with it before the next run.`;
+        }
+
+        document.getElementById('save-settings').addEventListener('click', async () => {
+          await saveJson('settings.json', collectSettings());
+        });
+
+        document.getElementById('save-sources').addEventListener('click', async () => {
+          try {
+            await saveJson('sources.json', parseSources());
+          } catch (error) {
+            configStatus.textContent = error.message;
+          }
+        });
+
+        document.getElementById('save-browser-draft').addEventListener('click', () => {
+          try {
+            localStorage.setItem('edaidigest.settingsDraft', JSON.stringify(collectSettings()));
+            localStorage.setItem('edaidigest.sourcesDraft', sourceEditor.value);
+            configStatus.textContent = 'Browser draft saved locally.';
+          } catch (error) {
+            configStatus.textContent = error.message;
+          }
+        });
+
+        document.getElementById('reset-browser-draft').addEventListener('click', () => {
+          localStorage.removeItem('edaidigest.settingsDraft');
+          localStorage.removeItem('edaidigest.sourcesDraft');
+          configStatus.textContent = 'Browser draft cleared. Reload to restore committed values.';
+        });
+
+        const settingsDraft = localStorage.getItem('edaidigest.settingsDraft');
+        const sourcesDraft = localStorage.getItem('edaidigest.sourcesDraft');
+        if (settingsDraft) {
+          try {
+            applySettingsDraft(JSON.parse(settingsDraft));
+          } catch (error) {
+            configStatus.textContent = error.message;
+          }
+        }
+        if (sourcesDraft) {
+          sourceEditor.value = sourcesDraft;
+          configStatus.textContent = 'Loaded browser draft. Save JSON files to use these values in future runs.';
+        }
+      </script>
+
+    </section>
+
+    <section class="panel">
+      <h2>Paper Sources</h2>
+      <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
+      <div class="source-list">
+            <div class="source-item">
+              <strong>arXiv - Cancer Screening ML</strong>
+              RSS/feed source: https://export.arxiv.org/api/query?search_query=all:(cancer%20screening)%20AND%20all:(machine%20learning%20OR%20artificial%20intelligence)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending.
+            </div>
+
+            <div class="source-item">
+              <strong>PubMed - Early Cancer AI</strong>
+              PubMed query, retmax 20.
+            </div>
+
+            <div class="source-item">
+              <strong>PubMed - Top Journals</strong>
+              PubMed query, retmax 30.
+            </div>
+
+            <div class="source-item">
+              <strong>medRxiv - Oncology AI</strong>
+              medrxiv API, recent 14 days.
+            </div>
+
+            <div class="source-item">
+              <strong>arXiv - Liquid Biopsy AI</strong>
+              RSS/feed source: https://export.arxiv.org/api/query?search_query=all:(liquid%20biopsy)%20AND%20all:(machine%20learning%20OR%20deep%20learning)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending.
+            </div>
+            </div>
     </section>
 
     <section class="panel">
       <h2>Funding Sources</h2>
       <p class="muted">Funding opportunities currently come from official grant feeds and researcher-facing funding announcements.</p>
-      
       <div class="source-list">
-        <div class="source-item">
-          <strong>Cancer Research UK News</strong>
-          Cancer Research UK news feed, used as an early signal for relevant funding and researcher-facing announcements.
-        </div>
-        <div class="source-item">
-          <strong>UKRI Opportunities</strong>
-          Official UK Research and Innovation opportunities feed.
-        </div>
-        <div class="source-item">
-          <strong>NIH Funding Opportunities</strong>
-          Official NIH Guide for Grants and Contracts RSS feed.
-        </div>
-      </div>
-    
+            <div class="source-item">
+              <strong>Cancer Research UK News</strong>
+              RSS/feed source: https://news.cancerresearchuk.org/feed/.
+            </div>
+
+            <div class="source-item">
+              <strong>UKRI Opportunities</strong>
+              RSS/feed source: https://www.ukri.org/opportunity/feed/.
+            </div>
+
+            <div class="source-item">
+              <strong>NIH Funding Opportunities</strong>
+              RSS/feed source: https://grants.nih.gov/grants/guide/newsfeed/fundingopps.xml.
+            </div>
+            </div>
     </section>
 
     <section class="panel">
       <h2>Job Sources</h2>
       <p class="muted">Job opportunities combine official institutional pages, targeted academic search pages, and a small manual watchlist.</p>
-      
       <div class="source-list">
-        <div class="source-item">
-          <strong>University of Cambridge Research Jobs</strong>
-          Official Cambridge research-vacancies page.
-        </div>
-        <div class="source-item">
-          <strong>jobs.ac.uk cancer and AI search</strong>
-          Search-driven academic jobs board feed focused on cancer and AI keywords.
-        </div>
-        <div class="source-item">
-          <strong>Manual watchlist</strong>
-          Curated additions for roles we want to include before a dedicated scraper exists.
-        </div>
-      </div>
-    
+            <div class="source-item">
+              <strong>University of Cambridge Research Jobs</strong>
+              HTML link scraper: https://www.cam.ac.uk/jobs/term/research.
+            </div>
+
+            <div class="source-item">
+              <strong>jobs.ac.uk - Cancer AI Jobs</strong>
+              HTML link scraper: https://www.jobs.ac.uk/search/?keywords=cancer+artificial+intelligence.
+            </div>
+
+            <div class="source-item">
+              <strong>Manual Jobs Watchlist</strong>
+              Manual file: manual_jobs.json.
+            </div>
+            </div>
     </section>
 
     <section class="panel">
@@ -430,7 +827,7 @@ Jobs
 <p><strong>Why it matters:</strong> is clearly cancer-related</p>
 <p><strong>Link:</strong> <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034" target="_blank" rel="noreferrer">https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034</a></p></div>
         </details>
-        
+
         <details class="draft-card" >
           <summary>
             <span>2026-04-27</span>
@@ -461,7 +858,7 @@ Jobs
 <h3>Jobs</h3>
 <p>_No shortlisted items yet._</p></div>
         </details>
-        
+
         <details class="draft-card" >
           <summary>
             <span>2026-04-16</span>
