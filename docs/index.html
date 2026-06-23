@@ -301,7 +301,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
-      <p class="muted">Last generated: 2026-06-23 10:10 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 10:26 UTC</p>
     </section>
 
     <section class="panel">
@@ -430,7 +430,7 @@ Link: {link}</pre>
               <label for="job-frequency">Update Frequency</label>
               <input id="job-frequency" data-field="frequency" value="monthly">
               <label for="job-score">Minimum Score</label>
-              <input id="job-score" data-field="min_score" type="number" min="0" step="0.1" value="2.0">
+              <input id="job-score" data-field="min_score" type="number" min="0" step="0.1" value="2">
               <label for="job-scope">Scope</label>
               <textarea id="job-scope" data-scope="job">Academic or research roles spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.</textarea>
             </div>
@@ -580,12 +580,12 @@ Link: {link}</textarea>
 ]</textarea>
 
       <div class="button-row">
-        <button id="save-settings" type="button">Download settings.json</button>
-        <button id="save-sources" type="button">Download sources.json</button>
+        <button id="save-settings" type="button">Save settings.json</button>
+        <button id="save-sources" type="button">Save sources.json</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
-      <p id="config-status" class="status-line">Downloads must replace the matching files in data/ before future digest runs use them.</p>
+      <p id="config-status" class="status-line">Local setup server saves directly to data/. Static GitHub Pages falls back to downloading JSON files.</p>
       <script type="application/json" id="settings-json-data">{
   "cadence": {
     "paper": {
@@ -601,7 +601,7 @@ Link: {link}</textarea>
     "job": {
       "lookback_days": 30,
       "frequency": "monthly",
-      "min_score": 2.0
+      "min_score": 2
     }
   },
   "scope": {
@@ -715,6 +715,29 @@ Link: {link}</textarea>
         }
 
         async function saveJson(filename, payload) {
+          const endpoint = filename === 'settings.json' ? '/api/settings' : '/api/sources';
+          try {
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            if (response.ok) {
+              const result = await response.json();
+              localStorage.removeItem('edaidigest.settingsDraft');
+              localStorage.removeItem('edaidigest.sourcesDraft');
+              configStatus.textContent = result.message || `Saved ${filename}.`;
+              return;
+            }
+            if (![404, 405, 501].includes(response.status)) {
+              const result = await response.json().catch(() => ({ error: response.statusText }));
+              configStatus.textContent = result.error || `Save failed with HTTP ${response.status}.`;
+              return;
+            }
+          } catch (error) {
+            // Static hosts do not expose the local save API; download remains the fallback.
+          }
+
           const text = JSON.stringify(payload, null, 2) + '\n';
           if ('showSaveFilePicker' in window) {
             try {
@@ -725,7 +748,7 @@ Link: {link}</textarea>
               const writable = await handle.createWritable();
               await writable.write(text);
               await writable.close();
-              configStatus.textContent = `Saved ${filename}. Replace data/${filename}, then rerun the digest build.`;
+              configStatus.textContent = `Saved ${filename} locally. Start the setup server for automatic data/ writes.`;
               return;
             } catch (error) {
               if (error.name === 'AbortError') {
@@ -735,7 +758,7 @@ Link: {link}</textarea>
             }
           }
           downloadJson(filename, payload);
-          configStatus.textContent = `Downloaded ${filename}. Replace data/${filename}, then rerun the digest build.`;
+          configStatus.textContent = `Downloaded ${filename}. Start python3 -m digest.cli serve-setup for automatic data/ writes.`;
         }
 
         document.getElementById('save-settings').addEventListener('click', async () => {

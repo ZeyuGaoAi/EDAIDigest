@@ -67,6 +67,10 @@ def build_parser() -> argparse.ArgumentParser:
     add_settings_arg(site_parser)
     site_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
 
+    serve_parser = subparsers.add_parser("serve-setup")
+    serve_parser.add_argument("--host", default="127.0.0.1")
+    serve_parser.add_argument("--port", type=int, default=8765)
+
     daily_parser = subparsers.add_parser("run-daily")
     daily_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
     add_settings_arg(daily_parser)
@@ -130,6 +134,12 @@ def main() -> int:
     if args.command == "build-site":
         path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print(path)
+        return 0
+
+    if args.command == "serve-setup":
+        from digest.setup_server import serve_setup
+
+        serve_setup(args.host, args.port)
         return 0
 
     if args.command == "run-daily":

@@ -182,12 +182,12 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       <textarea id="sources-json" class="json-editor">{_json_for_html(sources)}</textarea>
 
       <div class="button-row">
-        <button id="save-settings" type="button">Download settings.json</button>
-        <button id="save-sources" type="button">Download sources.json</button>
+        <button id="save-settings" type="button">Save settings.json</button>
+        <button id="save-sources" type="button">Save sources.json</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
-      <p id="config-status" class="status-line">Downloads must replace the matching files in data/ before future digest runs use them.</p>
+      <p id="config-status" class="status-line">Local setup server saves directly to data/. Static GitHub Pages falls back to downloading JSON files.</p>
       <script type="application/json" id="settings-json-data">{_json_for_script(settings)}</script>
       <script>
         const settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
@@ -278,6 +278,29 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         }}
 
         async function saveJson(filename, payload) {{
+          const endpoint = filename === 'settings.json' ? '/api/settings' : '/api/sources';
+          try {{
+            const response = await fetch(endpoint, {{
+              method: 'POST',
+              headers: {{ 'Content-Type': 'application/json' }},
+              body: JSON.stringify(payload),
+            }});
+            if (response.ok) {{
+              const result = await response.json();
+              localStorage.removeItem('edaidigest.settingsDraft');
+              localStorage.removeItem('edaidigest.sourcesDraft');
+              configStatus.textContent = result.message || `Saved ${{filename}}.`;
+              return;
+            }}
+            if (![404, 405, 501].includes(response.status)) {{
+              const result = await response.json().catch(() => ({{ error: response.statusText }}));
+              configStatus.textContent = result.error || `Save failed with HTTP ${{response.status}}.`;
+              return;
+            }}
+          }} catch (error) {{
+            // Static hosts do not expose the local save API; download remains the fallback.
+          }}
+
           const text = JSON.stringify(payload, null, 2) + '\\n';
           if ('showSaveFilePicker' in window) {{
             try {{
@@ -288,7 +311,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               const writable = await handle.createWritable();
               await writable.write(text);
               await writable.close();
-              configStatus.textContent = `Saved ${{filename}}. Replace data/${{filename}}, then rerun the digest build.`;
+              configStatus.textContent = `Saved ${{filename}} locally. Start the setup server for automatic data/ writes.`;
               return;
             }} catch (error) {{
               if (error.name === 'AbortError') {{
@@ -298,7 +321,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             }}
           }}
           downloadJson(filename, payload);
-          configStatus.textContent = `Downloaded ${{filename}}. Replace data/${{filename}}, then rerun the digest build.`;
+          configStatus.textContent = `Downloaded ${{filename}}. Start python3 -m digest.cli serve-setup for automatic data/ writes.`;
         }}
 
         document.getElementById('save-settings').addEventListener('click', async () => {{
