@@ -111,6 +111,13 @@ def _latest_html_draft_path() -> Path:
     return path
 
 
+def _latest_html_and_text_draft() -> tuple[Path, str, str]:
+    html_path = _latest_html_draft_path()
+    text_path = DRAFTS_DIR / f"{html_path.stem}.txt"
+    text = text_path.read_text() if text_path.exists() else html_path.read_text()
+    return html_path, html_path.read_text(), text
+
+
 def _mailto_for_latest_draft(settings: dict[str, Any]) -> str:
     distribution = settings.get("distribution", {})
     recipients = distribution.get("recipient_emails", [])
@@ -189,11 +196,12 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
                 if isinstance(payload, dict) and "settings" in payload:
                     _save_settings_payload(payload["settings"])
                     build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
-                draft_path = _latest_html_draft_path()
+                draft_path, html, text = _latest_html_and_text_draft()
                 self._send_json(
                     HTTPStatus.OK,
                     {
-                        "html": draft_path.read_text(),
+                        "html": html,
+                        "text": text,
                         "message": f"Opened rich HTML draft: {draft_path}. Copy the rendered content into your email composer.",
                     },
                 )

@@ -205,6 +205,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         <button id="save-sources" type="button">Save sources.json</button>
         <button id="regenerate-digest" type="button">Regenerate Weekly Digest</button>
         <button id="open-html-draft" type="button">Open HTML Draft</button>
+        <button id="copy-rich-email" type="button">Copy Rich Email</button>
         <button id="open-email-draft" type="button">Open Email Draft</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
@@ -372,6 +373,12 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           return result;
         }}
 
+        async function fetchHtmlDraft() {{
+          return postJson('/api/html-draft', {{
+            settings: collectSettings(),
+          }});
+        }}
+
         document.getElementById('save-settings').addEventListener('click', async () => {{
           await saveJson('settings.json', collectSettings());
         }});
@@ -414,13 +421,36 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         document.getElementById('open-html-draft').addEventListener('click', async () => {{
           try {{
             configStatus.textContent = 'Preparing rich HTML draft...';
-            const result = await postJson('/api/html-draft', {{
-              settings: collectSettings(),
-            }});
+            const result = await fetchHtmlDraft();
             const blob = new Blob([result.html], {{ type: 'text/html' }});
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank', 'noopener');
             configStatus.textContent = result.message;
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('copy-rich-email').addEventListener('click', async () => {{
+          try {{
+            configStatus.textContent = 'Copying rich email draft...';
+            const result = await fetchHtmlDraft();
+            if (navigator.clipboard && window.ClipboardItem) {{
+              await navigator.clipboard.write([
+                new ClipboardItem({{
+                  'text/html': new Blob([result.html], {{ type: 'text/html' }}),
+                  'text/plain': new Blob([result.text || result.html], {{ type: 'text/plain' }}),
+                }}),
+              ]);
+              configStatus.textContent = 'Copied rich HTML email. Paste into your email composer to keep formatting.';
+              return;
+            }}
+            if (navigator.clipboard && navigator.clipboard.writeText) {{
+              await navigator.clipboard.writeText(result.text || result.html);
+              configStatus.textContent = 'Copied plain-text fallback. This browser does not support rich HTML clipboard writes.';
+              return;
+            }}
+            throw new Error('Clipboard API is not available in this browser.');
           }} catch (error) {{
             configStatus.textContent = error.message;
           }}
