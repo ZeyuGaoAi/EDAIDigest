@@ -135,6 +135,7 @@ def main() -> int:
             min_score_config(args, settings),
             settings.get("email_template", {}),
             max_items_config(args, settings),
+            settings.get("distribution", {}).get("email_subject"),
         )
         print(path)
         return 0
@@ -166,6 +167,7 @@ def main() -> int:
             min_score_config(args, settings),
             settings.get("email_template", {}),
             max_items_config(args, settings),
+            settings.get("distribution", {}).get("email_subject"),
         )
         site_path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print("Ingest:")

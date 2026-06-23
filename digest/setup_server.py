@@ -48,6 +48,7 @@ def _regenerate_digest() -> dict[str, Any]:
         min_scores,
         settings.get("email_template", {}),
         max_items_from_settings(settings),
+        settings.get("distribution", {}).get("email_subject"),
     )
     site_path = build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
     return {
@@ -75,6 +76,7 @@ def _latest_draft_stem() -> str:
             min_scores_from_settings(settings),
             settings.get("email_template", {}),
             max_items_from_settings(settings),
+            settings.get("distribution", {}).get("email_subject"),
         )
         stems = sorted({path.stem for path in DRAFTS_DIR.glob("*.html")} | {path.stem for path in DRAFTS_DIR.glob("*.txt")}, reverse=True)
     if not stems:
@@ -104,6 +106,7 @@ def _latest_html_draft_path() -> Path:
         min_scores_from_settings(settings),
         settings.get("email_template", {}),
         max_items_from_settings(settings),
+        settings.get("distribution", {}).get("email_subject"),
     )
     path = DRAFTS_DIR / f"{_latest_draft_stem()}.html"
     if not path.exists():

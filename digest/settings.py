@@ -42,11 +42,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "email_subject": "AI for Early Cancer Digest | {date}",
     },
     "email_template": {
-        "subject_prefix": "AI for Early Cancer Digest",
-        "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
-        "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-        "body_template": '<p style="color: #5b6470;">{preheader}</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> {editor_note}</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
-        "empty_text": "<p><em>No shortlisted items yet.</em></p>",
+        "body_template": '<p style="color: #5b6470;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
         "item_templates": {
             "paper": '<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href="{html}">{html}</a></p>\n</article>',
             "funding": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',

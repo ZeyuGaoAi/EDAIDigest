@@ -13,12 +13,13 @@ VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected")
 DEFAULT_LOOKBACK_DAYS = {"paper": 7, "funding": 30, "job": 30}
 DEFAULT_MIN_SCORES = {"paper": 3.5, "funding": 3.5, "job": 2.0}
 DEFAULT_MAX_ITEMS = {"paper": 5, "funding": 5, "job": 5}
+DEFAULT_EMAIL_SUBJECT = "AI for Early Cancer Digest | {date}"
+DEFAULT_EMPTY_TEXT = "<p><em>No shortlisted items yet.</em></p>"
+DEFAULT_SUBJECT_PREFIX = "AI for Early Cancer Digest"
+DEFAULT_PREHEADER = "Selected updates on AI for early cancer detection, screening, funding, and jobs."
+DEFAULT_EDITOR_NOTE = "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days."
 DEFAULT_EMAIL_TEMPLATE = {
-    "subject_prefix": "AI for Early Cancer Digest",
-    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
-    "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-    "body_template": '<p style="color: #5b6470;">{preheader}</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> {editor_note}</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
-    "empty_text": "<p><em>No shortlisted items yet.</em></p>",
+    "body_template": '<p style="color: #5b6470;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
     "item_templates": {
         "paper": '<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href="{html}">{html}</a></p>\n</article>',
         "funding": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',
@@ -227,6 +228,7 @@ def generate_template_draft(
     min_scores: dict[str, float] | None = None,
     email_template: dict[str, str] | None = None,
     max_items: dict[str, int] | None = None,
+    email_subject_template: str | None = None,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
     min_scores = min_scores or DEFAULT_MIN_SCORES
@@ -264,22 +266,18 @@ def generate_template_draft(
             bucket.append(row)
             selected_ids.append(row["id"])
 
-    subject = f"{email_template['subject_prefix']} | {date_slug}"
-    preheader = str(email_template["preheader"])
-    editor_note = _format_template(
-        email_template["editor_note"],
-        {
-            "date": date_slug,
-            "paper_days": lookback_days["paper"],
-            "funding_days": lookback_days["funding"],
-            "job_days": lookback_days["job"],
-        },
-    )
+    legacy_values = {
+        "date": date_slug,
+        "paper_days": lookback_days["paper"],
+        "funding_days": lookback_days["funding"],
+        "job_days": lookback_days["job"],
+    }
+    subject = _format_template(email_subject_template or DEFAULT_EMAIL_SUBJECT, {"date": date_slug})
 
     rendered_sections: dict[str, str] = {}
     for category in ("paper", "funding", "job"):
         if not grouped.get(category):
-            rendered_sections[category] = email_template["empty_text"]
+            rendered_sections[category] = _ensure_html_fragment(str(email_template.get("empty_text", DEFAULT_EMPTY_TEXT)))
             continue
         rendered_items: list[str] = []
         for row in grouped[category]:
@@ -305,9 +303,9 @@ def generate_template_draft(
             {
                 "date": date_slug,
                 "subject": escape(subject),
-                "subject_prefix": escape(str(email_template["subject_prefix"])),
-                "preheader": escape(preheader),
-                "editor_note": escape(editor_note),
+                "subject_prefix": escape(str(email_template.get("subject_prefix", DEFAULT_SUBJECT_PREFIX))),
+                "preheader": escape(str(email_template.get("preheader", DEFAULT_PREHEADER))),
+                "editor_note": escape(_format_template(str(email_template.get("editor_note", DEFAULT_EDITOR_NOTE)), legacy_values)),
                 "paper_days": lookback_days["paper"],
                 "funding_days": lookback_days["funding"],
                 "job_days": lookback_days["job"],

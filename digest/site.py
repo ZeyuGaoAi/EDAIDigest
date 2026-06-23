@@ -128,11 +128,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
 
     workflow_trigger = escape(str(_settings_value(settings, ("workflow", "trigger"))))
     workflow_review = escape(str(_settings_value(settings, ("workflow", "review"))))
-    subject_prefix = escape(str(_settings_value(settings, ("email_template", "subject_prefix"))))
-    preheader = escape(str(_settings_value(settings, ("email_template", "preheader"))))
-    editor_note = escape(str(_settings_value(settings, ("email_template", "editor_note"))))
     body_template = escape(str(_settings_value(settings, ("email_template", "body_template"))))
-    empty_text = escape(str(_settings_value(settings, ("email_template", "empty_text"))))
     paper_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "paper"))))
     funding_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "funding"))))
     job_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "job"))))
@@ -154,21 +150,10 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           <label for="workflow-review">Review</label>
           <input id="workflow-review" value="{workflow_review}">
         </div>
-        <div class="config-card">
-          <h3>Email Template</h3>
-          <label for="subject-prefix">Subject Prefix</label>
-          <input id="subject-prefix" value="{subject_prefix}">
-          <label for="preheader">Preheader</label>
-          <textarea id="preheader">{preheader}</textarea>
-          <label for="editor-note">Editor Note</label>
-          <textarea id="editor-note">{editor_note}</textarea>
-          <label for="empty-text">Empty Section Text</label>
-          <input id="empty-text" value="{empty_text}">
-        </div>
       </div>
 
       <label for="body-template">Email Body Template</label>
-      <p class="muted">Available placeholders: {{date}}, {{subject}}, {{subject_prefix}}, {{preheader}}, {{editor_note}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}.</p>
+      <p class="muted">Available placeholders: {{date}}, {{subject}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}.</p>
       <textarea id="body-template" class="json-editor">{body_template}</textarea>
 
       <div class="config-grid">
@@ -237,11 +222,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             review: document.getElementById('workflow-review').value.trim(),
           }};
           next.email_template = {{
-            subject_prefix: document.getElementById('subject-prefix').value.trim(),
-            preheader: document.getElementById('preheader').value.trim(),
-            editor_note: document.getElementById('editor-note').value.trim(),
             body_template: document.getElementById('body-template').value.trim(),
-            empty_text: document.getElementById('empty-text').value.trim(),
             item_templates: {{
               paper: document.getElementById('paper-item-template').value.trim(),
               funding: document.getElementById('funding-item-template').value.trim(),
@@ -279,11 +260,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             document.getElementById('workflow-review').value = draft.workflow.review || '';
           }}
           if (draft.email_template) {{
-            document.getElementById('subject-prefix').value = draft.email_template.subject_prefix || '';
-            document.getElementById('preheader').value = draft.email_template.preheader || '';
-            document.getElementById('editor-note').value = draft.email_template.editor_note || '';
             document.getElementById('body-template').value = draft.email_template.body_template || '';
-            document.getElementById('empty-text').value = draft.email_template.empty_text || '';
             const itemTemplates = draft.email_template.item_templates || {{}};
             document.getElementById('paper-item-template').value = itemTemplates.paper || '';
             document.getElementById('funding-item-template').value = itemTemplates.funding || '';
@@ -936,13 +913,7 @@ def _build_archive_page(
         workflow_review=escape(workflow.get("review", "")),
     )
     configured_item_templates = email_template.get("item_templates", {})
-    template_html = f"""Subject: {email_template.get("subject_prefix", "AI for Early Cancer Digest")} | YYYY-MM-DD
-Preheader: {email_template.get("preheader", "")}
-
-Editor note:
-{email_template.get("editor_note", "")}
-
-Body template:
+    template_html = f"""Email body template:
 {email_template.get("body_template", "")}
 
 Paper item template:
@@ -1003,7 +974,7 @@ Job item template:
     </section>
 
     <section class="panel">
-      <h2>Email Template</h2>
+      <h2>Email Body Template</h2>
       <p class="muted">Current draft structure for reviewer-facing email generation.</p>
       <pre class="template-block">{escape(template_html)}</pre>
     </section>
