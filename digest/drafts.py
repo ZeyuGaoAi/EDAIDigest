@@ -92,6 +92,38 @@ def _html_to_text(html: str) -> str:
     return parser.text()
 
 
+def _markdownish_to_html(text: str) -> str:
+    lines: list[str] = []
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            lines.append("")
+        elif line.startswith("### "):
+            lines.append(f"<h3>{escape(line[4:])}</h3>")
+        elif line.startswith("## "):
+            lines.append(f"<h2>{escape(line[3:])}</h2>")
+        elif line.startswith("# "):
+            lines.append(f"<h1>{escape(line[2:])}</h1>")
+        elif line.startswith("- "):
+            lines.append(f"<p>{escape(line[2:])}</p>")
+        elif ": " in line and not line.startswith(("http://", "https://")):
+            key, value = line.split(": ", 1)
+            value_html = escape(value)
+            if value.startswith(("http://", "https://")):
+                href = escape(value, quote=True)
+                value_html = f'<a href="{href}">{escape(value)}</a>'
+            lines.append(f"<p><strong>{escape(key)}:</strong> {value_html}</p>")
+        else:
+            lines.append(f"<p>{escape(line)}</p>")
+    return "\n".join(lines)
+
+
+def _ensure_html_fragment(text: str) -> str:
+    if re.search(r"</?(h[1-6]|p|article|div|section|ul|ol|li|a|strong|em)\b", text, re.IGNORECASE):
+        return text
+    return _markdownish_to_html(text)
+
+
 def _email_html_document(date_slug: str, subject: str, preheader: str, editor_note: str, body: str) -> str:
     return f"""<!doctype html>
 <html>
@@ -263,34 +295,35 @@ def generate_template_draft(
             continue
         rendered_items: list[str] = []
         for row in grouped[category]:
-            rendered_items.append(
-                _format_template(
-                    item_templates[category],
-                    {
-                        "title": escape(row["title"] or ""),
-                        "source": escape(row["source"] or ""),
-                        "venue": escape(row["venue"] or row["source"] or ""),
-                        "doi_or_id": escape(_paper_identifier(row["source"] or "", row["url"] or "")),
-                        "html": escape(row["url"] or "", quote=True),
-                        "link": escape(row["url"] or "", quote=True),
-                        "summary": escape(_clean_summary(row["summary"])),
-                        "why_relevant": escape(row["why_relevant"] or ""),
-                    },
-                )
+            rendered = _format_template(
+                item_templates[category],
+                {
+                    "title": escape(row["title"] or ""),
+                    "source": escape(row["source"] or ""),
+                    "venue": escape(row["venue"] or row["source"] or ""),
+                    "doi_or_id": escape(_paper_identifier(row["source"] or "", row["url"] or "")),
+                    "html": escape(row["url"] or "", quote=True),
+                    "link": escape(row["url"] or "", quote=True),
+                    "summary": escape(_clean_summary(row["summary"])),
+                    "why_relevant": escape(row["why_relevant"] or ""),
+                },
             )
+            rendered_items.append(_ensure_html_fragment(rendered))
         rendered_sections[category] = "\n\n".join(rendered_items)
 
-    body_html = _format_template(
-        email_template["body_template"],
-        {
-            "date": date_slug,
-            "paper_days": lookback_days["paper"],
-            "funding_days": lookback_days["funding"],
-            "job_days": lookback_days["job"],
-            "papers": rendered_sections["paper"],
-            "funding": rendered_sections["funding"],
-            "jobs": rendered_sections["job"],
-        },
+    body_html = _ensure_html_fragment(
+        _format_template(
+            email_template["body_template"],
+            {
+                "date": date_slug,
+                "paper_days": lookback_days["paper"],
+                "funding_days": lookback_days["funding"],
+                "job_days": lookback_days["job"],
+                "papers": rendered_sections["paper"],
+                "funding": rendered_sections["funding"],
+                "jobs": rendered_sections["job"],
+            },
+        )
     )
     draft_path.write_text(_email_html_document(date_slug, subject, preheader, editor_note, body_html))
     text_path.write_text(_email_text_document(date_slug, subject, preheader, editor_note, body_html))
