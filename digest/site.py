@@ -204,6 +204,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         <button id="save-settings" type="button">Save settings.json</button>
         <button id="save-sources" type="button">Save sources.json</button>
         <button id="regenerate-digest" type="button">Regenerate Weekly Digest</button>
+        <button id="open-html-draft" type="button">Open HTML Draft</button>
         <button id="open-email-draft" type="button">Open Email Draft</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
@@ -410,6 +411,21 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           }}
         }});
 
+        document.getElementById('open-html-draft').addEventListener('click', async () => {{
+          try {{
+            configStatus.textContent = 'Preparing rich HTML draft...';
+            const result = await postJson('/api/html-draft', {{
+              settings: collectSettings(),
+            }});
+            const blob = new Blob([result.html], {{ type: 'text/html' }});
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank', 'noopener');
+            configStatus.textContent = result.message;
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
         document.getElementById('save-browser-draft').addEventListener('click', () => {{
           try {{
             localStorage.setItem('edaidigest.settingsDraft', JSON.stringify(collectSettings()));
@@ -482,17 +498,40 @@ def _markdown_to_html(text: str) -> str:
     return "\n".join(blocks)
 
 
+def _html_title(text: str, fallback: str) -> str:
+    match = re.search(r"<h1[^>]*>(.*?)</h1>", text, re.IGNORECASE | re.DOTALL)
+    if not match:
+        match = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
+    if not match:
+        return fallback
+    return re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", match.group(1)))).strip() or fallback
+
+
+def _html_body_fragment(text: str) -> str:
+    match = re.search(r"<body[^>]*>(.*?)</body>", text, re.IGNORECASE | re.DOTALL)
+    return match.group(1).strip() if match else text
+
+
 def _load_drafts(drafts_dir: Path) -> list[dict[str, str]]:
     drafts: list[dict[str, str]] = []
-    for path in sorted(drafts_dir.glob("*.md"), reverse=True):
+    stems = sorted({path.stem for path in drafts_dir.glob("*.md")} | {path.stem for path in drafts_dir.glob("*.html")}, reverse=True)
+    for stem in stems:
+        html_path = drafts_dir / f"{stem}.html"
+        md_path = drafts_dir / f"{stem}.md"
+        path = html_path if html_path.exists() else md_path
         content = path.read_text()
-        title = next((line[2:].strip() for line in content.splitlines() if line.startswith("# ")), path.stem)
+        if path.suffix == ".html":
+            title = _html_title(content, path.stem)
+            html = _html_body_fragment(content)
+        else:
+            title = next((line[2:].strip() for line in content.splitlines() if line.startswith("# ")), path.stem)
+            html = _markdown_to_html(content)
         drafts.append(
             {
                 "date": path.stem,
                 "title": title,
                 "path": path.name,
-                "html": _markdown_to_html(content),
+                "html": html,
             }
         )
     return drafts

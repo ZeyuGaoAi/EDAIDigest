@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from html import unescape
+from html import escape, unescape
+from html.parser import HTMLParser
 from pathlib import Path
 import re
 
@@ -16,12 +17,12 @@ DEFAULT_EMAIL_TEMPLATE = {
     "subject_prefix": "AI for Early Cancer Digest",
     "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
     "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-    "body_template": "## Papers\n\n{papers}\n\n## Funding\n\n{funding}\n\n## Jobs\n\n{jobs}",
-    "empty_text": "_No shortlisted items yet._",
+    "body_template": "<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}",
+    "empty_text": "<p><em>No shortlisted items yet.</em></p>",
     "item_templates": {
-        "paper": "### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}",
-        "funding": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
-        "job": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
+        "paper": '<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href="{html}">{html}</a></p>\n</article>',
+        "funding": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',
+        "job": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',
     },
 }
 
@@ -58,6 +59,67 @@ def _clean_summary(summary: str | None, limit: int = 420) -> str:
         return text
     trimmed = text[: limit - 1].rsplit(" ", 1)[0].strip()
     return f"{trimmed}..."
+
+
+class _HTMLToTextParser(HTMLParser):
+    block_tags = {"article", "br", "div", "h1", "h2", "h3", "h4", "li", "p", "section"}
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in self.block_tags:
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.block_tags:
+            self.parts.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def text(self) -> str:
+        text = unescape("".join(self.parts))
+        text = re.sub(r"[ \t]+", " ", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return "\n".join(line.strip() for line in text.strip().splitlines())
+
+
+def _html_to_text(html: str) -> str:
+    parser = _HTMLToTextParser()
+    parser.feed(html)
+    return parser.text()
+
+
+def _email_html_document(date_slug: str, subject: str, preheader: str, editor_note: str, body: str) -> str:
+    return f"""<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{escape(subject)}</title>
+</head>
+<body style="font-family: Georgia, 'Times New Roman', serif; color: #16212b; line-height: 1.5;">
+  <p style="color: #5b6470;">{escape(preheader)}</p>
+  <h1>AI for Early Cancer Digest - {escape(date_slug)}</h1>
+  <p><strong>Subject:</strong> {escape(subject)}</p>
+  <p><strong>Editor note:</strong> {escape(editor_note)}</p>
+  {body}
+</body>
+</html>
+"""
+
+
+def _email_text_document(date_slug: str, subject: str, preheader: str, editor_note: str, body_html: str) -> str:
+    return "\n\n".join(
+        [
+            f"AI for Early Cancer Digest - {date_slug}",
+            f"Subject: {subject}",
+            f"Preheader: {preheader}",
+            f"Editor note: {editor_note}",
+            _html_to_text(body_html),
+        ]
+    )
 
 
 def _passes_score(category: str, score: float | None, min_scores: dict[str, float]) -> bool:
@@ -156,7 +218,8 @@ def generate_template_draft(
     }
     category_filter_sql, category_params = _category_filter_sql(lookback_days)
     date_slug = datetime.now(UTC).date().isoformat()
-    draft_path = drafts_dir / f"{date_slug}.md"
+    draft_path = drafts_dir / f"{date_slug}.html"
+    text_path = drafts_dir / f"{date_slug}.txt"
     drafts_dir.mkdir(parents=True, exist_ok=True)
 
     selected_ids: list[int] = []
@@ -181,23 +244,17 @@ def generate_template_draft(
             bucket.append(row)
             selected_ids.append(row["id"])
 
-    lines = [
-        f"# AI for Early Cancer Digest - {date_slug}",
-        "",
-        f"Subject: {email_template['subject_prefix']} | {date_slug}",
-        "",
-        "Preheader:",
-        email_template["preheader"],
-        "",
-        "Editor note:",
-        _format_template(email_template["editor_note"], {
+    subject = f"{email_template['subject_prefix']} | {date_slug}"
+    preheader = str(email_template["preheader"])
+    editor_note = _format_template(
+        email_template["editor_note"],
+        {
             "date": date_slug,
             "paper_days": lookback_days["paper"],
             "funding_days": lookback_days["funding"],
             "job_days": lookback_days["job"],
-        }),
-        "",
-    ]
+        },
+    )
 
     rendered_sections: dict[str, str] = {}
     for category in ("paper", "funding", "job"):
@@ -210,34 +267,33 @@ def generate_template_draft(
                 _format_template(
                     item_templates[category],
                     {
-                        "title": row["title"],
-                        "source": row["source"],
-                        "venue": row["venue"] or row["source"],
-                        "doi_or_id": _paper_identifier(row["source"], row["url"]),
-                        "html": row["url"],
-                        "link": row["url"],
-                        "summary": _clean_summary(row["summary"]),
-                        "why_relevant": row["why_relevant"],
+                        "title": escape(row["title"] or ""),
+                        "source": escape(row["source"] or ""),
+                        "venue": escape(row["venue"] or row["source"] or ""),
+                        "doi_or_id": escape(_paper_identifier(row["source"] or "", row["url"] or "")),
+                        "html": escape(row["url"] or "", quote=True),
+                        "link": escape(row["url"] or "", quote=True),
+                        "summary": escape(_clean_summary(row["summary"])),
+                        "why_relevant": escape(row["why_relevant"] or ""),
                     },
                 )
             )
         rendered_sections[category] = "\n\n".join(rendered_items)
 
-    lines.append(
-        _format_template(
-            email_template["body_template"],
-            {
-                "date": date_slug,
-                "paper_days": lookback_days["paper"],
-                "funding_days": lookback_days["funding"],
-                "job_days": lookback_days["job"],
-                "papers": rendered_sections["paper"],
-                "funding": rendered_sections["funding"],
-                "jobs": rendered_sections["job"],
-            },
-        )
+    body_html = _format_template(
+        email_template["body_template"],
+        {
+            "date": date_slug,
+            "paper_days": lookback_days["paper"],
+            "funding_days": lookback_days["funding"],
+            "job_days": lookback_days["job"],
+            "papers": rendered_sections["paper"],
+            "funding": rendered_sections["funding"],
+            "jobs": rendered_sections["job"],
+        },
     )
-    draft_path.write_text("\n".join(lines))
+    draft_path.write_text(_email_html_document(date_slug, subject, preheader, editor_note, body_html))
+    text_path.write_text(_email_text_document(date_slug, subject, preheader, editor_note, body_html))
     if selected_ids:
         with connect(db_path) as conn:
             conn.executemany(

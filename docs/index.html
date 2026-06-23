@@ -303,7 +303,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">108</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 454</span></div>
-      <p class="muted">Last generated: 2026-06-23 11:08 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 12:11 UTC</p>
     </section>
 
     <section class="panel">
@@ -362,33 +362,36 @@ Editor note:
 Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.
 
 Body template:
-## Papers
-
+&lt;h2&gt;Papers&lt;/h2&gt;
 {papers}
 
-## Funding
-
+&lt;h2&gt;Funding&lt;/h2&gt;
 {funding}
 
-## Jobs
-
+&lt;h2&gt;Jobs&lt;/h2&gt;
 {jobs}
 
 Paper item template:
-### {title}
-Published in: {venue}
-DOI / ID: {doi_or_id}
-HTML: {html}
+&lt;article&gt;
+&lt;h3&gt;{title}&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Published in:&lt;/strong&gt; {venue}&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;DOI / ID:&lt;/strong&gt; {doi_or_id}&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;HTML:&lt;/strong&gt; &lt;a href=&quot;{html}&quot;&gt;{html}&lt;/a&gt;&lt;/p&gt;
+&lt;/article&gt;
 
 Funding item template:
-### {title}
-Source: {source}
-Link: {link}
+&lt;article&gt;
+&lt;h3&gt;{title}&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Source:&lt;/strong&gt; {source}&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Link:&lt;/strong&gt; &lt;a href=&quot;{link}&quot;&gt;{link}&lt;/a&gt;&lt;/p&gt;
+&lt;/article&gt;
 
 Job item template:
-### {title}
-Source: {source}
-Link: {link}</pre>
+&lt;article&gt;
+&lt;h3&gt;{title}&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Source:&lt;/strong&gt; {source}&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Link:&lt;/strong&gt; &lt;a href=&quot;{link}&quot;&gt;{link}&lt;/a&gt;&lt;/p&gt;
+&lt;/article&gt;</pre>
     </section>
 
     <section class="panel">
@@ -473,35 +476,50 @@ Link: {link}</pre>
             <span>2026-06-23</span>
             <span>AI for Early Cancer Digest - 2026-06-23</span>
           </summary>
-          <div class="draft-body"><h2>AI for Early Cancer Digest - 2026-06-23</h2>
-<p><strong>Subject:</strong> AI for Early Cancer Digest | 2026-06-23</p>
-<p>Preheader:</p>
-<p>Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>
-<p>Editor note:</p>
-<p>Draft for review. This issue covers papers from the past 7 days, plus funding and jobs from the past 30 days.</p>
-<h3>Papers</h3>
-<h4>Computational Methods and Challenges in Cell-Free DNA Analysis for Multi-Cancer Early Detection</h4>
+          <div class="draft-body"><p style="color: #5b6470;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>
+  <h1>AI for Early Cancer Digest - 2026-06-23</h1>
+  <p><strong>Subject:</strong> AI for Early Cancer Digest | 2026-06-23</p>
+  <p><strong>Editor note:</strong> Draft for review. This issue covers papers from the past 7 days, plus funding and jobs from the past 30 days.</p>
+  <h2>Papers</h2>
+<article>
+<h3>Computational Methods and Challenges in Cell-Free DNA Analysis for Multi-Cancer Early Detection</h3>
 <p><strong>Published in:</strong> arXiv</p>
 <p><strong>DOI / ID:</strong> arXiv:2606.20174v1</p>
-<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.20174v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2606.20174v1</a></p>
-<h4>SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis</h4>
+<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.20174v1">https://arxiv.org/abs/2606.20174v1</a></p>
+</article>
+
+<article>
+<h3>SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis</h3>
 <p><strong>Published in:</strong> arXiv</p>
 <p><strong>DOI / ID:</strong> arXiv:2606.22144v1</p>
-<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.22144v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2606.22144v1</a></p>
-<h3>Funding</h3>
-<h4>Rewiring the life sciences: why foundations come first for AI in science</h4>
+<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.22144v1">https://arxiv.org/abs/2606.22144v1</a></p>
+</article>
+
+<h2>Funding</h2>
+<article>
+<h3>Rewiring the life sciences: why foundations come first for AI in science</h3>
 <p><strong>Source:</strong> Cancer Research UK News</p>
-<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/" target="_blank" rel="noreferrer">https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/</a></p>
-<h4>Data science: new data strategy hails exciting future</h4>
+<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/">https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/</a></p>
+</article>
+
+<article>
+<h3>Data science: new data strategy hails exciting future</h3>
 <p><strong>Source:</strong> Cancer Research UK News</p>
-<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/" target="_blank" rel="noreferrer">https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/</a></p>
-<h3>Jobs</h3>
-<h4>PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</h4>
+<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/">https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/</a></p>
+</article>
+
+<h2>Jobs</h2>
+<article>
+<h3>PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</h3>
 <p><strong>Source:</strong> jobs.ac.uk - Cancer AI Jobs</p>
-<p><strong>Link:</strong> <a href="https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" target="_blank" rel="noreferrer">https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data</a></p>
-<h4>Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer Prevention</h4>
+<p><strong>Link:</strong> <a href="https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data">https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data</a></p>
+</article>
+
+<article>
+<h3>Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer Prevention</h3>
 <p><strong>Source:</strong> University of Cambridge Research Jobs</p>
-<p><strong>Link:</strong> <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034" target="_blank" rel="noreferrer">https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034</a></p></div>
+<p><strong>Link:</strong> <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034">https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034</a></p>
+</article></div>
         </details>
 
         <details class="draft-card" >

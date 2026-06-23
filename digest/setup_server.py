@@ -59,9 +59,14 @@ def _regenerate_digest() -> dict[str, Any]:
     }
 
 
-def _latest_draft_path() -> Path:
-    drafts = sorted(DRAFTS_DIR.glob("*.md"), reverse=True)
-    if not drafts:
+def _latest_draft_stem() -> str:
+    stems = sorted(
+        {path.stem for path in DRAFTS_DIR.glob("*.html")}
+        | {path.stem for path in DRAFTS_DIR.glob("*.txt")}
+        | {path.stem for path in DRAFTS_DIR.glob("*.md")},
+        reverse=True,
+    )
+    if not stems:
         settings = load_settings(SETTINGS_PATH)
         generate_template_draft(
             DB_PATH,
@@ -71,10 +76,39 @@ def _latest_draft_path() -> Path:
             settings.get("email_template", {}),
             max_items_from_settings(settings),
         )
-        drafts = sorted(DRAFTS_DIR.glob("*.md"), reverse=True)
-    if not drafts:
+        stems = sorted({path.stem for path in DRAFTS_DIR.glob("*.html")} | {path.stem for path in DRAFTS_DIR.glob("*.txt")}, reverse=True)
+    if not stems:
         raise ValueError("No digest draft exists yet")
-    return drafts[0]
+    return stems[0]
+
+
+def _latest_text_draft_path() -> Path:
+    stem = _latest_draft_stem()
+    for suffix in (".txt", ".md", ".html"):
+        path = DRAFTS_DIR / f"{stem}{suffix}"
+        if path.exists():
+            return path
+    raise ValueError("No digest draft exists yet")
+
+
+def _latest_html_draft_path() -> Path:
+    stem = _latest_draft_stem()
+    path = DRAFTS_DIR / f"{stem}.html"
+    if path.exists():
+        return path
+    settings = load_settings(SETTINGS_PATH)
+    generate_template_draft(
+        DB_PATH,
+        DRAFTS_DIR,
+        lookback_days_from_settings(settings),
+        min_scores_from_settings(settings),
+        settings.get("email_template", {}),
+        max_items_from_settings(settings),
+    )
+    path = DRAFTS_DIR / f"{_latest_draft_stem()}.html"
+    if not path.exists():
+        raise ValueError("No HTML digest draft exists yet")
+    return path
 
 
 def _mailto_for_latest_draft(settings: dict[str, Any]) -> str:
@@ -82,7 +116,7 @@ def _mailto_for_latest_draft(settings: dict[str, Any]) -> str:
     recipients = distribution.get("recipient_emails", [])
     if not recipients:
         raise ValueError("Add at least one recipient email before preparing a draft")
-    draft_path = _latest_draft_path()
+    draft_path = _latest_text_draft_path()
     body = draft_path.read_text()
     date_slug = draft_path.stem
     subject_template = distribution.get("email_subject") or "AI for Early Cancer Digest | {date}"
@@ -146,6 +180,21 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
                     {
                         **result,
                         "message": f"Regenerated weekly digest: {result['draft']}.{warning}",
+                    },
+                )
+                return
+
+            if self.path == "/api/html-draft":
+                payload = self._read_json_body()
+                if isinstance(payload, dict) and "settings" in payload:
+                    _save_settings_payload(payload["settings"])
+                    build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
+                draft_path = _latest_html_draft_path()
+                self._send_json(
+                    HTTPStatus.OK,
+                    {
+                        "html": draft_path.read_text(),
+                        "message": f"Opened rich HTML draft: {draft_path}. Copy the rendered content into your email composer.",
                     },
                 )
                 return
