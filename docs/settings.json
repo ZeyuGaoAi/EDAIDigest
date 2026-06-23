@@ -28,7 +28,9 @@
   "distribution": {
     "sender_email": "zg323@cam.ac.uk",
     "recipient_emails": [
-      "zg323@cam.ac.uk"
+      "zg323@cam.ac.uk",
+      "mc973@cam.ac.uk",
+      "hmw56@cam.ac.uk"
     ],
     "email_subject": "AI for Early Cancer Digest | {date}"
   },
@@ -40,8 +42,8 @@
     "empty_text": "_No shortlisted items yet._",
     "item_templates": {
       "paper": "### {title}\nPublished in: {venue}\nDOI / ID: {doi_or_id}\nHTML: {html}",
-      "funding": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}",
-      "job": "### {title}\nSource: {source}\nSummary: {summary}\nWhy it matters: {why_relevant}\nLink: {link}"
+      "funding": "### {title}\nSource: {source}\nLink: {link}",
+      "job": "### {title}\nSource: {source}\nLink: {link}"
     }
   }
 }

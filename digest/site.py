@@ -388,6 +388,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               sources: parseSources(),
             }});
             configStatus.textContent = result.message;
+            window.location.href = `./index.html?updated=${{Date.now()}}`;
           }} catch (error) {{
             configStatus.textContent = error.message;
           }}
@@ -778,10 +779,12 @@ def _shared_styles() -> str:
 
 def _nav(active: str) -> str:
     archive_class = "active" if active == "archive" else ""
+    setup_class = "active" if active == "setup" else ""
     items_class = "active" if active == "items" else ""
     return f"""
     <nav class="nav">
       <a class="{archive_class}" href="./index.html">Daily Digest Archive</a>
+      <a class="{setup_class}" href="./setup.html">Setup</a>
       <a class="{items_class}" href="./items.html">Historical Item Database</a>
     </nav>
     """
@@ -877,7 +880,6 @@ Funding item template:
 
 Job item template:
 {configured_item_templates.get("job", "")}"""
-    config_editor_html = _build_config_editor(settings, sources)
     drafts_html = "".join(
         f"""
         <details class="draft-card" {"open" if index == 0 else ""}>
@@ -903,10 +905,11 @@ Job item template:
   <div class="wrap">
     <section class="hero">
       <span class="eyebrow">Cambridge-initiated digest</span>
-      <h1>Digest Setup</h1>
-      <p class="muted">This page acts as the setup reference for the Cambridge AI for Early Cancer Digest and as a lightweight backup of the generated archive.</p>
+      <h1>Daily Digest Archive</h1>
+      <p class="muted">A lightweight backup of generated AI for early cancer digest drafts. The most recent issue opens by default.</p>
       {_nav("archive")}
       <div class="hero-links">
+        <a class="hero-link primary" href="./setup.html">Open Setup</a>
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
       <div class="stats">{stats_html}</div>
@@ -933,12 +936,6 @@ Job item template:
     </section>
 
     <section class="panel">
-      <h2>Editable Configuration</h2>
-      <p class="muted">Update cadence, scope, email copy, and source definitions here. The exported JSON files are the inputs used by future digest runs.</p>
-      {config_editor_html}
-    </section>
-
-    <section class="panel">
       <h2>Paper Sources</h2>
       <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
       {paper_source_html}
@@ -960,6 +957,40 @@ Job item template:
       <h2>Digest Archive</h2>
       <p class="muted">Newest draft first. The most recent issue opens by default.</p>
       <div class="draft-list">{drafts_html}</div>
+    </section>
+  </div>
+</body>
+</html>
+"""
+
+
+def _build_setup_page(settings: dict, sources: list[dict], generated_at: str) -> str:
+    config_editor_html = _build_config_editor(settings, sources)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup | Cambridge AI for Early Cancer Digest</title>
+{_shared_styles()}
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Cambridge-initiated digest</span>
+      <h1>Setup</h1>
+      <p class="muted">Edit cadence, source definitions, email template, distribution list, and manual actions for the digest pipeline.</p>
+      {_nav("setup")}
+      <div class="hero-links">
+        <a class="hero-link primary" href="./index.html">Back to Digest Archive</a>
+      </div>
+      <p class="muted">Last generated: {generated_at}</p>
+    </section>
+
+    <section class="panel">
+      <h2>Editable Configuration</h2>
+      <p class="muted">Changes save directly to data/ when this page is served through the local setup server.</p>
+      {config_editor_html}
     </section>
   </div>
 </body>
@@ -1117,6 +1148,7 @@ def build_site(
     index_path.write_text(
         _clean_generated_html(_build_archive_page(drafts, by_category, by_status, generated_at, settings, sources))
     )
+    (site_dir / "setup.html").write_text(_clean_generated_html(_build_setup_page(settings, sources, generated_at)))
     (site_dir / "items.html").write_text(_clean_generated_html(_build_items_page(items, generated_at)))
     (site_dir / "settings.json").write_text(json.dumps(settings, indent=2) + "\n")
     (site_dir / "sources.json").write_text(json.dumps(sources, indent=2) + "\n")
