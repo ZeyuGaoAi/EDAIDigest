@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from html import escape
+from html import unescape
 from pathlib import Path
 import re
 
@@ -26,6 +27,16 @@ def _linkify(text: str) -> str:
         lambda match: f'<a href="{match.group(1)}" target="_blank" rel="noreferrer">{match.group(1)}</a>',
         escaped,
     )
+
+
+def _clean_text(text: str | None, limit: int = 220) -> str:
+    if not text:
+        return ""
+    cleaned = re.sub(r"<[^>]+>", " ", unescape(text))
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if len(cleaned) <= limit:
+        return cleaned
+    return f"{cleaned[: limit - 3].rstrip()}..."
 
 
 def _markdown_to_html(text: str) -> str:
@@ -262,6 +273,15 @@ def _shared_styles() -> str:
       display: block;
       margin-bottom: 4px;
     }
+    .template-block {
+      margin: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      white-space: pre-wrap;
+      font: 13px/1.55 "Courier New", Courier, monospace;
+    }
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -371,6 +391,65 @@ def _build_archive_page(
         </div>
       </div>
     """
+    workflow_html = """
+      <div class="source-list">
+        <div class="source-item">
+          <strong>Paper definition</strong>
+          Relevant papers on AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.
+        </div>
+        <div class="source-item">
+          <strong>Funding definition</strong>
+          Relevant calls, programmes, and announcements that may matter to researchers building AI for early cancer detection.
+        </div>
+        <div class="source-item">
+          <strong>Job definition</strong>
+          Relevant roles in academia or research organisations spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.
+        </div>
+      </div>
+    """
+    cadence_html = """
+      <div class="source-list">
+        <div class="source-item">
+          <strong>Papers</strong>
+          Search window: past 7 days. Intended update rhythm: weekly.
+        </div>
+        <div class="source-item">
+          <strong>Funding</strong>
+          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+        </div>
+        <div class="source-item">
+          <strong>Jobs</strong>
+          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+        </div>
+        <div class="source-item">
+          <strong>Workflow</strong>
+          Manual trigger ingests new items, refreshes the review queue, drafts the digest, and rebuilds the backup site.
+        </div>
+      </div>
+    """
+    template_html = """Subject: AI for Early Cancer Digest | YYYY-MM-DD
+Preheader: Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+Editor note:
+One short sentence from the reviewer.
+
+Papers
+- Title
+- Published in
+- DOI / ID
+- HTML
+
+Funding
+- Title
+- Source
+- One-line note
+- Link
+
+Jobs
+- Title
+- Source
+- One-line note
+- Link"""
     drafts_html = "".join(
         f"""
         <details class="draft-card" {"open" if index == 0 else ""}>
@@ -396,8 +475,8 @@ def _build_archive_page(
   <div class="wrap">
     <section class="hero">
       <span class="eyebrow">Cambridge-initiated digest</span>
-      <h1>Daily Digest Archive</h1>
-      <p class="muted">A public archive of the daily AI for early cancer digest. The most recent issue opens by default; older issues stay folded below.</p>
+      <h1>Digest Setup</h1>
+      <p class="muted">This page acts as the setup reference for the Cambridge AI for Early Cancer Digest and as a lightweight backup of the generated archive.</p>
       {_nav("archive")}
       <div class="hero-links">
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
@@ -405,6 +484,24 @@ def _build_archive_page(
       <div class="stats">{stats_html}</div>
       <div class="status-row">{status_html}</div>
       <p class="muted">Last generated: {generated_at}</p>
+    </section>
+
+    <section class="panel">
+      <h2>Scope Definition</h2>
+      <p class="muted">The current setup keeps three item types and a deliberately short review workflow.</p>
+      {workflow_html}
+    </section>
+
+    <section class="panel">
+      <h2>Update Cadence</h2>
+      <p class="muted">Papers are reviewed on a weekly window; funding and jobs stay broader and slower.</p>
+      {cadence_html}
+    </section>
+
+    <section class="panel">
+      <h2>Email Template</h2>
+      <p class="muted">Current draft structure for reviewer-facing email generation.</p>
+      <pre class="template-block">{escape(template_html)}</pre>
     </section>
 
     <section class="panel">
@@ -426,8 +523,8 @@ def _build_archive_page(
     </section>
 
     <section class="panel">
-      <h2>Archive</h2>
-      <p class="muted">Newest draft first.</p>
+      <h2>Digest Archive</h2>
+      <p class="muted">Newest draft first. The most recent issue opens by default.</p>
       <div class="draft-list">{drafts_html}</div>
     </section>
   </div>
@@ -445,7 +542,7 @@ def _build_items_page(items, generated_at: str) -> str:
           <td>{escape(row['source'])}</td>
           <td>
             <a href="{escape(row['url'])}" target="_blank" rel="noreferrer">{escape(row['title'])}</a>
-            <div class="subtext">{escape((row['summary'] or '')[:220])}</div>
+            <div class="subtext">{escape(_clean_text(row['summary']))}</div>
           </td>
           <td>{row['score']:.1f}</td>
           <td>{escape(row['status'])}</td>

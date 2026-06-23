@@ -5,9 +5,23 @@ from pathlib import Path
 
 from digest.config import DB_PATH, DRAFTS_DIR, REVIEW_QUEUE_PATH, SITE_DIR, SOURCES_PATH
 from digest.db import init_db
-from digest.drafts import export_review_queue, generate_template_draft, set_status
+from digest.drafts import DEFAULT_LOOKBACK_DAYS, export_review_queue, generate_template_draft, set_status
 from digest.fetch import ingest
 from digest.site import build_site
+
+
+def add_lookback_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--paper-days", type=int, default=DEFAULT_LOOKBACK_DAYS["paper"])
+    parser.add_argument("--funding-days", type=int, default=DEFAULT_LOOKBACK_DAYS["funding"])
+    parser.add_argument("--job-days", type=int, default=DEFAULT_LOOKBACK_DAYS["job"])
+
+
+def lookback_config(args: argparse.Namespace) -> dict[str, int]:
+    return {
+        "paper": args.paper_days,
+        "funding": args.funding_days,
+        "job": args.job_days,
+    }
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,12 +36,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     queue_parser = subparsers.add_parser("export-review")
     queue_parser.add_argument("--output", type=Path, default=REVIEW_QUEUE_PATH)
-    queue_parser.add_argument("--lookback-days", type=int, default=7)
+    add_lookback_args(queue_parser)
     queue_parser.add_argument("--min-score", type=float, default=3.5)
 
     draft_parser = subparsers.add_parser("generate-draft")
     draft_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
-    draft_parser.add_argument("--lookback-days", type=int, default=7)
+    add_lookback_args(draft_parser)
     draft_parser.add_argument("--per-category", type=int, default=3)
 
     site_parser = subparsers.add_parser("build-site")
@@ -39,7 +53,7 @@ def build_parser() -> argparse.ArgumentParser:
     daily_parser.add_argument("--review-output", type=Path, default=REVIEW_QUEUE_PATH)
     daily_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
     daily_parser.add_argument("--site-dir", type=Path, default=SITE_DIR)
-    daily_parser.add_argument("--lookback-days", type=int, default=7)
+    add_lookback_args(daily_parser)
     daily_parser.add_argument("--min-score", type=float, default=3.5)
     daily_parser.add_argument("--per-category", type=int, default=3)
 
@@ -70,12 +84,12 @@ def main() -> int:
         return 0
 
     if args.command == "export-review":
-        path = export_review_queue(args.db, args.output, args.lookback_days, args.min_score)
+        path = export_review_queue(args.db, args.output, lookback_config(args), args.min_score)
         print(path)
         return 0
 
     if args.command == "generate-draft":
-        path = generate_template_draft(args.db, args.drafts_dir, args.lookback_days, args.per_category)
+        path = generate_template_draft(args.db, args.drafts_dir, lookback_config(args), args.per_category)
         print(path)
         return 0
 
@@ -86,8 +100,8 @@ def main() -> int:
 
     if args.command == "run-daily":
         stats, errors = ingest(args.db, args.sources)
-        review_path = export_review_queue(args.db, args.review_output, args.lookback_days, args.min_score)
-        draft_path = generate_template_draft(args.db, args.drafts_dir, args.lookback_days, args.per_category)
+        review_path = export_review_queue(args.db, args.review_output, lookback_config(args), args.min_score)
+        draft_path = generate_template_draft(args.db, args.drafts_dir, lookback_config(args), args.per_category)
         site_path = build_site(args.db, args.drafts_dir, args.site_dir)
         print("Ingest:")
         for source_name, count in stats.items():

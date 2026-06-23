@@ -89,6 +89,16 @@ def _request_text(url: str) -> str:
         return response.read().decode("utf-8")
 
 
+def _default_venue(source: Source, url: str | None) -> str | None:
+    if url and "arxiv.org" in url:
+        return "arXiv"
+    if url and "medrxiv.org" in url:
+        return "medRxiv"
+    if source.kind == "pubmed":
+        return "PubMed"
+    return None
+
+
 class AnchorParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -209,6 +219,7 @@ def fetch_feed(source: Source) -> list[dict[str, Any]]:
                 "title": title,
                 "summary": summary,
                 "url": link,
+                "venue": _default_venue(source, link),
                 "published_at": published_at,
             }
         )
@@ -258,6 +269,7 @@ def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
                 "title": title,
                 "summary": summary,
                 "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
+                "venue": _child_text(article, ".//Journal/Title"),
                 "published_at": _pubmed_date(article),
             }
         )
@@ -291,6 +303,7 @@ def fetch_biorxiv_api(source: Source) -> list[dict[str, Any]]:
                 "title": title,
                 "summary": _text_or_none(entry.get("abstract")),
                 "url": f"https://www.medrxiv.org/content/{doi}v{entry.get('version', '1')}",
+                "venue": "medRxiv",
                 "published_at": _text_or_none(entry.get("date")),
             }
         )
@@ -315,6 +328,7 @@ def fetch_manual_file(source: Source, config_path: Path) -> list[dict[str, Any]]
                 "title": title,
                 "summary": entry.get("summary"),
                 "url": url,
+                "venue": entry.get("venue"),
                 "published_at": entry.get("published_at"),
             }
         )
@@ -348,6 +362,7 @@ def fetch_html_links(source: Source) -> list[dict[str, Any]]:
                 "title": text,
                 "summary": None,
                 "url": absolute_url,
+                "venue": None,
                 "published_at": None,
             }
         )
@@ -369,12 +384,13 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
             cursor = conn.execute(
                 """
                 INSERT INTO items (
-                    url, title, source, category, published_at, fetched_at,
+                    url, title, source, venue, category, published_at, fetched_at,
                     score, summary, why_relevant, content_hash
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(url) DO UPDATE SET
                     title=excluded.title,
                     source=excluded.source,
+                    venue=COALESCE(excluded.venue, items.venue),
                     category=excluded.category,
                     published_at=COALESCE(excluded.published_at, items.published_at),
                     fetched_at=excluded.fetched_at,
@@ -387,6 +403,7 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     item["url"],
                     item["title"],
                     source.name,
+                    item.get("venue"),
                     source.category,
                     item.get("published_at"),
                     fetched_at,

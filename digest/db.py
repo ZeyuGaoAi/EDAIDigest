@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS items (
     url TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
     source TEXT NOT NULL,
+    venue TEXT,
     category TEXT NOT NULL,
     published_at TEXT,
     fetched_at TEXT NOT NULL,
@@ -43,5 +44,7 @@ def connect(db_path: Path) -> sqlite3.Connection:
 def init_db(db_path: Path) -> None:
     with connect(db_path) as conn:
         conn.executescript(SCHEMA)
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
+        if "venue" not in columns:
+            conn.execute("ALTER TABLE items ADD COLUMN venue TEXT")
         conn.commit()
-

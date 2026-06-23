@@ -182,6 +182,15 @@
       display: block;
       margin-bottom: 4px;
     }
+    .template-block {
+      margin: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      white-space: pre-wrap;
+      font: 13px/1.55 "Courier New", Courier, monospace;
+    }
     .hero-link {
       display: inline-flex;
       align-items: center;
@@ -217,8 +226,8 @@
   <div class="wrap">
     <section class="hero">
       <span class="eyebrow">Cambridge-initiated digest</span>
-      <h1>Daily Digest Archive</h1>
-      <p class="muted">A public archive of the daily AI for early cancer digest. The most recent issue opens by default; older issues stay folded below.</p>
+      <h1>Digest Setup</h1>
+      <p class="muted">This page acts as the setup reference for the Cambridge AI for Early Cancer Digest and as a lightweight backup of the generated archive.</p>
       
     <nav class="nav">
       <a class="active" href="./index.html">Daily Digest Archive</a>
@@ -228,9 +237,83 @@
       <div class="hero-links">
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
-      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">61</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">63</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">169</span></div></div>
-      <div class="status-row"><span class="chip">drafted: 11</span><span class="chip">new: 282</span></div>
-      <p class="muted">Last generated: 2026-04-27 08:32 UTC</p>
+      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
+      <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
+      <p class="muted">Last generated: 2026-06-23 09:34 UTC</p>
+    </section>
+
+    <section class="panel">
+      <h2>Scope Definition</h2>
+      <p class="muted">The current setup keeps three item types and a deliberately short review workflow.</p>
+      
+      <div class="source-list">
+        <div class="source-item">
+          <strong>Paper definition</strong>
+          Relevant papers on AI for early cancer detection, screening, risk prediction, surveillance, liquid biopsy, and adjacent early-diagnosis methods.
+        </div>
+        <div class="source-item">
+          <strong>Funding definition</strong>
+          Relevant calls, programmes, and announcements that may matter to researchers building AI for early cancer detection.
+        </div>
+        <div class="source-item">
+          <strong>Job definition</strong>
+          Relevant roles in academia or research organisations spanning AI, data science, imaging, biomarkers, screening, and prevention in cancer.
+        </div>
+      </div>
+    
+    </section>
+
+    <section class="panel">
+      <h2>Update Cadence</h2>
+      <p class="muted">Papers are reviewed on a weekly window; funding and jobs stay broader and slower.</p>
+      
+      <div class="source-list">
+        <div class="source-item">
+          <strong>Papers</strong>
+          Search window: past 7 days. Intended update rhythm: weekly.
+        </div>
+        <div class="source-item">
+          <strong>Funding</strong>
+          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+        </div>
+        <div class="source-item">
+          <strong>Jobs</strong>
+          Search window: past 30 days. Intended update rhythm: monthly or manual when needed.
+        </div>
+        <div class="source-item">
+          <strong>Workflow</strong>
+          Manual trigger ingests new items, refreshes the review queue, drafts the digest, and rebuilds the backup site.
+        </div>
+      </div>
+    
+    </section>
+
+    <section class="panel">
+      <h2>Email Template</h2>
+      <p class="muted">Current draft structure for reviewer-facing email generation.</p>
+      <pre class="template-block">Subject: AI for Early Cancer Digest | YYYY-MM-DD
+Preheader: Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+Editor note:
+One short sentence from the reviewer.
+
+Papers
+- Title
+- Published in
+- DOI / ID
+- HTML
+
+Funding
+- Title
+- Source
+- One-line note
+- Link
+
+Jobs
+- Title
+- Source
+- One-line note
+- Link</pre>
     </section>
 
     <section class="panel">
@@ -301,10 +384,54 @@
     </section>
 
     <section class="panel">
-      <h2>Archive</h2>
-      <p class="muted">Newest draft first.</p>
+      <h2>Digest Archive</h2>
+      <p class="muted">Newest draft first. The most recent issue opens by default.</p>
       <div class="draft-list">
         <details class="draft-card" open>
+          <summary>
+            <span>2026-06-23</span>
+            <span>AI for Early Cancer Digest - 2026-06-23</span>
+          </summary>
+          <div class="draft-body"><h2>AI for Early Cancer Digest - 2026-06-23</h2>
+<p><strong>Subject:</strong> AI for Early Cancer Digest | 2026-06-23</p>
+<p>Preheader:</p>
+<p>Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>
+<p>Editor note:</p>
+<p>Draft for review. This issue covers papers from the past 7 days, plus funding and jobs from the past 30 days.</p>
+<h3>Papers</h3>
+<h4>Computational Methods and Challenges in Cell-Free DNA Analysis for Multi-Cancer Early Detection</h4>
+<p><strong>Published in:</strong> arXiv</p>
+<p><strong>DOI / ID:</strong> arXiv:2606.20174v1</p>
+<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.20174v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2606.20174v1</a></p>
+<h4>SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis</h4>
+<p><strong>Published in:</strong> arXiv</p>
+<p><strong>DOI / ID:</strong> arXiv:2606.22144v1</p>
+<p><strong>HTML:</strong> <a href="https://arxiv.org/abs/2606.22144v1" target="_blank" rel="noreferrer">https://arxiv.org/abs/2606.22144v1</a></p>
+<h3>Funding</h3>
+<h4>Rewiring the life sciences: why foundations come first for AI in science</h4>
+<p><strong>Source:</strong> Cancer Research UK News</p>
+<p><strong>Summary:</strong> AI could transform cancer research, but the science will only deliver if we get the foundations right first – learn how we can ensure just that… The post Rewiring the life sciences: why foundations come first for AI in science appeared first on Cancer Research UK - Cancer News .</p>
+<p><strong>Why it matters:</strong> includes an AI or machine learning angle; is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/" target="_blank" rel="noreferrer">https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/</a></p>
+<h4>Data science: new data strategy hails exciting future</h4>
+<p><strong>Source:</strong> Cancer Research UK News</p>
+<p><strong>Summary:</strong> As CRUK launch their new Data Science in Cancer Research strategy, Melissa Lewis-Brown talks about the importance of AI and data science for researchers The post Data science: new data strategy hails exciting future appeared first on Cancer Research UK - Cancer News .</p>
+<p><strong>Why it matters:</strong> includes an AI or machine learning angle; is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/" target="_blank" rel="noreferrer">https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/</a></p>
+<h3>Jobs</h3>
+<h4>PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</h4>
+<p><strong>Source:</strong> jobs.ac.uk - Cancer AI Jobs</p>
+<p><strong>Summary:</strong> Add one-line summary.</p>
+<p><strong>Why it matters:</strong> is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" target="_blank" rel="noreferrer">https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data</a></p>
+<h4>Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer Prevention</h4>
+<p><strong>Source:</strong> University of Cambridge Research Jobs</p>
+<p><strong>Summary:</strong> Add one-line summary.</p>
+<p><strong>Why it matters:</strong> is clearly cancer-related</p>
+<p><strong>Link:</strong> <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034" target="_blank" rel="noreferrer">https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034</a></p></div>
+        </details>
+        
+        <details class="draft-card" >
           <summary>
             <span>2026-04-27</span>
             <span>AI for Early Cancer Digest - 2026-04-27</span>
