@@ -39,9 +39,9 @@
   },
   "email_template": {
     "subject_prefix": "AI for Early Cancer Digest",
-    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.\nReply this email for any feedback!",
+    "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
     "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-    "body_template": "<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}",
+    "body_template": "<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style=\"color: #a33d2f;\"><strong>Reply this email for any feedback!</strong></p>",
     "empty_text": "<p><em>No shortlisted items yet.</em></p>",
     "item_templates": {
       "paper": "<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href=\"{html}\">{html}</a></p>\n</article>",

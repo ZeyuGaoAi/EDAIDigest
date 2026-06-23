@@ -3,7 +3,6 @@ AI for Early Cancer Digest - 2026-06-23
 Subject: AI for Early Cancer Digest | 2026-06-23
 
 Preheader: Selected updates on AI for early cancer detection, screening, funding, and jobs.
-Reply this email for any feedback!
 
 Editor note: Draft for review. This issue covers papers from the past 7 days, plus funding and jobs from the past 30 days.
 
@@ -52,3 +51,5 @@ Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer 
 Source: University of Cambridge Research Jobs
 
 Link: https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034
+
+Reply this email for any feedback!
