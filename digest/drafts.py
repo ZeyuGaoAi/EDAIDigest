@@ -17,7 +17,7 @@ DEFAULT_EMAIL_TEMPLATE = {
     "subject_prefix": "AI for Early Cancer Digest",
     "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
     "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-    "body_template": "<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}",
+    "body_template": '<p style="color: #5b6470;">{preheader}</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> {editor_note}</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
     "empty_text": "<p><em>No shortlisted items yet.</em></p>",
     "item_templates": {
         "paper": '<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href="{html}">{html}</a></p>\n</article>',
@@ -98,6 +98,8 @@ def _markdownish_to_html(text: str) -> str:
         line = raw_line.strip()
         if not line:
             lines.append("")
+        elif re.search(r"</?(h[1-6]|p|article|div|section|ul|ol|li|a|strong|em)\b", line, re.IGNORECASE):
+            lines.append(line)
         elif line.startswith("### "):
             lines.append(f"<h3>{escape(line[4:])}</h3>")
         elif line.startswith("## "):
@@ -119,12 +121,10 @@ def _markdownish_to_html(text: str) -> str:
 
 
 def _ensure_html_fragment(text: str) -> str:
-    if re.search(r"</?(h[1-6]|p|article|div|section|ul|ol|li|a|strong|em)\b", text, re.IGNORECASE):
-        return text
     return _markdownish_to_html(text)
 
 
-def _email_html_document(date_slug: str, subject: str, preheader: str, editor_note: str, body: str) -> str:
+def _email_html_document(subject: str, body: str) -> str:
     return f"""<!doctype html>
 <html>
 <head>
@@ -132,26 +132,14 @@ def _email_html_document(date_slug: str, subject: str, preheader: str, editor_no
   <title>{escape(subject)}</title>
 </head>
 <body style="font-family: Georgia, 'Times New Roman', serif; color: #16212b; line-height: 1.5;">
-  <p style="color: #5b6470;">{escape(preheader)}</p>
-  <h1>AI for Early Cancer Digest - {escape(date_slug)}</h1>
-  <p><strong>Subject:</strong> {escape(subject)}</p>
-  <p><strong>Editor note:</strong> {escape(editor_note)}</p>
   {body}
 </body>
 </html>
 """
 
 
-def _email_text_document(date_slug: str, subject: str, preheader: str, editor_note: str, body_html: str) -> str:
-    return "\n\n".join(
-        [
-            f"AI for Early Cancer Digest - {date_slug}",
-            f"Subject: {subject}",
-            f"Preheader: {preheader}",
-            f"Editor note: {editor_note}",
-            _html_to_text(body_html),
-        ]
-    )
+def _email_text_document(body_html: str) -> str:
+    return _html_to_text(body_html)
 
 
 def _passes_score(category: str, score: float | None, min_scores: dict[str, float]) -> bool:
@@ -316,6 +304,10 @@ def generate_template_draft(
             email_template["body_template"],
             {
                 "date": date_slug,
+                "subject": escape(subject),
+                "subject_prefix": escape(str(email_template["subject_prefix"])),
+                "preheader": escape(preheader),
+                "editor_note": escape(editor_note),
                 "paper_days": lookback_days["paper"],
                 "funding_days": lookback_days["funding"],
                 "job_days": lookback_days["job"],
@@ -325,8 +317,8 @@ def generate_template_draft(
             },
         )
     )
-    draft_path.write_text(_email_html_document(date_slug, subject, preheader, editor_note, body_html))
-    text_path.write_text(_email_text_document(date_slug, subject, preheader, editor_note, body_html))
+    draft_path.write_text(_email_html_document(subject, body_html))
+    text_path.write_text(_email_text_document(body_html))
     if selected_ids:
         with connect(db_path) as conn:
             conn.executemany(

@@ -300,7 +300,7 @@
       <div class="hero-links">
         <a class="hero-link primary" href="./index.html">Back to Digest Archive</a>
       </div>
-      <p class="muted">Last generated: 2026-06-23 12:43 UTC</p>
+      <p class="muted">Last generated: 2026-06-23 12:46 UTC</p>
     </section>
 
     <section class="panel">
@@ -375,7 +375,13 @@
       </div>
 
       <label for="body-template">Email Body Template</label>
-      <textarea id="body-template" class="json-editor">&lt;h2&gt;Papers&lt;/h2&gt;
+      <p class="muted">Available placeholders: {date}, {subject}, {subject_prefix}, {preheader}, {editor_note}, {paper_days}, {funding_days}, {job_days}, {papers}, {funding}, {jobs}.</p>
+      <textarea id="body-template" class="json-editor">&lt;p style=&quot;color: #5b6470;&quot;&gt;{preheader}&lt;/p&gt;
+&lt;h1&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subject:&lt;/strong&gt; {subject}&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Editor note:&lt;/strong&gt; {editor_note}&lt;/p&gt;
+
+&lt;h2&gt;Papers&lt;/h2&gt;
 {papers}
 
 &lt;h2&gt;Funding&lt;/h2&gt;
@@ -564,7 +570,7 @@ hmw56@cam.ac.uk</textarea>
     "subject_prefix": "AI for Early Cancer Digest",
     "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
     "editor_note": "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.",
-    "body_template": "\u003ch2\u003ePapers\u003c/h2\u003e\n{papers}\n\n\u003ch2\u003eFunding\u003c/h2\u003e\n{funding}\n\n\u003ch2\u003eJobs\u003c/h2\u003e\n{jobs}\n\n\u003cp style=\"color: #a33d2f;\"\u003e\u003cstrong\u003eReply this email for any feedback!\u003c/strong\u003e\u003c/p\u003e",
+    "body_template": "\u003cp style=\"color: #5b6470;\"\u003e{preheader}\u003c/p\u003e\n\u003ch1\u003eAI for Early Cancer Digest - {date}\u003c/h1\u003e\n\u003cp\u003e\u003cstrong\u003eSubject:\u003c/strong\u003e {subject}\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eEditor note:\u003c/strong\u003e {editor_note}\u003c/p\u003e\n\n\u003ch2\u003ePapers\u003c/h2\u003e\n{papers}\n\n\u003ch2\u003eFunding\u003c/h2\u003e\n{funding}\n\n\u003ch2\u003eJobs\u003c/h2\u003e\n{jobs}\n\n\u003cp style=\"color: #a33d2f;\"\u003e\u003cstrong\u003eReply this email for any feedback!\u003c/strong\u003e\u003c/p\u003e",
     "empty_text": "\u003cp\u003e\u003cem\u003eNo shortlisted items yet.\u003c/em\u003e\u003c/p\u003e",
     "item_templates": {
       "paper": "\u003carticle\u003e\n\u003ch3\u003e{title}\u003c/h3\u003e\n\u003cp\u003e\u003cstrong\u003ePublished in:\u003c/strong\u003e {venue}\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eDOI / ID:\u003c/strong\u003e {doi_or_id}\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHTML:\u003c/strong\u003e \u003ca href=\"{html}\"\u003e{html}\u003c/a\u003e\u003c/p\u003e\n\u003c/article\u003e",
