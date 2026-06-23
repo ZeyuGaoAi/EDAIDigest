@@ -11,6 +11,7 @@ from digest.db import connect
 VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected")
 DEFAULT_LOOKBACK_DAYS = {"paper": 7, "funding": 30, "job": 30}
 DEFAULT_MIN_SCORES = {"paper": 3.5, "funding": 3.5, "job": 2.0}
+DEFAULT_MAX_ITEMS = {"paper": 5, "funding": 5, "job": 5}
 DEFAULT_EMAIL_TEMPLATE = {
     "subject_prefix": "AI for Early Cancer Digest",
     "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",
@@ -143,10 +144,11 @@ def generate_template_draft(
     lookback_days: dict[str, int] | None = None,
     min_scores: dict[str, float] | None = None,
     email_template: dict[str, str] | None = None,
-    per_category: int = 3,
+    max_items: dict[str, int] | None = None,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
     min_scores = min_scores or DEFAULT_MIN_SCORES
+    max_items = max_items or DEFAULT_MAX_ITEMS
     email_template = {**DEFAULT_EMAIL_TEMPLATE, **(email_template or {})}
     item_templates = {
         **DEFAULT_EMAIL_TEMPLATE["item_templates"],
@@ -175,7 +177,7 @@ def generate_template_draft(
         if not _passes_score(row["category"], row["score"], min_scores):
             continue
         bucket = grouped.setdefault(row["category"], [])
-        if len(bucket) < per_category:
+        if len(bucket) < max_items.get(row["category"], DEFAULT_MAX_ITEMS[row["category"]]):
             bucket.append(row)
             selected_ids.append(row["id"])
 

@@ -10,7 +10,7 @@ from urllib.parse import quote
 from digest.config import DB_PATH, DRAFTS_DIR, REVIEW_QUEUE_PATH, SETTINGS_PATH, SITE_DIR, SOURCES_PATH
 from digest.drafts import export_review_queue, generate_template_draft
 from digest.fetch import ingest
-from digest.settings import load_settings, lookback_days_from_settings, min_scores_from_settings
+from digest.settings import load_settings, lookback_days_from_settings, max_items_from_settings, min_scores_from_settings
 from digest.site import build_site
 
 
@@ -47,6 +47,7 @@ def _regenerate_digest() -> dict[str, Any]:
         lookback_days,
         min_scores,
         settings.get("email_template", {}),
+        max_items_from_settings(settings),
     )
     site_path = build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
     return {
@@ -68,6 +69,7 @@ def _latest_draft_path() -> Path:
             lookback_days_from_settings(settings),
             min_scores_from_settings(settings),
             settings.get("email_template", {}),
+            max_items_from_settings(settings),
         )
         drafts = sorted(DRAFTS_DIR.glob("*.md"), reverse=True)
     if not drafts:

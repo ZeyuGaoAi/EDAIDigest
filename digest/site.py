@@ -106,6 +106,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         lookback_days = escape(str(_settings_value(settings, ("cadence", category, "lookback_days"))))
         frequency = escape(str(_settings_value(settings, ("cadence", category, "frequency"))))
         min_score = escape(str(_settings_value(settings, ("cadence", category, "min_score"))))
+        max_items = escape(str(_settings_value(settings, ("cadence", category, "max_items"), 5)))
         scope = escape(str(_settings_value(settings, ("scope", category))))
         cards.append(
             f"""
@@ -117,6 +118,8 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               <input id="{category}-frequency" data-field="frequency" value="{frequency}">
               <label for="{category}-score">Minimum Score</label>
               <input id="{category}-score" data-field="min_score" type="number" min="0" step="0.1" value="{min_score}">
+              <label for="{category}-max-items">Max Items in Digest</label>
+              <input id="{category}-max-items" data-field="max_items" type="number" min="1" step="1" value="{max_items}">
               <label for="{category}-scope">Scope</label>
               <textarea id="{category}-scope" data-scope="{category}">{scope}</textarea>
             </div>

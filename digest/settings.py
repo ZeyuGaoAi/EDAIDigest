@@ -12,16 +12,19 @@ DEFAULT_SETTINGS: dict[str, Any] = {
             "lookback_days": 7,
             "frequency": "weekly",
             "min_score": 3.5,
+            "max_items": 5,
         },
         "funding": {
             "lookback_days": 30,
             "frequency": "monthly",
             "min_score": 3.5,
+            "max_items": 5,
         },
         "job": {
             "lookback_days": 30,
             "frequency": "monthly",
             "min_score": 2.0,
+            "max_items": 5,
         },
     },
     "scope": {
@@ -84,5 +87,13 @@ def min_scores_from_settings(settings: dict[str, Any]) -> dict[str, float]:
     cadence = settings.get("cadence", {})
     return {
         category: float(cadence.get(category, {}).get("min_score", DEFAULT_SETTINGS["cadence"][category]["min_score"]))
+        for category in ("paper", "funding", "job")
+    }
+
+
+def max_items_from_settings(settings: dict[str, Any]) -> dict[str, int]:
+    cadence = settings.get("cadence", {})
+    return {
+        category: int(cadence.get(category, {}).get("max_items", DEFAULT_SETTINGS["cadence"][category]["max_items"]))
         for category in ("paper", "funding", "job")
     }

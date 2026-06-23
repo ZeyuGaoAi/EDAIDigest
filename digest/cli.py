@@ -7,7 +7,7 @@ from digest.config import DB_PATH, DRAFTS_DIR, REVIEW_QUEUE_PATH, SETTINGS_PATH,
 from digest.db import init_db
 from digest.drafts import export_review_queue, generate_template_draft, set_status
 from digest.fetch import ingest
-from digest.settings import load_settings, lookback_days_from_settings, min_scores_from_settings
+from digest.settings import load_settings, lookback_days_from_settings, max_items_from_settings, min_scores_from_settings
 from digest.site import build_site
 
 
@@ -36,6 +36,14 @@ def min_score_config(args: argparse.Namespace, settings: dict) -> dict[str, floa
     if min_score is not None:
         config["paper"] = min_score
         config["funding"] = min_score
+    return config
+
+
+def max_items_config(args: argparse.Namespace, settings: dict) -> dict[str, int]:
+    config = max_items_from_settings(settings)
+    per_category = getattr(args, "per_category", None)
+    if per_category is not None:
+        config = {category: per_category for category in ("paper", "funding", "job")}
     return config
 
 
@@ -126,7 +134,7 @@ def main() -> int:
             lookback_config(args, settings),
             min_score_config(args, settings),
             settings.get("email_template", {}),
-            args.per_category,
+            max_items_config(args, settings),
         )
         print(path)
         return 0
@@ -157,7 +165,7 @@ def main() -> int:
             lookback_config(args, settings),
             min_score_config(args, settings),
             settings.get("email_template", {}),
-            args.per_category,
+            max_items_config(args, settings),
         )
         site_path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print("Ingest:")
