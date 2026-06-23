@@ -33,6 +33,11 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "trigger": "Manual trigger while the scope is still being refined.",
         "review": "AI drafts the digest; a human reviews before anything is sent.",
     },
+    "distribution": {
+        "sender_email": "zg323@cam.ac.uk",
+        "recipient_emails": ["zg323@cam.ac.uk"],
+        "email_subject": "AI for Early Cancer Digest | {date}",
+    },
     "email_template": {
         "subject_prefix": "AI for Early Cancer Digest",
         "preheader": "Selected updates on AI for early cancer detection, screening, funding, and jobs.",

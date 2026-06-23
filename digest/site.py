@@ -133,6 +133,10 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
     paper_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "paper"))))
     funding_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "funding"))))
     job_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "job"))))
+    sender_email = escape(str(_settings_value(settings, ("distribution", "sender_email"))))
+    recipient_emails = _settings_value(settings, ("distribution", "recipient_emails"), [])
+    recipient_text = escape("\n".join(recipient_emails if isinstance(recipient_emails, list) else []))
+    email_subject = escape(str(_settings_value(settings, ("distribution", "email_subject"))))
 
     return f"""
       <div class="config-grid">
@@ -181,9 +185,23 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       <label for="sources-json">Sources JSON</label>
       <textarea id="sources-json" class="json-editor">{_json_for_html(sources)}</textarea>
 
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Email Distribution</h3>
+          <label for="sender-email">Sender Email</label>
+          <input id="sender-email" value="{sender_email}">
+          <label for="recipient-emails">Recipient Emails</label>
+          <textarea id="recipient-emails">{recipient_text}</textarea>
+          <label for="email-subject">Email Subject</label>
+          <input id="email-subject" value="{email_subject}">
+        </div>
+      </div>
+
       <div class="button-row">
         <button id="save-settings" type="button">Save settings.json</button>
         <button id="save-sources" type="button">Save sources.json</button>
+        <button id="regenerate-digest" type="button">Regenerate Weekly Digest</button>
+        <button id="open-email-draft" type="button">Open Email Draft</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
@@ -224,6 +242,14 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               job: document.getElementById('job-item-template').value.trim(),
             }},
           }};
+          next.distribution = {{
+            sender_email: document.getElementById('sender-email').value.trim(),
+            recipient_emails: document.getElementById('recipient-emails').value
+              .split(/[\\n,;]/)
+              .map((email) => email.trim())
+              .filter(Boolean),
+            email_subject: document.getElementById('email-subject').value.trim(),
+          }};
           return next;
         }}
 
@@ -256,6 +282,11 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             document.getElementById('paper-item-template').value = itemTemplates.paper || '';
             document.getElementById('funding-item-template').value = itemTemplates.funding || '';
             document.getElementById('job-item-template').value = itemTemplates.job || '';
+          }}
+          if (draft.distribution) {{
+            document.getElementById('sender-email').value = draft.distribution.sender_email || '';
+            document.getElementById('recipient-emails').value = (draft.distribution.recipient_emails || []).join('\\n');
+            document.getElementById('email-subject').value = draft.distribution.email_subject || '';
           }}
         }}
 
@@ -324,6 +355,19 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           configStatus.textContent = `Downloaded ${{filename}}. Start python3 -m digest.cli serve-setup for automatic data/ writes.`;
         }}
 
+        async function postJson(endpoint, payload) {{
+          const response = await fetch(endpoint, {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json' }},
+            body: JSON.stringify(payload),
+          }});
+          const result = await response.json().catch(() => ({{ error: response.statusText }}));
+          if (!response.ok) {{
+            throw new Error(result.error || `HTTP ${{response.status}}`);
+          }}
+          return result;
+        }}
+
         document.getElementById('save-settings').addEventListener('click', async () => {{
           await saveJson('settings.json', collectSettings());
         }});
@@ -331,6 +375,32 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         document.getElementById('save-sources').addEventListener('click', async () => {{
           try {{
             await saveJson('sources.json', parseSources());
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('regenerate-digest').addEventListener('click', async () => {{
+          try {{
+            configStatus.textContent = 'Regenerating weekly digest...';
+            const result = await postJson('/api/regenerate', {{
+              settings: collectSettings(),
+              sources: parseSources(),
+            }});
+            configStatus.textContent = result.message;
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('open-email-draft').addEventListener('click', async () => {{
+          try {{
+            configStatus.textContent = 'Preparing email draft...';
+            const result = await postJson('/api/email-draft', {{
+              settings: collectSettings(),
+            }});
+            configStatus.textContent = result.message;
+            window.location.href = result.mailto;
           }} catch (error) {{
             configStatus.textContent = error.message;
           }}

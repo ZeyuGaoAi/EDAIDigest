@@ -299,9 +299,9 @@
       <div class="hero-links">
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
-      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">106</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
-      <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 452</span></div>
-      <p class="muted">Last generated: 2026-06-23 10:26 UTC</p>
+      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">108</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
+      <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 454</span></div>
+      <p class="muted">Last generated: 2026-06-23 10:49 UTC</p>
     </section>
 
     <section class="panel">
@@ -579,9 +579,23 @@ Link: {link}</textarea>
   }
 ]</textarea>
 
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>Email Distribution</h3>
+          <label for="sender-email">Sender Email</label>
+          <input id="sender-email" value="zg323@cam.ac.uk">
+          <label for="recipient-emails">Recipient Emails</label>
+          <textarea id="recipient-emails">zg323@cam.ac.uk</textarea>
+          <label for="email-subject">Email Subject</label>
+          <input id="email-subject" value="AI for Early Cancer Digest | {date}">
+        </div>
+      </div>
+
       <div class="button-row">
         <button id="save-settings" type="button">Save settings.json</button>
         <button id="save-sources" type="button">Save sources.json</button>
+        <button id="regenerate-digest" type="button">Regenerate Weekly Digest</button>
+        <button id="open-email-draft" type="button">Open Email Draft</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
@@ -612,6 +626,13 @@ Link: {link}</textarea>
   "workflow": {
     "trigger": "Manual trigger while the scope is still being refined.",
     "review": "AI drafts the digest; a human reviews before anything is sent."
+  },
+  "distribution": {
+    "sender_email": "zg323@cam.ac.uk",
+    "recipient_emails": [
+      "zg323@cam.ac.uk"
+    ],
+    "email_subject": "AI for Early Cancer Digest | {date}"
   },
   "email_template": {
     "subject_prefix": "AI for Early Cancer Digest",
@@ -661,6 +682,14 @@ Link: {link}</textarea>
               job: document.getElementById('job-item-template').value.trim(),
             },
           };
+          next.distribution = {
+            sender_email: document.getElementById('sender-email').value.trim(),
+            recipient_emails: document.getElementById('recipient-emails').value
+              .split(/[\n,;]/)
+              .map((email) => email.trim())
+              .filter(Boolean),
+            email_subject: document.getElementById('email-subject').value.trim(),
+          };
           return next;
         }
 
@@ -693,6 +722,11 @@ Link: {link}</textarea>
             document.getElementById('paper-item-template').value = itemTemplates.paper || '';
             document.getElementById('funding-item-template').value = itemTemplates.funding || '';
             document.getElementById('job-item-template').value = itemTemplates.job || '';
+          }
+          if (draft.distribution) {
+            document.getElementById('sender-email').value = draft.distribution.sender_email || '';
+            document.getElementById('recipient-emails').value = (draft.distribution.recipient_emails || []).join('\n');
+            document.getElementById('email-subject').value = draft.distribution.email_subject || '';
           }
         }
 
@@ -761,6 +795,19 @@ Link: {link}</textarea>
           configStatus.textContent = `Downloaded ${filename}. Start python3 -m digest.cli serve-setup for automatic data/ writes.`;
         }
 
+        async function postJson(endpoint, payload) {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json().catch(() => ({ error: response.statusText }));
+          if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+          }
+          return result;
+        }
+
         document.getElementById('save-settings').addEventListener('click', async () => {
           await saveJson('settings.json', collectSettings());
         });
@@ -768,6 +815,32 @@ Link: {link}</textarea>
         document.getElementById('save-sources').addEventListener('click', async () => {
           try {
             await saveJson('sources.json', parseSources());
+          } catch (error) {
+            configStatus.textContent = error.message;
+          }
+        });
+
+        document.getElementById('regenerate-digest').addEventListener('click', async () => {
+          try {
+            configStatus.textContent = 'Regenerating weekly digest...';
+            const result = await postJson('/api/regenerate', {
+              settings: collectSettings(),
+              sources: parseSources(),
+            });
+            configStatus.textContent = result.message;
+          } catch (error) {
+            configStatus.textContent = error.message;
+          }
+        });
+
+        document.getElementById('open-email-draft').addEventListener('click', async () => {
+          try {
+            configStatus.textContent = 'Preparing email draft...';
+            const result = await postJson('/api/email-draft', {
+              settings: collectSettings(),
+            });
+            configStatus.textContent = result.message;
+            window.location.href = result.mailto;
           } catch (error) {
             configStatus.textContent = error.message;
           }
