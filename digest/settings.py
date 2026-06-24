@@ -42,11 +42,11 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "email_subject": "AI for Early Cancer Digest | {date}",
     },
     "email_template": {
-        "body_template": '<p style="color: #5b6470;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1>AI for Early Cancer Digest - {date}</h1>\n<p><strong>Subject:</strong> {subject}</p>\n<p><strong>Editor note:</strong> Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.</p>\n\n<h2>Papers</h2>\n{papers}\n\n<h2>Funding</h2>\n{funding}\n\n<h2>Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f;"><strong>Reply this email for any feedback!</strong></p>',
+        "body_template": '<p style="color: #5b6470; margin: 0 0 8px;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - {date}</h1>\n<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days</p>\n\n<h2 style="margin: 24px 0 12px;">Papers</h2>\n{papers}\n\n<h2 style="margin: 24px 0 12px;">Funding</h2>\n{funding}\n\n<h2 style="margin: 24px 0 12px;">Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>',
         "item_templates": {
-            "paper": '<article>\n<h3>{title}</h3>\n<p><strong>Published in:</strong> {venue}</p>\n<p><strong>DOI / ID:</strong> {doi_or_id}</p>\n<p><strong>HTML:</strong> <a href="{html}">{html}</a></p>\n</article>',
-            "funding": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',
-            "job": '<article>\n<h3>{title}</h3>\n<p><strong>Source:</strong> {source}</p>\n<p><strong>Link:</strong> <a href="{link}">{link}</a></p>\n</article>',
+            "paper": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{html}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: {venue} · DOI / ID: {doi_or_id} · <a href="{html}">HTML</a></span>\n</div>',
+            "funding": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View opportunity</a></span>\n</div>',
+            "job": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View role</a></span>\n</div>',
         },
     },
 }

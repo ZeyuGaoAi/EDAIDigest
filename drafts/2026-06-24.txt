@@ -1,0 +1,37 @@
+Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+AI for Early Cancer Digest - 2026-06-24
+
+Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+
+Papers
+
+• Computational Methods and Challenges in Cell-Free DNA Analysis for Multi-Cancer Early Detection
+
+Published in: arXiv · DOI / ID: arXiv:2606.20174v1 · HTML
+
+• SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis
+
+Published in: arXiv · DOI / ID: arXiv:2606.22144v1 · HTML
+
+Funding
+
+• Rewiring the life sciences: why foundations come first for AI in science
+
+Source: Cancer Research UK News · View opportunity
+
+• Data science: new data strategy hails exciting future
+
+Source: Cancer Research UK News · View opportunity
+
+Jobs
+
+• PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+• Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer Prevention
+
+Source: University of Cambridge Research Jobs · View role
+
+Reply this email for any feedback!

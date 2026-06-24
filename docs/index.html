@@ -303,7 +303,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">93</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">108</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">270</span></div></div>
       <div class="status-row"><span class="chip">drafted: 17</span><span class="chip">new: 454</span></div>
-      <p class="muted">Last generated: 2026-06-23 12:57 UTC</p>
+      <p class="muted">Last generated: 2026-06-24 09:57 UTC</p>
     </section>
 
     <section class="panel">
@@ -356,43 +356,38 @@
       <h2>Email Body Template</h2>
       <p class="muted">Current draft structure for reviewer-facing email generation.</p>
       <pre class="template-block">Email body template:
-&lt;p style=&quot;color: #5b6470;&quot;&gt;Selected updates on AI for early cancer detection, screening, funding, and jobs.&lt;/p&gt;
-&lt;h1&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
-&lt;p&gt;&lt;strong&gt;Subject:&lt;/strong&gt; {subject}&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Editor note:&lt;/strong&gt; Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days.&lt;/p&gt;
+&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;Selected updates on AI for early cancer detection, screening, funding, and jobs.&lt;/p&gt;
+&lt;h1 style=&quot;margin: 0 0 8px;&quot;&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
+&lt;p style=&quot;color: #5b6470; margin: 0 0 24px;&quot;&gt;Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days&lt;/p&gt;
 
-&lt;h2&gt;Papers&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Papers&lt;/h2&gt;
 {papers}
 
-&lt;h2&gt;Funding&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Funding&lt;/h2&gt;
 {funding}
 
-&lt;h2&gt;Jobs&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Jobs&lt;/h2&gt;
 {jobs}
 
-&lt;p style=&quot;color: #a33d2f;&quot;&gt;&lt;strong&gt;Reply this email for any feedback!&lt;/strong&gt;&lt;/p&gt;
+&lt;p style=&quot;color: #a33d2f; margin-top: 28px;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
 
 Paper item template:
-&lt;article&gt;
-&lt;h3&gt;{title}&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Published in:&lt;/strong&gt; {venue}&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;DOI / ID:&lt;/strong&gt; {doi_or_id}&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;HTML:&lt;/strong&gt; &lt;a href=&quot;{html}&quot;&gt;{html}&lt;/a&gt;&lt;/p&gt;
-&lt;/article&gt;
+&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
+&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{html}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Published in: {venue} · DOI / ID: {doi_or_id} · &lt;a href=&quot;{html}&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
 
 Funding item template:
-&lt;article&gt;
-&lt;h3&gt;{title}&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Source:&lt;/strong&gt; {source}&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Link:&lt;/strong&gt; &lt;a href=&quot;{link}&quot;&gt;{link}&lt;/a&gt;&lt;/p&gt;
-&lt;/article&gt;
+&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
+&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
 
 Job item template:
-&lt;article&gt;
-&lt;h3&gt;{title}&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Source:&lt;/strong&gt; {source}&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Link:&lt;/strong&gt; &lt;a href=&quot;{link}&quot;&gt;{link}&lt;/a&gt;&lt;/p&gt;
-&lt;/article&gt;</pre>
+&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
+&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;</pre>
     </section>
 
     <section class="panel">
@@ -473,6 +468,51 @@ Job item template:
       <p class="muted">Newest draft first. The most recent issue opens by default.</p>
       <div class="draft-list">
         <details class="draft-card" open>
+          <summary>
+            <span>2026-06-24</span>
+            <span>AI for Early Cancer Digest - 2026-06-24</span>
+          </summary>
+          <div class="draft-body"><p style="color: #5b6470; margin: 0 0 8px;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>
+<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - 2026-06-24</h1>
+<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days</p>
+
+<h2 style="margin: 24px 0 12px;">Papers</h2>
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://arxiv.org/abs/2606.20174v1" style="color: #16212b;">Computational Methods and Challenges in Cell-Free DNA Analysis for Multi-Cancer Early Detection</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: arXiv · DOI / ID: arXiv:2606.20174v1 · <a href="https://arxiv.org/abs/2606.20174v1">HTML</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://arxiv.org/abs/2606.22144v1" style="color: #16212b;">SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: arXiv · DOI / ID: arXiv:2606.22144v1 · <a href="https://arxiv.org/abs/2606.22144v1">HTML</a></span>
+</div>
+
+<h2 style="margin: 24px 0 12px;">Funding</h2>
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/" style="color: #16212b;">Rewiring the life sciences: why foundations come first for AI in science</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: Cancer Research UK News · <a href="https://news.cancerresearchuk.org/2026/06/22/rewiring-the-life-sciences-why-foundations-come-first-for-ai-in-science/">View opportunity</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/" style="color: #16212b;">Data science: new data strategy hails exciting future</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: Cancer Research UK News · <a href="https://news.cancerresearchuk.org/2026/06/22/data-science-new-data-strategy-hails-exciting-future/">View opportunity</a></span>
+</div>
+
+<h2 style="margin: 24px 0 12px;">Jobs</h2>
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" style="color: #16212b;">PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DRY050/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data">View role</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034" style="color: #16212b;">Research Assistant / Research Associate - Single-Cell Genomics of Breast Cancer Prevention</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: University of Cambridge Research Jobs · <a href="https://www.cam.ac.uk/jobs/research-assistant-research-associate-single-cell-genomics-of-breast-cancer-prevention-pl50034">View role</a></span>
+</div>
+
+<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p></div>
+        </details>
+
+        <details class="draft-card" >
           <summary>
             <span>2026-06-23</span>
             <span>AI for Early Cancer Digest - 2026-06-23</span>
