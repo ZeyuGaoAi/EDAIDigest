@@ -61,14 +61,20 @@ def _json_for_script(payload) -> str:
 def _source_detail(source: dict) -> str:
     kind = source.get("kind", "rss")
     if kind == "pubmed":
-        return f"PubMed query, retmax {source.get('retmax', 20)}."
-    if kind == "biorxiv_api":
-        return f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
-    if kind == "html_links":
-        return f"HTML link scraper: {source.get('url', 'configured URL')}."
-    if kind == "manual":
-        return f"Manual file: {source.get('path', 'configured path')}."
-    return f"RSS/feed source: {source.get('url', 'configured URL')}."
+        detail = f"PubMed query, retmax {source.get('retmax', 20)}."
+    elif kind == "biorxiv_api":
+        detail = f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
+    elif kind == "html_links":
+        detail = f"HTML link scraper: {source.get('url', 'configured URL')}."
+    elif kind == "manual":
+        detail = f"Manual file: {source.get('path', 'configured path')}."
+    else:
+        detail = f"RSS/feed source: {source.get('url', 'configured URL')}."
+    if "priority" in source:
+        detail += f" Digest priority {source['priority']}."
+    if "max_digest_items" in source:
+        detail += f" Digest cap {source['max_digest_items']}."
+    return detail
 
 
 def _sources_html(sources: list[dict], category: str) -> str:

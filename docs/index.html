@@ -301,9 +301,9 @@
         <a class="hero-link primary" href="./setup.html">Open Setup</a>
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
-      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">120</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">148</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">354</span></div></div>
-      <div class="status-row"><span class="chip">drafted: 24</span><span class="chip">expired: 101</span><span class="chip">new: 497</span></div>
-      <p class="muted">Last generated: 2026-07-10 12:52 UTC</p>
+      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">120</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">148</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">448</span></div></div>
+      <div class="status-row"><span class="chip">drafted: 26</span><span class="chip">expired: 101</span><span class="chip">new: 589</span></div>
+      <p class="muted">Last generated: 2026-07-10 13:05 UTC</p>
     </section>
 
     <section class="panel">
@@ -396,28 +396,23 @@ Job item template:
       <p class="muted">Current paper monitoring combines preprint servers, published-paper databases, and a targeted top-journal watchlist.</p>
       <div class="source-list">
             <div class="source-item">
-              <strong>arXiv - Cancer Screening ML</strong>
-              RSS/feed source: https://export.arxiv.org/api/query?search_query=all:(cancer%20screening)%20AND%20all:(machine%20learning%20OR%20artificial%20intelligence)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending.
+              <strong>arXiv - AI/ML Early Cancer Preprints</strong>
+              RSS/feed source: https://export.arxiv.org/api/query?search_query=%28cat%3Acs.AI%20OR%20cat%3Acs.LG%20OR%20cat%3Acs.CV%20OR%20cat%3Astat.ML%29%20AND%20all%3A%28cancer%20OR%20oncology%20OR%20tumour%20OR%20tumor%29%20AND%20all%3A%28%22early%20detection%22%20OR%20screening%20OR%20%22early%20diagnosis%22%20OR%20%22risk%20stratification%22%29&amp;start=0&amp;max_results=100&amp;sortBy=submittedDate&amp;sortOrder=descending. Digest priority 2. Digest cap 2.
             </div>
 
             <div class="source-item">
               <strong>PubMed - Early Cancer AI</strong>
-              PubMed query, retmax 20.
+              PubMed query, retmax 20. Digest priority 1.
             </div>
 
             <div class="source-item">
-              <strong>PubMed - Top Journals</strong>
-              PubMed query, retmax 30.
+              <strong>PubMed - Selected High-Impact Journals</strong>
+              PubMed query, retmax 30. Digest priority 0.
             </div>
 
             <div class="source-item">
-              <strong>medRxiv - Oncology AI</strong>
-              medrxiv API, recent 14 days.
-            </div>
-
-            <div class="source-item">
-              <strong>arXiv - Liquid Biopsy AI</strong>
-              RSS/feed source: https://export.arxiv.org/api/query?search_query=all:(liquid%20biopsy)%20AND%20all:(machine%20learning%20OR%20deep%20learning)&amp;start=0&amp;max_results=20&amp;sortBy=submittedDate&amp;sortOrder=descending.
+              <strong>medRxiv - Oncology AI Preprints</strong>
+              medrxiv API, recent 14 days. Digest priority 3. Digest cap 2.
             </div>
             </div>
     </section>
@@ -479,18 +474,28 @@ Job item template:
 
 <h2 style="margin: 24px 0 12px;">Papers</h2>
 <div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://pubmed.ncbi.nlm.nih.gov/42396659/" style="color: #16212b;">Evolving role of biomarkers beyond prostate‑specific antigen in refining prostate cancer screening: From blood‑based tests to urinary and genetic markers (Review).</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · <a href="https://pubmed.ncbi.nlm.nih.gov/42396659/">HTML</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://arxiv.org/abs/2606.28252v1" style="color: #16212b;">Parameter-Efficient Continuous-Variable Photonic Quantum Neural Networks for Edge Quantum AI: Demonstration in Oral Cancer Detection</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: arXiv (preprint) · DOI / ID: arXiv:2606.28252v1 · <a href="https://arxiv.org/abs/2606.28252v1">HTML</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://arxiv.org/abs/2607.03839v1" style="color: #16212b;">Adversarial LassoNet: Robust Feature Selection via Stability-Driven Sparse Learning</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: arXiv (preprint) · DOI / ID: arXiv:2607.03839v1 · <a href="https://arxiv.org/abs/2607.03839v1">HTML</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
 <span style="color: #a33d2f;">•</span> <a href="https://www.medrxiv.org/content/10.64898/2026.07.02.26357095v1" style="color: #16212b;">Integrative analysis of cfDNA features from ultra-low coverage whole genome sequencing enables robust detection of ovarian cancer</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: medRxiv · DOI / ID: 10.64898/2026.07.02.26357095 · <a href="https://www.medrxiv.org/content/10.64898/2026.07.02.26357095v1">HTML</a></span>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.07.02.26357095 · <a href="https://www.medrxiv.org/content/10.64898/2026.07.02.26357095v1">HTML</a></span>
 </div>
 
 <div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
 <span style="color: #a33d2f;">•</span> <a href="https://www.medrxiv.org/content/10.64898/2026.06.26.26356700v1" style="color: #16212b;">The urinary-metabolite-based lung cancer index (uLCI): an interpretable machine-learning risk model for early-stage disease</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: medRxiv · DOI / ID: 10.64898/2026.06.26.26356700 · <a href="https://www.medrxiv.org/content/10.64898/2026.06.26.26356700v1">HTML</a></span>
-</div>
-
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://pubmed.ncbi.nlm.nih.gov/42396659/" style="color: #16212b;">Evolving role of biomarkers beyond prostate‑specific antigen in refining prostate cancer screening: From blood‑based tests to urinary and genetic markers (Review).</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · <a href="https://pubmed.ncbi.nlm.nih.gov/42396659/">HTML</a></span>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.06.26.26356700 · <a href="https://www.medrxiv.org/content/10.64898/2026.06.26.26356700v1">HTML</a></span>
 </div>
 
 <h2 style="margin: 24px 0 12px;">Funding</h2>
@@ -500,7 +505,7 @@ Job item template:
 <p><em>No shortlisted items yet.</em></p>
 
 <p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>
-<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: Papers: arXiv - Cancer Screening ML, PubMed - Early Cancer AI, PubMed - Top Journals, medRxiv - Oncology AI, arXiv - Liquid Biopsy AI | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist</em></p></div>
+<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist</em></p></div>
         </details>
 
         <details class="draft-card" >

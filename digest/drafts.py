@@ -183,6 +183,36 @@ def _source_attribution(source_config_path: Path | None) -> str:
     ) or "Source configuration unavailable"
 
 
+def _source_selection_rules(source_config_path: Path | None) -> dict[str, dict[str, tuple[int, int | None]]]:
+    """Return active source names plus optional priority and per-source digest caps."""
+    if source_config_path is None or not source_config_path.exists():
+        return {}
+    try:
+        payload = json.loads(source_config_path.read_text())
+    except json.JSONDecodeError:
+        return {}
+
+    rules: dict[str, dict[str, tuple[int, int | None]]] = {}
+    for source in payload:
+        if not isinstance(source, dict):
+            continue
+        category = source.get("category")
+        name = source.get("name")
+        if not isinstance(category, str) or not isinstance(name, str) or not name:
+            continue
+        try:
+            priority = int(source.get("priority", 100))
+        except (TypeError, ValueError):
+            priority = 100
+        try:
+            cap_value = source.get("max_digest_items")
+            cap = int(cap_value) if cap_value is not None else None
+        except (TypeError, ValueError):
+            cap = None
+        rules.setdefault(category, {})[name] = (priority, cap if cap and cap > 0 else None)
+    return rules
+
+
 def export_review_queue(
     db_path: Path,
     output_path: Path,
@@ -265,6 +295,7 @@ def generate_template_draft(
     draft_path = drafts_dir / f"{date_slug}.html"
     text_path = drafts_dir / f"{date_slug}.txt"
     drafts_dir.mkdir(parents=True, exist_ok=True)
+    source_rules = _source_selection_rules(source_config_path)
 
     selected_ids: list[int] = []
     with connect(db_path) as conn:
@@ -279,13 +310,34 @@ def generate_template_draft(
             category_params,
         ).fetchall()
 
-    grouped = {"paper": [], "funding": [], "job": []}
+    candidates = {"paper": [], "funding": [], "job": []}
     for row in rows:
         if not _passes_score(row["category"], row["score"], min_scores):
             continue
-        bucket = grouped.setdefault(row["category"], [])
-        if len(bucket) < max_items.get(row["category"], DEFAULT_MAX_ITEMS[row["category"]]):
-            bucket.append(row)
+        category_rules = source_rules.get(row["category"], {})
+        # Configuration defines the active sources, so retired feeds cannot
+        # resurface from historical rows in the database.
+        if category_rules and row["source"] not in category_rules:
+            continue
+        candidates.setdefault(row["category"], []).append(row)
+
+    grouped = {"paper": [], "funding": [], "job": []}
+    for category, category_candidates in candidates.items():
+        category_rules = source_rules.get(category, {})
+        # The database query already orders equal-priority candidates by score
+        # and recency. Stable sorting adds source precedence without losing it.
+        category_candidates.sort(
+            key=lambda row: category_rules.get(row["source"], (100, None))[0]
+        )
+        source_counts: dict[str, int] = {}
+        for row in category_candidates:
+            if len(grouped[category]) >= max_items.get(category, DEFAULT_MAX_ITEMS[category]):
+                break
+            _, source_cap = category_rules.get(row["source"], (100, None))
+            if source_cap is not None and source_counts.get(row["source"], 0) >= source_cap:
+                continue
+            grouped[category].append(row)
+            source_counts[row["source"]] = source_counts.get(row["source"], 0) + 1
             selected_ids.append(row["id"])
 
     legacy_values = {

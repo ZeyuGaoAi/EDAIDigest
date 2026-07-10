@@ -35,6 +35,8 @@ class Source:
     retmax: int = 20
     sort: str = "pub date"
     max_items: int = 20
+    priority: int = 100
+    max_digest_items: int | None = None
     kind: str = "rss"
 
 
@@ -91,9 +93,9 @@ def _request_text(url: str) -> str:
 
 def _default_venue(source: Source, url: str | None) -> str | None:
     if url and "arxiv.org" in url:
-        return "arXiv"
+        return "arXiv (preprint)"
     if url and "medrxiv.org" in url:
-        return "medRxiv"
+        return "medRxiv (preprint)"
     if source.kind == "pubmed":
         return "PubMed"
     return None
@@ -303,7 +305,7 @@ def fetch_biorxiv_api(source: Source) -> list[dict[str, Any]]:
                 "title": title,
                 "summary": _text_or_none(entry.get("abstract")),
                 "url": f"https://www.medrxiv.org/content/{doi}v{entry.get('version', '1')}",
-                "venue": "medRxiv",
+                "venue": "medRxiv (preprint)",
                 "published_at": _text_or_none(entry.get("date")),
             }
         )
