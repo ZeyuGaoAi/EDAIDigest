@@ -233,7 +233,6 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
 
 
 def serve_setup(host: str = "127.0.0.1", port: int = 8765) -> None:
-    build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
     server = ThreadingHTTPServer((host, port), SetupRequestHandler)
     print(f"Serving setup editor at http://{host}:{port}/")
     print("Press Ctrl-C to stop.")
