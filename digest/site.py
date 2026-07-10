@@ -153,7 +153,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       </div>
 
       <label for="body-template">Email Body Template</label>
-      <p class="muted">Available placeholders: {{date}}, {{subject}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}.</p>
+      <p class="muted">Available placeholders: {{date}}, {{subject}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}, {{sources}}.</p>
       <textarea id="body-template" class="json-editor">{body_template}</textarea>
 
       <div class="config-grid">

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from html import escape, unescape
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 import re
 
@@ -19,7 +20,7 @@ DEFAULT_SUBJECT_PREFIX = "AI for Early Cancer Digest"
 DEFAULT_PREHEADER = "Selected updates on AI for early cancer detection, screening, funding, and jobs."
 DEFAULT_EDITOR_NOTE = "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days."
 DEFAULT_EMAIL_TEMPLATE = {
-    "body_template": '<p style="color: #5b6470; margin: 0 0 8px;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - {date}</h1>\n<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days</p>\n\n<h2 style="margin: 24px 0 12px;">Papers</h2>\n{papers}\n\n<h2 style="margin: 24px 0 12px;">Funding</h2>\n{funding}\n\n<h2 style="margin: 24px 0 12px;">Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>',
+    "body_template": '<p style="color: #5b6470; margin: 0 0 8px;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>\n<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - {date}</h1>\n<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days</p>\n\n<h2 style="margin: 24px 0 12px;">Papers</h2>\n{papers}\n\n<h2 style="margin: 24px 0 12px;">Funding</h2>\n{funding}\n\n<h2 style="margin: 24px 0 12px;">Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>\n<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: {sources}</em></p>',
     "item_templates": {
         "paper": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{html}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: {venue} · DOI / ID: {doi_or_id} · <a href="{html}">HTML</a></span>\n</div>',
         "funding": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View opportunity</a></span>\n</div>',
@@ -162,6 +163,26 @@ def _paper_identifier(source: str, url: str) -> str:
     return source
 
 
+def _source_attribution(source_config_path: Path | None) -> str:
+    if source_config_path is None or not source_config_path.exists():
+        return "Source configuration unavailable"
+    payload = json.loads(source_config_path.read_text())
+    grouped = {"paper": [], "funding": [], "job": []}
+    for source in payload:
+        if not isinstance(source, dict):
+            continue
+        category = source.get("category")
+        name = source.get("name")
+        if category in grouped and isinstance(name, str) and name:
+            grouped[category].append(name)
+    labels = {"paper": "Papers", "funding": "Funding", "job": "Jobs"}
+    return " | ".join(
+        f"{labels[category]}: {', '.join(names)}"
+        for category, names in grouped.items()
+        if names
+    ) or "Source configuration unavailable"
+
+
 def export_review_queue(
     db_path: Path,
     output_path: Path,
@@ -229,6 +250,7 @@ def generate_template_draft(
     email_template: dict[str, str] | None = None,
     max_items: dict[str, int] | None = None,
     email_subject_template: str | None = None,
+    source_config_path: Path | None = None,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
     min_scores = min_scores or DEFAULT_MIN_SCORES
@@ -312,6 +334,7 @@ def generate_template_draft(
                 "papers": rendered_sections["paper"],
                 "funding": rendered_sections["funding"],
                 "jobs": rendered_sections["job"],
+                "sources": escape(_source_attribution(source_config_path)),
             },
         )
     )

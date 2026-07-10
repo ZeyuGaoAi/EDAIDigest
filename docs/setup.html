@@ -300,7 +300,7 @@
       <div class="hero-links">
         <a class="hero-link primary" href="./index.html">Back to Digest Archive</a>
       </div>
-      <p class="muted">Last generated: 2026-07-10 12:41 UTC</p>
+      <p class="muted">Last generated: 2026-07-10 12:52 UTC</p>
     </section>
 
     <section class="panel">
@@ -364,7 +364,7 @@
       </div>
 
       <label for="body-template">Email Body Template</label>
-      <p class="muted">Available placeholders: {date}, {subject}, {paper_days}, {funding_days}, {job_days}, {papers}, {funding}, {jobs}.</p>
+      <p class="muted">Available placeholders: {date}, {subject}, {paper_days}, {funding_days}, {job_days}, {papers}, {funding}, {jobs}, {sources}.</p>
       <textarea id="body-template" class="json-editor">&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;Selected updates on AI for early cancer detection, screening, funding, and jobs.&lt;/p&gt;
 &lt;h1 style=&quot;margin: 0 0 8px;&quot;&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
 &lt;p style=&quot;color: #5b6470; margin: 0 0 24px;&quot;&gt;Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days&lt;/p&gt;
@@ -378,7 +378,8 @@
 &lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Jobs&lt;/h2&gt;
 {jobs}
 
-&lt;p style=&quot;color: #a33d2f; margin-top: 28px;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;</textarea>
+&lt;p style=&quot;color: #a33d2f; margin-top: 28px;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
+&lt;p style=&quot;color: #5b6470; font-size: 12px; margin-top: 18px;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;</textarea>
 
       <div class="config-grid">
         <div class="config-card">
@@ -551,7 +552,7 @@ hmw56@cam.ac.uk</textarea>
     "email_subject": "AI for Early Cancer Digest | {date}"
   },
   "email_template": {
-    "body_template": "\u003cp style=\"color: #5b6470; margin: 0 0 8px;\"\u003eSelected updates on AI for early cancer detection, screening, funding, and jobs.\u003c/p\u003e\n\u003ch1 style=\"margin: 0 0 8px;\"\u003eAI for Early Cancer Digest - {date}\u003c/h1\u003e\n\u003cp style=\"color: #5b6470; margin: 0 0 24px;\"\u003eDraft for review \u00b7 Papers cover the past {paper_days} days \u00b7 Funding and jobs cover the past {funding_days} days\u003c/p\u003e\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003ePapers\u003c/h2\u003e\n{papers}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eFunding\u003c/h2\u003e\n{funding}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eJobs\u003c/h2\u003e\n{jobs}\n\n\u003cp style=\"color: #a33d2f; margin-top: 28px;\"\u003eReply this email for any feedback!\u003c/p\u003e",
+    "body_template": "\u003cp style=\"color: #5b6470; margin: 0 0 8px;\"\u003eSelected updates on AI for early cancer detection, screening, funding, and jobs.\u003c/p\u003e\n\u003ch1 style=\"margin: 0 0 8px;\"\u003eAI for Early Cancer Digest - {date}\u003c/h1\u003e\n\u003cp style=\"color: #5b6470; margin: 0 0 24px;\"\u003eDraft for review \u00b7 Papers cover the past {paper_days} days \u00b7 Funding and jobs cover the past {funding_days} days\u003c/p\u003e\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003ePapers\u003c/h2\u003e\n{papers}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eFunding\u003c/h2\u003e\n{funding}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eJobs\u003c/h2\u003e\n{jobs}\n\n\u003cp style=\"color: #a33d2f; margin-top: 28px;\"\u003eReply this email for any feedback!\u003c/p\u003e\n\u003cp style=\"color: #5b6470; font-size: 12px; margin-top: 18px;\"\u003e\u003cem\u003eSources monitored: {sources}\u003c/em\u003e\u003c/p\u003e",
     "item_templates": {
       "paper": "\u003cdiv style=\"margin: 0 0 16px; padding-left: 18px; text-indent: -18px;\"\u003e\n\u003cspan style=\"color: #a33d2f;\"\u003e\u2022\u003c/span\u003e \u003ca href=\"{html}\" style=\"color: #16212b;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;\"\u003ePublished in: {venue} \u00b7 DOI / ID: {doi_or_id} \u00b7 \u003ca href=\"{html}\"\u003eHTML\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",
       "funding": "\u003cdiv style=\"margin: 0 0 16px; padding-left: 18px; text-indent: -18px;\"\u003e\n\u003cspan style=\"color: #a33d2f;\"\u003e\u2022\u003c/span\u003e \u003ca href=\"{link}\" style=\"color: #16212b;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;\"\u003eSource: {source} \u00b7 \u003ca href=\"{link}\"\u003eView opportunity\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",

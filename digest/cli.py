@@ -65,6 +65,7 @@ def build_parser() -> argparse.ArgumentParser:
     draft_parser = subparsers.add_parser("generate-draft")
     draft_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
     add_settings_arg(draft_parser)
+    draft_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
     add_lookback_args(draft_parser)
     draft_parser.add_argument("--per-category", type=int)
 
@@ -139,6 +140,7 @@ def main() -> int:
             settings.get("email_template", {}),
             max_items_config(args, settings),
             settings.get("distribution", {}).get("email_subject"),
+            args.sources,
         )
         print(path)
         return 0
@@ -171,6 +173,7 @@ def main() -> int:
             settings.get("email_template", {}),
             max_items_config(args, settings),
             settings.get("distribution", {}).get("email_subject"),
+            args.sources,
         )
         site_path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print("Ingest:")

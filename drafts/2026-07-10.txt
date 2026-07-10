@@ -27,3 +27,5 @@ Jobs
 No shortlisted items yet.
 
 Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - Cancer Screening ML, PubMed - Early Cancer AI, PubMed - Top Journals, medRxiv - Oncology AI, arXiv - Liquid Biopsy AI | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist
