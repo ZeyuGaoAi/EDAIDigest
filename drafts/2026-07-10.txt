@@ -14,10 +14,6 @@ Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · HTML
 
 Published in: arXiv (preprint) · DOI / ID: arXiv:2606.28252v1 · HTML
 
-• Adversarial LassoNet: Robust Feature Selection via Stability-Driven Sparse Learning
-
-Published in: arXiv (preprint) · DOI / ID: arXiv:2607.03839v1 · HTML
-
 • Integrative analysis of cfDNA features from ultra-low coverage whole genome sequencing enables robust detection of ovarian cancer
 
 Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.07.02.26357095 · HTML
