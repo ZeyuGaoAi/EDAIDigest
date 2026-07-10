@@ -10,10 +10,6 @@ Papers
 
 Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · HTML
 
-• Parameter-Efficient Continuous-Variable Photonic Quantum Neural Networks for Edge Quantum AI: Demonstration in Oral Cancer Detection
-
-Published in: arXiv (preprint) · DOI / ID: arXiv:2606.28252v1 · HTML
-
 • Integrative analysis of cfDNA features from ultra-low coverage whole genome sequencing enables robust detection of ovarian cancer
 
 Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.07.02.26357095 · HTML
@@ -21,6 +17,10 @@ Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.07.02.26357095 · HT
 • The urinary-metabolite-based lung cancer index (uLCI): an interpretable machine-learning risk model for early-stage disease
 
 Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.06.26.26356700 · HTML
+
+• Parameter-Efficient Continuous-Variable Photonic Quantum Neural Networks for Edge Quantum AI: Demonstration in Oral Cancer Detection
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2606.28252v1 · HTML
 
 Funding
 

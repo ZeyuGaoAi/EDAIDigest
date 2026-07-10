@@ -67,6 +67,10 @@ JOB_DOMAIN_TERMS = (
     "health informatics",
 )
 
+# A paper is only in scope when early cancer detection is its main problem,
+# rather than an incidental dataset used to evaluate a generic ML method.
+PAPER_FOCUS_SUMMARY_CHARS = 700
+
 
 def _hits(text: str, keywords: Iterable[str]) -> int:
     return sum(
@@ -74,6 +78,12 @@ def _hits(text: str, keywords: Iterable[str]) -> int:
         for keyword in keywords
         if re.search(rf"(?<!\w){re.escape(keyword)}(?!\w)", text, re.IGNORECASE)
     )
+
+
+def _has_primary_paper_focus(title: str, summary: str | None) -> bool:
+    """Require cancer screening/early-detection context before benchmark details."""
+    focus_text = f"{title}\n{(summary or '')[:PAPER_FOCUS_SUMMARY_CHARS]}"
+    return _hits(focus_text, CANCER_TERMS) > 0 and _hits(focus_text, EARLY_TERMS) > 0
 
 
 def score_relevance(category: str, title: str, summary: str | None) -> float:
@@ -87,7 +97,11 @@ def score_relevance(category: str, title: str, summary: str | None) -> float:
 
     # The digest is intentionally narrow. Returning no item is better than
     # presenting generic cancer news, jobs, or treatment research as relevant.
-    if category == "paper" and (not all((early_hits, cancer_hits, ai_hits)) or treatment_hits):
+    if category == "paper" and (
+        not all((early_hits, cancer_hits, ai_hits))
+        or not _has_primary_paper_focus(title, summary)
+        or treatment_hits
+    ):
         return 0.0
     if category == "funding" and (cancer_hits == 0 or funding_hits == 0 or (early_hits == 0 and ai_hits == 0)):
         return 0.0

@@ -4,8 +4,7 @@
     "category": "paper",
     "kind": "rss",
     "url": "https://export.arxiv.org/api/query?search_query=%28cat%3Acs.AI%20OR%20cat%3Acs.LG%20OR%20cat%3Acs.CV%20OR%20cat%3Astat.ML%29%20AND%20all%3A%28cancer%20OR%20oncology%20OR%20tumour%20OR%20tumor%29%20AND%20all%3A%28%22early%20detection%22%20OR%20screening%20OR%20%22early%20diagnosis%22%20OR%20%22risk%20stratification%22%29&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending",
-    "priority": 2,
-    "max_digest_items": 2
+    "priority": 2
   },
   {
     "name": "PubMed - Early Cancer AI",
@@ -33,8 +32,7 @@
     "recent_days": 14,
     "api_category": "oncology",
     "max_items": 50,
-    "priority": 3,
-    "max_digest_items": 2
+    "priority": 2
   },
   {
     "name": "Cancer Research UK News",
