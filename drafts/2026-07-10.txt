@@ -2,13 +2,21 @@ Selected updates on AI for early cancer detection, screening, funding, and jobs.
 
 AI for Early Cancer Digest - 2026-07-10
 
-Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+Draft for review · Papers cover the past 14 days · Funding and jobs cover the past 30 days
 
 Papers
 
 • Integrative analysis of cfDNA features from ultra-low coverage whole genome sequencing enables robust detection of ovarian cancer
 
 Published in: medRxiv · DOI / ID: 10.64898/2026.07.02.26357095 · HTML
+
+• The urinary-metabolite-based lung cancer index (uLCI): an interpretable machine-learning risk model for early-stage disease
+
+Published in: medRxiv · DOI / ID: 10.64898/2026.06.26.26356700 · HTML
+
+• Evolving role of biomarkers beyond prostate‑specific antigen in refining prostate cancer screening: From blood‑based tests to urinary and genetic markers (Review).
+
+Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · HTML
 
 Funding
 
