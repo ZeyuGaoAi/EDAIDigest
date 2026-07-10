@@ -9,7 +9,7 @@ import re
 from digest.db import connect
 
 
-VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected")
+VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected", "expired")
 DEFAULT_LOOKBACK_DAYS = {"paper": 7, "funding": 30, "job": 30}
 DEFAULT_MIN_SCORES = {"paper": 3.5, "funding": 3.5, "job": 2.0}
 DEFAULT_MAX_ITEMS = {"paper": 5, "funding": 5, "job": 5}
@@ -176,7 +176,7 @@ def export_review_queue(
             f"""
             SELECT id, title, source, category, published_at, score, summary, why_relevant, url, status
             FROM items
-            WHERE status != 'rejected'
+            WHERE status NOT IN ('rejected', 'expired')
               AND ({category_filter_sql})
             ORDER BY category, score DESC, COALESCE(published_at, fetched_at) DESC
             """,

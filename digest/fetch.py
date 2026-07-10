@@ -397,7 +397,8 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     score=excluded.score,
                     summary=COALESCE(excluded.summary, items.summary),
                     why_relevant=excluded.why_relevant,
-                    content_hash=excluded.content_hash
+                    content_hash=excluded.content_hash,
+                    status=CASE WHEN items.status = 'expired' THEN 'new' ELSE items.status END
                 """,
                 (
                     item["url"],
@@ -416,6 +417,31 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
             inserted += 1 if cursor.rowcount == 1 else 0
         conn.commit()
     return inserted
+
+
+def expire_missing_html_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> None:
+    """Retire roles that have disappeared from their source listing.
+
+    HTML job listings do not reliably expose publication or closing dates. A
+    retained URL is therefore only eligible while the source still lists it.
+    """
+    urls = [item["url"] for item in items if item.get("url")]
+    if not urls:
+        return
+    placeholders = ", ".join("?" for _ in urls)
+    with connect(db_path) as conn:
+        conn.execute(
+            f"""
+            UPDATE items
+            SET status = 'expired'
+            WHERE source = ?
+              AND category = ?
+              AND status IN ('new', 'reviewed', 'drafted')
+              AND url NOT IN ({placeholders})
+            """,
+            [source.name, source.category, *urls],
+        )
+        conn.commit()
 
 
 def rescore_items(db_path: Path) -> None:
@@ -454,6 +480,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
             else:
                 raise ValueError(f"Unsupported source kind: {source.kind}")
             stats[source.name] = upsert_items(db_path, source, items)
+            if source.kind == "html_links":
+                expire_missing_html_items(db_path, source, items)
         except Exception as exc:
             errors[source.name] = str(exc)
     rescore_items(db_path)

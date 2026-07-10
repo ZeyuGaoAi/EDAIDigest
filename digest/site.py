@@ -1099,6 +1099,7 @@ def _build_items_page(items, generated_at: str) -> str:
           <option value="approved">approved</option>
           <option value="sent">sent</option>
           <option value="rejected">rejected</option>
+          <option value="expired">expired</option>
         </select>
       </div>
       <table>
