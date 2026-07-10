@@ -34,8 +34,7 @@ def min_score_config(args: argparse.Namespace, settings: dict) -> dict[str, floa
     config = min_scores_from_settings(settings)
     min_score = getattr(args, "min_score", None)
     if min_score is not None:
-        config["paper"] = min_score
-        config["funding"] = min_score
+        config = {category: min_score for category in ("paper", "funding", "job")}
     return config
 
 
@@ -67,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
     draft_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
     add_settings_arg(draft_parser)
     add_lookback_args(draft_parser)
-    draft_parser.add_argument("--per-category", type=int, default=3)
+    draft_parser.add_argument("--per-category", type=int)
 
     site_parser = subparsers.add_parser("build-site")
     site_parser.add_argument("--drafts-dir", type=Path, default=DRAFTS_DIR)
@@ -79,7 +78,11 @@ def build_parser() -> argparse.ArgumentParser:
     serve_parser.add_argument("--host", default="127.0.0.1")
     serve_parser.add_argument("--port", type=int, default=8765)
 
-    daily_parser = subparsers.add_parser("run-daily")
+    daily_parser = subparsers.add_parser(
+        "run-digest",
+        aliases=["run-daily"],
+        help="Fetch sources, create the review queue and draft, then rebuild the site.",
+    )
     daily_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
     add_settings_arg(daily_parser)
     daily_parser.add_argument("--review-output", type=Path, default=REVIEW_QUEUE_PATH)
@@ -87,7 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
     daily_parser.add_argument("--site-dir", type=Path, default=SITE_DIR)
     add_lookback_args(daily_parser)
     daily_parser.add_argument("--min-score", type=float)
-    daily_parser.add_argument("--per-category", type=int, default=3)
+    daily_parser.add_argument("--per-category", type=int)
 
     status_parser = subparsers.add_parser("set-status")
     status_parser.add_argument("item_id", type=int)
@@ -151,7 +154,7 @@ def main() -> int:
         serve_setup(args.host, args.port)
         return 0
 
-    if args.command == "run-daily":
+    if args.command in {"run-digest", "run-daily"}:
         settings = load_settings(args.settings)
         stats, errors = ingest(args.db, args.sources)
         review_path = export_review_queue(

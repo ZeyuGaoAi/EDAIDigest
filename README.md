@@ -8,8 +8,8 @@ Lightweight local pipeline for a human-reviewed digest covering:
 
 The intended workflow is:
 
-1. A scheduled Codex automation runs the local ingest commands.
-2. Codex reads the review queue and drafts a daily newsletter in Markdown.
+1. A scheduled Codex automation, or a manual action in the local setup page, runs the digest workflow.
+2. Codex reads the review queue and drafts a weekly HTML newsletter.
 3. A human reviewer checks the draft and tells Codex whether to revise or approve it.
 4. Sending is handled later, after approval.
 
@@ -55,7 +55,7 @@ Export the reviewer queue for Codex and the human reviewer:
 python3 -m digest.cli export-review
 ```
 
-Generate a fallback draft template:
+Generate the current HTML email draft:
 
 ```bash
 python3 -m digest.cli generate-draft
@@ -84,19 +84,15 @@ python3 -m digest.cli set-status 12 approved
 
 ## How the automation should behave
 
-The scheduled automation should:
+The digest automation should:
 
-1. Run `python3 -m digest.cli run-daily`
+1. Run `python3 -m digest.cli run-digest`
 2. Read [review_queue.md](/Users/gao05/Documents/Playground/ai-early-cancer-digest/review_queue.md)
-3. Rewrite `drafts/YYYY-MM-DD.md` into a short human-ready newsletter draft with:
-   - a concise subject line
-   - top papers
-   - top funding calls
-   - top jobs
-   - a short editor note
-4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html)
-5. Keep factual statements tied to the linked sources
-6. Avoid sending anything automatically
+3. Generate `drafts/YYYY-MM-DD.html` and `drafts/YYYY-MM-DD.txt`, using the editable templates and item limits in the setup page.
+4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html).
+5. Keep factual statements tied to the linked sources, and do not send anything automatically.
+
+Paper selection uses the preceding seven days. Funding and jobs use the preceding 30 days. The item cap for each category comes from the editable configuration; it is not silently changed by the command line.
 
 ## Notes on source quality
 
@@ -120,7 +116,7 @@ The generated public pages live at [docs/index.html](/Users/gao05/Documents/Play
 Typical flow:
 
 ```bash
-python3 -m digest.cli run-daily
+python3 -m digest.cli run-digest
 git add .
 git commit -m "Update digest and site"
 git push origin main

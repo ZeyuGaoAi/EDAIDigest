@@ -418,6 +418,24 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
     return inserted
 
 
+def rescore_items(db_path: Path) -> None:
+    """Refresh scores for retained items after relevance rules change."""
+    with connect(db_path) as conn:
+        rows = conn.execute("SELECT id, category, title, summary FROM items").fetchall()
+        conn.executemany(
+            "UPDATE items SET score = ?, why_relevant = ? WHERE id = ?",
+            [
+                (
+                    score_relevance(row["category"], row["title"], row["summary"]),
+                    why_relevant(row["title"], row["summary"]),
+                    row["id"],
+                )
+                for row in rows
+            ],
+        )
+        conn.commit()
+
+
 def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, str]]:
     stats: dict[str, int] = {}
     errors: dict[str, str] = {}
@@ -438,4 +456,5 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
             stats[source.name] = upsert_items(db_path, source, items)
         except Exception as exc:
             errors[source.name] = str(exc)
+    rescore_items(db_path)
     return stats, errors

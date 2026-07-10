@@ -10,6 +10,10 @@ Papers
 
 Published in: arXiv · DOI / ID: arXiv:2606.20174v1 · HTML
 
+• BenchX: Benchmarking AI Models for Cancer Detection and Localization with Demographic and Protocol Biases
+
+Published in: arXiv · DOI / ID: arXiv:2606.24883v1 · HTML
+
 • SAGE: An Expert-Annotated South Asian GI Endoscopy Dataset for Multimodal Learning and Hallucination Analysis
 
 Published in: arXiv · DOI / ID: arXiv:2606.22144v1 · HTML
@@ -27,6 +31,10 @@ Source: Cancer Research UK News · View opportunity
 Jobs
 
 • PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+• Research Assistant – Whole Genome Duplication in prostate cancer
 
 Source: jobs.ac.uk - Cancer AI Jobs · View role
 

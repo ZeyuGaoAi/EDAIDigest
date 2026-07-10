@@ -152,7 +152,7 @@ def _paper_identifier(source: str, url: str) -> str:
     if "arxiv.org/abs/" in url:
         return f"arXiv:{url.rsplit('/', 1)[-1]}"
     if "medrxiv.org/content/" in url:
-        match = re.search(r"/content/([^/]+?)(?:v\d+)?$", url)
+        match = re.search(r"/content/(.+?)(?:v\d+)?/?$", url)
         if match:
             return match.group(1)
     if "pubmed.ncbi.nlm.nih.gov/" in url:
