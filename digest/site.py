@@ -339,6 +339,9 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         }}
 
         async function postJson(endpoint, payload) {{
+          if (!['127.0.0.1', 'localhost'].includes(window.location.hostname)) {{
+            throw new Error('This action requires the local setup server. Open http://127.0.0.1:8765/setup.html.');
+          }}
           const response = await fetch(endpoint, {{
             method: 'POST',
             headers: {{ 'Content-Type': 'application/json' }},
