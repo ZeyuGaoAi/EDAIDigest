@@ -37,6 +37,7 @@ class Source:
     max_items: int = 20
     priority: int = 100
     max_digest_items: int | None = None
+    date_preference: str = "online"
     kind: str = "rss"
 
 
@@ -165,8 +166,16 @@ def _date_node_to_string(date_node: ET.Element) -> str | None:
     return f"{year}-{month}-{day}"
 
 
-def _pubmed_date(article: ET.Element) -> str | None:
-    # Prefer electronic / indexing dates over future journal issue dates.
+def _pubmed_date(article: ET.Element, date_preference: str = "online") -> str | None:
+    """Return the configured publication date while retaining a useful fallback."""
+    if date_preference == "issue":
+        issue_date = article.find(".//JournalIssue/PubDate")
+        if issue_date is not None:
+            value = _date_node_to_string(issue_date)
+            if value:
+                return value
+
+    # Online-first is the most timely default for broad PubMed searches.
     article_date = article.find(".//ArticleDate")
     if article_date is not None:
         value = _date_node_to_string(article_date)
@@ -272,7 +281,7 @@ def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
                 "summary": summary,
                 "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
                 "venue": _child_text(article, ".//Journal/Title"),
-                "published_at": _pubmed_date(article),
+                "published_at": _pubmed_date(article, source.date_preference),
             }
         )
     return items

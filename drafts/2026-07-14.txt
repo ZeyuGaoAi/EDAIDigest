@@ -1,0 +1,39 @@
+Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+AI for Early Cancer Digest - 2026-07-14
+
+Draft for review · Papers cover the past 14 days · Funding and jobs cover the past 30 days
+
+Papers
+
+• Machine Learning Predicts Hepatocellular Carcinoma Risk from Routine Clinical Data: A Large Population-Based Multicentric Study.
+
+Published in: Cancer discovery · DOI / ID: PMID:41881847 · HTML
+
+• A scalable deep-learning framework for cancer detection using cell-free DNA shallow whole-genome sequencing.
+
+Published in: Science advances · DOI / ID: PMID:42430497 · HTML
+
+• The Promise of Machine Learning-Based Population Screening for Hepatocellular Carcinoma.
+
+Published in: Cancer discovery · DOI / ID: PMID:42381462 · HTML
+
+• Evolving role of biomarkers beyond prostate‑specific antigen in refining prostate cancer screening: From blood‑based tests to urinary and genetic markers (Review).
+
+Published in: Molecular medicine reports · DOI / ID: PMID:42396659 · HTML
+
+• Integrative analysis of cfDNA features from ultra-low coverage whole genome sequencing enables robust detection of ovarian cancer
+
+Published in: medRxiv (preprint) · DOI / ID: 10.64898/2026.07.02.26357095 · HTML
+
+Funding
+
+No shortlisted items yet.
+
+Jobs
+
+No shortlisted items yet.
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist

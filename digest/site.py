@@ -62,6 +62,8 @@ def _source_detail(source: dict) -> str:
     kind = source.get("kind", "rss")
     if kind == "pubmed":
         detail = f"PubMed query, retmax {source.get('retmax', 20)}."
+        if source.get("date_preference") == "issue":
+            detail += " Uses journal issue publication dates."
     elif kind == "biorxiv_api":
         detail = f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
     elif kind == "html_links":
