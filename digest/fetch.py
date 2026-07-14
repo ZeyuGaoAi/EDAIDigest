@@ -38,6 +38,7 @@ class Source:
     priority: int = 100
     max_digest_items: int | None = None
     date_preference: str = "online"
+    issue_search_days: int | None = None
     kind: str = "rss"
 
 
@@ -197,6 +198,15 @@ def _pubmed_date(article: ET.Element, date_preference: str = "online") -> str | 
     return None
 
 
+def _pubmed_search_term(source: Source, today: datetime | None = None) -> str:
+    """Scope issue-date sources before requesting PubMed candidates."""
+    if source.date_preference != "issue" or not source.issue_search_days:
+        return source.term or ""
+    end_date = (today or datetime.now(UTC)).date()
+    start_date = end_date - timedelta(days=source.issue_search_days)
+    return f"({source.term}) AND ({start_date:%Y/%m/%d}:{end_date:%Y/%m/%d}[dp])"
+
+
 def fetch_feed(source: Source) -> list[dict[str, Any]]:
     if not source.url:
         raise ValueError(f"Source {source.name} does not define a URL")
@@ -244,7 +254,7 @@ def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
     search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?" + urlencode(
         {
             "db": "pubmed",
-            "term": source.term,
+            "term": _pubmed_search_term(source),
             "retmax": source.retmax,
             "sort": source.sort,
             "retmode": "xml",

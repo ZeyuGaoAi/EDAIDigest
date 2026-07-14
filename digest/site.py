@@ -64,6 +64,8 @@ def _source_detail(source: dict) -> str:
         detail = f"PubMed query, retmax {source.get('retmax', 20)}."
         if source.get("date_preference") == "issue":
             detail += " Uses journal issue publication dates."
+        if source.get("issue_search_days"):
+            detail += f" Searches the last {source['issue_search_days']} issue days."
     elif kind == "biorxiv_api":
         detail = f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
     elif kind == "html_links":

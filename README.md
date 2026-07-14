@@ -96,7 +96,7 @@ Paper selection uses the preceding seven days. Funding and jobs use the precedin
 
 ## Notes on source quality
 
-- The default `paper` sources combine a targeted arXiv feed across `cs.AI`, `cs.LG`, `cs.CV`, and `stat.ML`; medRxiv oncology preprints; broad PubMed-indexed published papers; and a curated PubMed query targeting high-impact journal families such as Nature, Science, Cell, Cancer Discovery, Lancet, and JAMA. The high-impact query uses journal issue dates, so online-first articles enter the digest when their issue is released. Published sources rank ahead of the combined preprint pool, which is then ordered by relevance and recency within the overall paper limit.
+- The default `paper` sources combine a targeted arXiv feed across `cs.AI`, `cs.LG`, `cs.CV`, and `stat.ML`; medRxiv oncology preprints; broad PubMed-indexed published papers; and a curated PubMed query targeting high-impact journal families such as Nature, Science, Cell, Cancer Discovery, Lancet, and JAMA. The high-impact query searches the preceding 45 issue-publication days, so online-first articles enter when their issue is released even if PubMed ranks them far behind newly indexed records. The digest still applies its configured weekly window before publication. Published sources rank ahead of the combined preprint pool, which is then ordered by relevance and recency within the overall paper limit.
 - `funding` now includes live feeds from Cancer Research UK news, UKRI opportunities, and the NIH Guide for Grants and Contracts.
 - `job` now includes a Cambridge research-vacancies page scrape, a jobs.ac.uk cancer-and-AI search scrape, and the manual watchlist.
 - The default `funding` feed currently uses Cancer Research UK news as a placeholder source stream.
