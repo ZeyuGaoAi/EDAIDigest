@@ -6,6 +6,10 @@ Draft for review · Papers cover the past 7 days · Funding and jobs cover the p
 
 Papers
 
+• Integrating structurally defined DNA-carbon nanotube sensors with machine learning for cancer detection.
+
+Published in: Science advances · DOI / ID: PMID:42525763 · HTML
+
 • Re-thinking Mammography Transfer Learning: The Dataset-Informed Transfer Learning (DITL) Framework for Breast Cancer Screening and Lesion Diagnosis
 
 Published in: arXiv (preprint) · DOI / ID: arXiv:2607.26043v1 · HTML

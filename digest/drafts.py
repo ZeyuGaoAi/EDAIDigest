@@ -38,18 +38,26 @@ def _format_template(template: str, values: dict[str, object]) -> str:
     return template.format_map(_SafeDict({key: "" if value is None else value for key, value in values.items()}))
 
 
-def _category_cutoff(category: str, lookback_days: dict[str, int]) -> str:
+def _category_cutoff(
+    category: str,
+    lookback_days: dict[str, int],
+    now: datetime | None = None,
+) -> str:
     days = lookback_days.get(category, DEFAULT_LOOKBACK_DAYS[category])
-    return (datetime.now(UTC) - timedelta(days=days)).isoformat()
+    return ((now or datetime.now(UTC)) - timedelta(days=days)).isoformat()
 
 
-def _category_filter_sql(lookback_days: dict[str, int]) -> tuple[str, list[str]]:
+def _category_filter_sql(
+    lookback_days: dict[str, int],
+    now: datetime | None = None,
+) -> tuple[str, list[str]]:
     clauses: list[str] = []
     params: list[str] = []
-    now = datetime.now(UTC).isoformat()
+    now = now or datetime.now(UTC)
+    window_end = now + timedelta(days=1)
     for category in ("paper", "funding", "job"):
         clauses.append("(category = ? AND COALESCE(published_at, fetched_at) >= ? AND COALESCE(published_at, fetched_at) <= ?)")
-        params.extend([category, _category_cutoff(category, lookback_days), now])
+        params.extend([category, _category_cutoff(category, lookback_days, now), window_end.isoformat()])
     return " OR ".join(clauses), params
 
 
