@@ -31,6 +31,15 @@ class PaperRelevanceTests(unittest.TestCase):
         )
         self.assertGreater(score, 0.0)
 
+    def test_accepts_transfer_learning_method_targeting_screening(self):
+        summary = "We introduce a transfer learning method for breast cancer screening mammography."
+        score = score_relevance(
+            "paper",
+            "Dataset-informed transfer learning for breast cancer screening",
+            summary,
+        )
+        self.assertGreater(score, 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

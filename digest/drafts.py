@@ -46,9 +46,10 @@ def _category_cutoff(category: str, lookback_days: dict[str, int]) -> str:
 def _category_filter_sql(lookback_days: dict[str, int]) -> tuple[str, list[str]]:
     clauses: list[str] = []
     params: list[str] = []
+    now = datetime.now(UTC).isoformat()
     for category in ("paper", "funding", "job"):
-        clauses.append("(category = ? AND COALESCE(published_at, fetched_at) >= ?)")
-        params.extend([category, _category_cutoff(category, lookback_days)])
+        clauses.append("(category = ? AND COALESCE(published_at, fetched_at) >= ? AND COALESCE(published_at, fetched_at) <= ?)")
+        params.extend([category, _category_cutoff(category, lookback_days), now])
     return " OR ".join(clauses), params
 
 

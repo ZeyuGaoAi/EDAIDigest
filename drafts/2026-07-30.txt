@@ -1,0 +1,23 @@
+Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+AI for Early Cancer Digest - 2026-07-30
+
+Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+
+Papers
+
+• Re-thinking Mammography Transfer Learning: The Dataset-Informed Transfer Learning (DITL) Framework for Breast Cancer Screening and Lesion Diagnosis
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2607.26043v1 · HTML
+
+Funding
+
+No shortlisted items yet.
+
+Jobs
+
+No shortlisted items yet.
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist

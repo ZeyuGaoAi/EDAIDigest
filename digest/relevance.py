@@ -28,6 +28,7 @@ CANCER_TERMS = (
 AI_TERMS = (
     "artificial intelligence",
     "machine learning",
+    "transfer learning",
     "deep learning",
     "foundation model",
     "llm",
