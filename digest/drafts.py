@@ -236,7 +236,7 @@ def export_review_queue(
             f"""
             SELECT id, title, source, category, published_at, score, summary, why_relevant, url, status
             FROM items
-            WHERE status NOT IN ('rejected', 'expired')
+            WHERE status = 'new'
               AND ({category_filter_sql})
             ORDER BY category, score DESC, COALESCE(published_at, fetched_at) DESC
             """,
@@ -312,7 +312,7 @@ def generate_template_draft(
             f"""
             SELECT id, title, source, venue, category, summary, why_relevant, url, score
             FROM items
-            WHERE status IN ('new', 'reviewed', 'drafted')
+            WHERE status = 'reviewed'
               AND ({category_filter_sql})
             ORDER BY category, score DESC, COALESCE(published_at, fetched_at) DESC
             """,
@@ -404,7 +404,7 @@ def generate_template_draft(
     if selected_ids:
         with connect(db_path) as conn:
             conn.executemany(
-                "UPDATE items SET status = 'drafted' WHERE id = ? AND status IN ('new', 'reviewed')",
+                "UPDATE items SET status = 'drafted' WHERE id = ? AND status = 'reviewed'",
                 [(item_id,) for item_id in selected_ids],
             )
             conn.commit()

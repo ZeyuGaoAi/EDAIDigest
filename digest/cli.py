@@ -82,7 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
     daily_parser = subparsers.add_parser(
         "run-digest",
         aliases=["run-daily"],
-        help="Fetch sources, create the review queue and draft, then rebuild the site.",
+        help="Fetch sources, create a Codex review queue, then rebuild the site.",
     )
     daily_parser.add_argument("--sources", type=Path, default=SOURCES_PATH)
     add_settings_arg(daily_parser)
@@ -165,16 +165,6 @@ def main() -> int:
             lookback_config(args, settings),
             min_score_config(args, settings),
         )
-        draft_path = generate_template_draft(
-            args.db,
-            args.drafts_dir,
-            lookback_config(args, settings),
-            min_score_config(args, settings),
-            settings.get("email_template", {}),
-            max_items_config(args, settings),
-            settings.get("distribution", {}).get("email_subject"),
-            args.sources,
-        )
         site_path = build_site(args.db, args.drafts_dir, args.site_dir, args.settings, args.sources)
         print("Ingest:")
         for source_name, count in stats.items():
@@ -184,7 +174,7 @@ def main() -> int:
             for source_name, error in errors.items():
                 print(f"  {source_name}: {error}")
         print(f"Review queue: {review_path}")
-        print(f"Draft: {draft_path}")
+        print("Draft: not generated until Codex review is complete")
         print(f"Site: {site_path}")
         return 0
 

@@ -201,7 +201,8 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       <div class="button-row">
         <button id="save-settings" type="button">Save settings.json</button>
         <button id="save-sources" type="button">Save sources.json</button>
-        <button id="regenerate-digest" type="button">Regenerate Weekly Digest</button>
+        <button id="collect-candidates" type="button">Collect Candidates for Codex Review</button>
+        <button id="generate-reviewed-digest" type="button">Generate Reviewed Digest</button>
         <button id="open-html-draft" type="button">Open HTML Draft</button>
         <button id="copy-rich-email" type="button">Copy Rich Email</button>
         <button id="open-email-draft" type="button">Open Email Draft</button>
@@ -384,13 +385,23 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           }}
         }});
 
-        document.getElementById('regenerate-digest').addEventListener('click', async () => {{
+        document.getElementById('collect-candidates').addEventListener('click', async () => {{
           try {{
-            configStatus.textContent = 'Regenerating weekly digest...';
-            const result = await postJson('/api/regenerate', {{
+            configStatus.textContent = 'Collecting candidates for Codex review...';
+            const result = await postJson('/api/collect', {{
               settings: collectSettings(),
               sources: parseSources(),
             }});
+            configStatus.textContent = result.message;
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('generate-reviewed-digest').addEventListener('click', async () => {{
+          try {{
+            configStatus.textContent = 'Generating reviewed digest...';
+            const result = await postJson('/api/generate-reviewed', {{ settings: collectSettings() }});
             configStatus.textContent = result.message;
             window.location.href = `./index.html?updated=${{Date.now()}}`;
           }} catch (error) {{

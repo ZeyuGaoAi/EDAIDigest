@@ -86,9 +86,9 @@ python3 -m digest.cli set-status 12 approved
 
 The digest automation should:
 
-1. Run `python3 -m digest.cli run-digest`
-2. Read [review_queue.md](/Users/gao05/Documents/Playground/ai-early-cancer-digest/review_queue.md)
-3. Generate `drafts/YYYY-MM-DD.html` and `drafts/YYYY-MM-DD.txt`, using the editable templates and item limits in the setup page.
+1. Run `python3 -m digest.cli run-digest` to collect keyword-filtered candidates and write [review_queue.md](/Users/gao05/Documents/Playground/ai-early-cancer-digest/review_queue.md).
+2. Codex reads each candidate's title, abstract, or job description, then marks it `reviewed` or `rejected`.
+3. Generate `drafts/YYYY-MM-DD.html` and `drafts/YYYY-MM-DD.txt` from `reviewed` items only, using the editable templates and item limits in the setup page.
 4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html).
 5. Keep factual statements tied to the linked sources, and do not send anything automatically.
 

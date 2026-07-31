@@ -34,7 +34,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     },
     "workflow": {
         "trigger": "Manual trigger while the scope is still being refined.",
-        "review": "AI drafts the digest; a human reviews before anything is sent.",
+        "review": "Codex reads each candidate title and abstract, marks it reviewed or rejected, then generates the digest from reviewed items only.",
     },
     "distribution": {
         "sender_email": "zg323@cam.ac.uk",

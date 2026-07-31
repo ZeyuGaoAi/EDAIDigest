@@ -35,17 +35,28 @@ def _save_sources_payload(payload: Any) -> list[dict[str, Any]]:
     return payload
 
 
-def _regenerate_digest() -> dict[str, Any]:
+def _collect_candidates() -> dict[str, Any]:
     settings = load_settings(SETTINGS_PATH)
     lookback_days = lookback_days_from_settings(settings)
     min_scores = min_scores_from_settings(settings)
     stats, errors = ingest(DB_PATH, SOURCES_PATH)
     review_path = export_review_queue(DB_PATH, REVIEW_QUEUE_PATH, lookback_days, min_scores)
+    site_path = build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
+    return {
+        "review_queue": str(review_path),
+        "site": str(site_path),
+        "stats": stats,
+        "errors": errors,
+    }
+
+
+def _generate_reviewed_digest() -> dict[str, Any]:
+    settings = load_settings(SETTINGS_PATH)
     draft_path = generate_template_draft(
         DB_PATH,
         DRAFTS_DIR,
-        lookback_days,
-        min_scores,
+        lookback_days_from_settings(settings),
+        min_scores_from_settings(settings),
         settings.get("email_template", {}),
         max_items_from_settings(settings),
         settings.get("distribution", {}).get("email_subject"),
@@ -54,10 +65,7 @@ def _regenerate_digest() -> dict[str, Any]:
     site_path = build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
     return {
         "draft": str(draft_path),
-        "review_queue": str(review_path),
         "site": str(site_path),
-        "stats": stats,
-        "errors": errors,
     }
 
 
@@ -177,14 +185,14 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
                 )
                 return
 
-            if self.path == "/api/regenerate":
+            if self.path == "/api/collect":
                 payload = self._read_json_body()
                 if isinstance(payload, dict):
                     if "settings" in payload:
                         _save_settings_payload(payload["settings"])
                     if "sources" in payload:
                         _save_sources_payload(payload["sources"])
-                result = _regenerate_digest()
+                result = _collect_candidates()
                 warning = ""
                 if result["errors"]:
                     warning = " Some sources returned errors; see terminal output or review queue."
@@ -192,7 +200,21 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
                     HTTPStatus.OK,
                     {
                         **result,
-                        "message": f"Regenerated weekly digest: {result['draft']}.{warning}",
+                        "message": f"Collected candidates for Codex review: {result['review_queue']}.{warning}",
+                    },
+                )
+                return
+
+            if self.path == "/api/generate-reviewed":
+                payload = self._read_json_body()
+                if isinstance(payload, dict) and "settings" in payload:
+                    _save_settings_payload(payload["settings"])
+                result = _generate_reviewed_digest()
+                self._send_json(
+                    HTTPStatus.OK,
+                    {
+                        **result,
+                        "message": f"Generated digest from Codex-reviewed candidates: {result['draft']}",
                     },
                 )
                 return

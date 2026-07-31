@@ -10,10 +10,6 @@ Papers
 
 Published in: Science advances · DOI / ID: PMID:42525763 · HTML
 
-• Agreement and workflow efficiency of AI-based coronary artery calcification quantification in lung cancer screening: Comparison with semi-automated and visual assessment.
-
-Published in: European journal of radiology open · DOI / ID: PMID:42502844 · HTML
-
 • Medical Imaging Fusing Vision Transformer: Laryngeal Cancer Screening with Explanation
 
 Published in: arXiv (preprint) · DOI / ID: arXiv:2607.17789v1 · HTML
@@ -37,10 +33,6 @@ Source: jobs.ac.uk - Cancer AI Jobs · View role
 Source: jobs.ac.uk - Cancer AI Jobs · View role
 
 • (Senior) Group Leaders – Computational Biology and AI
-
-Source: jobs.ac.uk - Cancer AI Jobs · View role
-
-• (Senior) Group Leaders – Clinician Scientist
 
 Source: jobs.ac.uk - Cancer AI Jobs · View role
 

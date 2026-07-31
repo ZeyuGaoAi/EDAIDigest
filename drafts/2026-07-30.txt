@@ -2,13 +2,17 @@ Selected updates on AI for early cancer detection, screening, funding, and jobs.
 
 AI for Early Cancer Digest - 2026-07-30
 
-Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+Draft for review · Papers cover the past 14 days · Funding and jobs cover the past 30 days
 
 Papers
 
 • Integrating structurally defined DNA-carbon nanotube sensors with machine learning for cancer detection.
 
 Published in: Science advances · DOI / ID: PMID:42525763 · HTML
+
+• Medical Imaging Fusing Vision Transformer: Laryngeal Cancer Screening with Explanation
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2607.17789v1 · HTML
 
 • Re-thinking Mammography Transfer Learning: The Dataset-Informed Transfer Learning (DITL) Framework for Breast Cancer Screening and Lesion Diagnosis
 
@@ -29,10 +33,6 @@ Source: jobs.ac.uk - Cancer AI Jobs · View role
 Source: jobs.ac.uk - Cancer AI Jobs · View role
 
 • (Senior) Group Leaders – Computational Biology and AI
-
-Source: jobs.ac.uk - Cancer AI Jobs · View role
-
-• (Senior) Group Leaders – Clinician Scientist
 
 Source: jobs.ac.uk - Cancer AI Jobs · View role
 
