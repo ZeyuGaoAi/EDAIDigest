@@ -39,6 +39,7 @@ class Source:
     max_digest_items: int | None = None
     date_preference: str = "online"
     issue_search_days: int | None = None
+    follow_item_pages: bool = False
     kind: str = "rss"
 
 
@@ -93,6 +94,13 @@ def _request_text(url: str) -> str:
         return response.read().decode("utf-8")
 
 
+def _html_to_visible_text(html: str) -> str:
+    """Extract visible detail-page text without retaining scripts or styles."""
+    parser = TextContentParser()
+    parser.feed(html)
+    return parser.text()
+
+
 def _default_venue(source: Source, url: str | None) -> str | None:
     if url and "arxiv.org" in url:
         return "arXiv (preprint)"
@@ -129,6 +137,30 @@ class AnchorParser(HTMLParser):
             self.anchors.append((self._current_href, text))
         self._current_href = None
         self._current_text = []
+
+
+class TextContentParser(HTMLParser):
+    skipped_tags = {"script", "style", "noscript", "svg"}
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+        self._skip_depth = 0
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in self.skipped_tags:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.skipped_tags and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth == 0:
+            self.parts.append(data)
+
+    def text(self) -> str:
+        return " ".join(" ".join(self.parts).split())
 
 
 def _child_text(element: ET.Element, path: str) -> str | None:
@@ -378,10 +410,17 @@ def fetch_html_links(source: Source) -> list[dict[str, Any]]:
         if absolute_url in seen:
             continue
         seen.add(absolute_url)
+        summary = None
+        if source.follow_item_pages:
+            try:
+                summary = _html_to_visible_text(_request_text(absolute_url))
+            except Exception:
+                # Retain the listing item when an individual advert page is unavailable.
+                summary = None
         items.append(
             {
                 "title": text,
-                "summary": None,
+                "summary": summary,
                 "url": absolute_url,
                 "venue": None,
                 "published_at": None,

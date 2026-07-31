@@ -69,6 +69,7 @@
     "kind": "html_links",
     "url": "https://www.jobs.ac.uk/search/?keywords=cancer+artificial+intelligence",
     "include_regex": "/job/[A-Z0-9]+/",
+    "follow_item_pages": true,
     "max_items": 30
   },
   {

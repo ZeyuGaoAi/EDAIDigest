@@ -40,6 +40,23 @@ class PaperRelevanceTests(unittest.TestCase):
         )
         self.assertGreater(score, 0.0)
 
+    def test_rejects_radiotherapy_recurrence_model(self):
+        summary = (
+            "We develop a machine learning model for risk stratification of recurrence "
+            "after radiotherapy for localised prostate cancer."
+        )
+        score = score_relevance(
+            "paper",
+            "Machine learning predicts recurrence after radiotherapy for prostate cancer",
+            summary,
+        )
+        self.assertEqual(score, 0.0)
+
+    def test_accepts_cancer_ai_job_when_detail_page_provides_domain_context(self):
+        summary = "The post supports artificial intelligence research for cancer imaging and early detection."
+        score = score_relevance("job", "Research Assistant in AI for Medical Imaging", summary)
+        self.assertGreater(score, 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -70,6 +70,8 @@ def _source_detail(source: dict) -> str:
         detail = f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
     elif kind == "html_links":
         detail = f"HTML link scraper: {source.get('url', 'configured URL')}."
+        if source.get("follow_item_pages"):
+            detail += " Follows item pages for relevance scoring."
     elif kind == "manual":
         detail = f"Manual file: {source.get('path', 'configured path')}."
     else:

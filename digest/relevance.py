@@ -45,6 +45,7 @@ TREATMENT_TERMS = (
     "anastomotic leak",
     "postoperative",
     "post-operative",
+    "radiotherapy",
 )
 
 FUNDING_TERMS = (
