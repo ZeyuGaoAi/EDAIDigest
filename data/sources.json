@@ -31,7 +31,7 @@
     "category": "paper",
     "kind": "biorxiv_api",
     "server": "medrxiv",
-    "recent_days": 14,
+    "recent_days": 30,
     "api_category": "oncology",
     "max_items": 50,
     "priority": 2
