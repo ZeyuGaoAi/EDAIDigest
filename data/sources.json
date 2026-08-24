@@ -55,6 +55,13 @@
     "url": "https://grants.nih.gov/grants/guide/newsfeed/fundingopps.xml"
   },
   {
+    "name": "ACED Manchester Funding Opportunities",
+    "category": "funding",
+    "kind": "html_page",
+    "url": "https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/",
+    "item_title": "ACED Clinical Research Training Fellowship (2027)"
+  },
+  {
     "name": "University of Cambridge Research Jobs",
     "category": "job",
     "kind": "html_links",

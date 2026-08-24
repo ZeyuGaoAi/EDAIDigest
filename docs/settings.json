@@ -1,7 +1,7 @@
 {
   "cadence": {
     "paper": {
-      "lookback_days": 14,
+      "lookback_days": 7,
       "frequency": "weekly",
       "min_score": 3.5,
       "max_items": 5
@@ -31,7 +31,6 @@
   "distribution": {
     "sender_email": "zg323@cam.ac.uk",
     "recipient_emails": [
-      "zg323@cam.ac.uk",
       "mc973@cam.ac.uk",
       "hmw56@cam.ac.uk"
     ],

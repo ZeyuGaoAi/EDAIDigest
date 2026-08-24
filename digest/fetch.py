@@ -40,6 +40,7 @@ class Source:
     date_preference: str = "online"
     issue_search_days: int | None = None
     follow_item_pages: bool = False
+    item_title: str | None = None
     kind: str = "rss"
 
 
@@ -431,6 +432,23 @@ def fetch_html_links(source: Source) -> list[dict[str, Any]]:
     return items
 
 
+def fetch_html_page(source: Source) -> list[dict[str, Any]]:
+    """Treat a stable opportunity page itself as one reviewable item."""
+    if not source.url:
+        raise ValueError(f"Source {source.name} does not define a URL")
+    if not source.item_title:
+        raise ValueError(f"Source {source.name} does not define an item_title")
+    return [
+        {
+            "title": source.item_title,
+            "summary": _html_to_visible_text(_request_text(source.url)),
+            "url": source.url,
+            "venue": source.name,
+            "published_at": None,
+        }
+    ]
+
+
 def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> int:
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
@@ -458,7 +476,12 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     summary=COALESCE(excluded.summary, items.summary),
                     why_relevant=excluded.why_relevant,
                     content_hash=excluded.content_hash,
-                    status=CASE WHEN items.status = 'expired' THEN 'new' ELSE items.status END
+                    -- A monitored page can be republished with a new call at the
+                    -- same URL; changed content must return to human review.
+                    status=CASE
+                        WHEN items.status = 'expired' OR items.content_hash != excluded.content_hash THEN 'new'
+                        ELSE items.status
+                    END
                 """,
                 (
                     item["url"],
@@ -531,6 +554,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_feed(source)
             elif source.kind == "html_links":
                 items = fetch_html_links(source)
+            elif source.kind == "html_page":
+                items = fetch_html_page(source)
             elif source.kind == "biorxiv_api":
                 items = fetch_biorxiv_api(source)
             elif source.kind == "pubmed":
