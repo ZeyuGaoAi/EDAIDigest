@@ -59,7 +59,17 @@
     "category": "funding",
     "kind": "html_page",
     "url": "https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/",
-    "item_title": "ACED Clinical Research Training Fellowship (2027)"
+    "item_title": "ACED Clinical Research Training Fellowship (2027)",
+    "priority": 0
+  },
+  {
+    "name": "Cambridge ACED Funding Opportunities",
+    "category": "funding",
+    "kind": "html_sections",
+    "url": "https://www.earlycancer.cam.ac.uk/aced-cambridge/aced-funding",
+    "include_regex": "ACED.*(clinical.*fellowship|project funding|skills exchange|early career|studentship)",
+    "max_items": 10,
+    "priority": 1
   },
   {
     "name": "University of Cambridge Research Jobs",

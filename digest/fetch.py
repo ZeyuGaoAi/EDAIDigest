@@ -164,6 +164,67 @@ class TextContentParser(HTMLParser):
         return " ".join(" ".join(self.parts).split())
 
 
+class HeadingSectionParser(HTMLParser):
+    """Collect page text under headings so one page can expose several calls."""
+
+    skipped_tags = {"script", "style", "noscript", "svg"}
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.sections: list[tuple[str, str]] = []
+        self._skip_depth = 0
+        self._heading_tag: str | None = None
+        self._heading_parts: list[str] = []
+        self._current_heading: str | None = None
+        self._current_parts: list[str] = []
+
+    def _flush(self) -> None:
+        if not self._current_heading:
+            return
+        summary = " ".join(" ".join(self._current_parts).split())
+        self.sections.append((self._current_heading, summary))
+        self._current_heading = None
+        self._current_parts = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in self.skipped_tags:
+            self._skip_depth += 1
+            return
+        if self._skip_depth:
+            return
+        if tag in {"h1", "h2", "h3", "h4"}:
+            self._flush()
+            self._heading_tag = tag
+            self._heading_parts = []
+        elif tag in {"br", "p", "li"} and self._current_heading:
+            self._current_parts.append(" ")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.skipped_tags and self._skip_depth:
+            self._skip_depth -= 1
+            return
+        if self._skip_depth:
+            return
+        if tag == self._heading_tag:
+            heading = " ".join(" ".join(self._heading_parts).split())
+            self._heading_tag = None
+            self._heading_parts = []
+            if heading:
+                self._current_heading = heading
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth:
+            return
+        if self._heading_tag:
+            self._heading_parts.append(data)
+        elif self._current_heading:
+            self._current_parts.append(data)
+
+    def close(self) -> None:
+        super().close()
+        self._flush()
+
+
 def _child_text(element: ET.Element, path: str) -> str | None:
     child = element.find(path)
     if child is None:
@@ -449,6 +510,38 @@ def fetch_html_page(source: Source) -> list[dict[str, Any]]:
     ]
 
 
+def _heading_anchor(title: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", title.casefold()).strip("-") or "opportunity"
+
+
+def fetch_html_sections(source: Source) -> list[dict[str, Any]]:
+    """Extract individual opportunities from a curated page of heading sections."""
+    if not source.url:
+        raise ValueError(f"Source {source.name} does not define a URL")
+    parser = HeadingSectionParser()
+    parser.feed(_request_text(source.url))
+    parser.close()
+    include = re.compile(source.include_regex, re.IGNORECASE) if source.include_regex else None
+    items: list[dict[str, Any]] = []
+    for title, summary in parser.sections:
+        # Restrict matching to the heading. Page navigation and supporting text
+        # often mention other opportunities but are not separate calls.
+        if include and not include.search(title):
+            continue
+        items.append(
+            {
+                "title": title,
+                "summary": summary,
+                "url": f"{source.url}#{_heading_anchor(title)}",
+                "venue": source.name,
+                "published_at": None,
+            }
+        )
+        if len(items) >= source.max_items:
+            break
+    return items
+
+
 def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> int:
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
@@ -556,6 +649,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_html_links(source)
             elif source.kind == "html_page":
                 items = fetch_html_page(source)
+            elif source.kind == "html_sections":
+                items = fetch_html_sections(source)
             elif source.kind == "biorxiv_api":
                 items = fetch_biorxiv_api(source)
             elif source.kind == "pubmed":

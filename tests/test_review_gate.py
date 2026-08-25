@@ -72,6 +72,36 @@ class ReviewGateTests(unittest.TestCase):
 
             self.assertIn("Papers cover the past 14 days", path.read_text())
 
+    def test_draft_deduplicates_mirrored_opportunities_by_title(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            db_path = root / "digest.db"
+            init_db(db_path)
+            with connect(db_path) as conn:
+                for source, title in (
+                    ("Manchester ACED", "ACED Clinical Research Training Fellowship (2027)"),
+                    ("Cambridge ACED", "ACED Clinical Research Training Fellowship 2027"),
+                ):
+                    conn.execute(
+                        """
+                        INSERT INTO items (
+                            url, title, source, venue, category, published_at, fetched_at,
+                            status, score, summary, why_relevant, content_hash
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            f"https://example.test/{source}", title, source, source, "funding",
+                            "2026-07-31T10:00:00+00:00", "2026-07-31T10:00:00+00:00",
+                            "reviewed", 10.0, "Cancer early detection funding.", "test", source,
+                        ),
+                    )
+                conn.commit()
+
+            with patch.object(drafts, "datetime", FixedDatetime):
+                html = drafts.generate_template_draft(db_path, root / "drafts").read_text()
+
+            self.assertEqual(html.count("ACED Clinical Research Training Fellowship"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

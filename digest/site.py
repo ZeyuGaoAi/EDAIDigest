@@ -74,6 +74,8 @@ def _source_detail(source: dict) -> str:
             detail += " Follows item pages for relevance scoring."
     elif kind == "html_page":
         detail = f"Monitors the page itself as one opportunity: {source.get('url', 'configured URL')}."
+    elif kind == "html_sections":
+        detail = f"Extracts matching opportunity sections from: {source.get('url', 'configured URL')}."
     elif kind == "manual":
         detail = f"Manual file: {source.get('path', 'configured path')}."
     else:

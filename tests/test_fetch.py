@@ -5,7 +5,14 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from digest.db import connect, init_db
-from digest.fetch import Source, _pubmed_date, _pubmed_search_term, fetch_html_page, upsert_items
+from digest.fetch import (
+    Source,
+    _pubmed_date,
+    _pubmed_search_term,
+    fetch_html_page,
+    fetch_html_sections,
+    upsert_items,
+)
 
 
 ARTICLE = ET.fromstring(
@@ -83,6 +90,26 @@ class HtmlPageSourceTests(unittest.TestCase):
                 status = conn.execute("SELECT status FROM items").fetchone()["status"]
 
         self.assertEqual(status, "new")
+
+    def test_html_sections_extracts_matching_funding_calls(self):
+        source = Source(
+            name="Cambridge ACED",
+            category="funding",
+            kind="html_sections",
+            url="https://example.test/aced-funding",
+            include_regex=r"ACED.*(clinical.*fellowship|project funding|skills exchange|early career|studentship)",
+        )
+        html = """
+        <h2>ACED Clinical Research Training Fellowship 2027</h2>
+        <p>Funding supports a three-year PhD in cancer early detection.</p>
+        <h2>ACED Documents</h2><p>Administrative documents.</p>
+        """
+        with patch("digest.fetch._request_text", return_value=html):
+            items = fetch_html_sections(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "ACED Clinical Research Training Fellowship 2027")
+        self.assertIn("three-year PhD", items[0]["summary"])
 
 
 if __name__ == "__main__":

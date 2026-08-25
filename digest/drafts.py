@@ -72,6 +72,11 @@ def _clean_summary(summary: str | None, limit: int = 420) -> str:
     return f"{trimmed}..."
 
 
+def _canonical_title(title: str | None) -> str:
+    """Normalize titles so mirrored opportunity pages do not repeat in a draft."""
+    return re.sub(r"[^a-z0-9]+", " ", (title or "").casefold()).strip()
+
+
 class _HTMLToTextParser(HTMLParser):
     block_tags = {"article", "br", "div", "h1", "h2", "h3", "h4", "li", "p", "section"}
 
@@ -339,14 +344,20 @@ def generate_template_draft(
             key=lambda row: category_rules.get(row["source"], (100, None))[0]
         )
         source_counts: dict[str, int] = {}
+        selected_titles: set[str] = set()
         for row in category_candidates:
             if len(grouped[category]) >= max_items.get(category, DEFAULT_MAX_ITEMS[category]):
                 break
             _, source_cap = category_rules.get(row["source"], (100, None))
             if source_cap is not None and source_counts.get(row["source"], 0) >= source_cap:
                 continue
+            title_key = _canonical_title(row["title"])
+            if title_key and title_key in selected_titles:
+                continue
             grouped[category].append(row)
             source_counts[row["source"]] = source_counts.get(row["source"], 0) + 1
+            if title_key:
+                selected_titles.add(title_key)
             selected_ids.append(row["id"])
 
     legacy_values = {
