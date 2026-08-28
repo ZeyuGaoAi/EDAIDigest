@@ -353,6 +353,9 @@ def generate_template_draft(
                 continue
             title_key = _canonical_title(row["title"])
             if title_key and title_key in selected_titles:
+                # Mark the mirrored entry as consumed too, so it cannot surface
+                # alone in a later digest after the canonical source is drafted.
+                selected_ids.append(row["id"])
                 continue
             grouped[category].append(row)
             source_counts[row["source"]] = source_counts.get(row["source"], 0) + 1

@@ -101,6 +101,9 @@ class ReviewGateTests(unittest.TestCase):
                 html = drafts.generate_template_draft(db_path, root / "drafts").read_text()
 
             self.assertEqual(html.count("ACED Clinical Research Training Fellowship"), 1)
+            with connect(db_path) as conn:
+                statuses = [row["status"] for row in conn.execute("SELECT status FROM items")]
+            self.assertEqual(statuses, ["drafted", "drafted"])
 
 
 if __name__ == "__main__":

@@ -545,6 +545,7 @@ def fetch_html_sections(source: Source) -> list[dict[str, Any]]:
 def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> int:
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
+    reset_on_content_change = source.kind in {"html_page", "html_sections"}
     with connect(db_path) as conn:
         for item in items:
             summary = item.get("summary")
@@ -572,7 +573,8 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     -- A monitored page can be republished with a new call at the
                     -- same URL; changed content must return to human review.
                     status=CASE
-                        WHEN items.status = 'expired' OR items.content_hash != excluded.content_hash THEN 'new'
+                        WHEN items.status = 'expired'
+                          OR (? = 1 AND items.content_hash != excluded.content_hash) THEN 'new'
                         ELSE items.status
                     END
                 """,
@@ -588,6 +590,7 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     summary,
                     why_relevant(item["title"], summary),
                     content_hash,
+                    int(reset_on_content_change),
                 ),
             )
             inserted += 1 if cursor.rowcount == 1 else 0

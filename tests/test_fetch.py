@@ -91,6 +91,27 @@ class HtmlPageSourceTests(unittest.TestCase):
 
         self.assertEqual(status, "new")
 
+    def test_changed_listing_detail_does_not_redraft_an_existing_job(self):
+        source = Source(name="Jobs", category="job", kind="html_links")
+        first_item = {
+            "title": "Cancer AI Researcher",
+            "summary": "Cancer early detection and machine learning.",
+            "url": "https://example.test/job",
+        }
+        second_item = {**first_item, "summary": "Cancer early detection and machine learning. Updated page navigation."}
+        with TemporaryDirectory() as directory:
+            db_path = Path(directory) / "digest.db"
+            init_db(db_path)
+            upsert_items(db_path, source, [first_item])
+            with connect(db_path) as conn:
+                conn.execute("UPDATE items SET status = 'drafted'")
+                conn.commit()
+            upsert_items(db_path, source, [second_item])
+            with connect(db_path) as conn:
+                status = conn.execute("SELECT status FROM items").fetchone()["status"]
+
+        self.assertEqual(status, "drafted")
+
     def test_html_sections_extracts_matching_funding_calls(self):
         source = Source(
             name="Cambridge ACED",
