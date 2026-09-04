@@ -247,7 +247,14 @@ def export_review_queue(
             """,
             category_params,
         ).fetchall()
-    rows = [row for row in rows if _passes_score(row["category"], row["score"], min_scores)]
+    # Paper source queries are already focused. Keep recent low-score papers in
+    # the queue so Codex can rescue relevant work whose abstract omits our
+    # keyword vocabulary; keep Funding and Jobs score-filtered to limit noise.
+    rows = [
+        row
+        for row in rows
+        if row["category"] == "paper" or _passes_score(row["category"], row["score"], min_scores)
+    ]
 
     lines = [
         "# Review Queue",
@@ -326,8 +333,8 @@ def generate_template_draft(
 
     candidates = {"paper": [], "funding": [], "job": []}
     for row in rows:
-        if not _passes_score(row["category"], row["score"], min_scores):
-            continue
+        # `reviewed` is an explicit Codex/human decision. It deliberately
+        # overrides the keyword score used only to prioritize the review queue.
         category_rules = source_rules.get(row["category"], {})
         # Configuration defines the active sources, so retired feeds cannot
         # resurface from historical rows in the database.

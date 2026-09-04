@@ -105,6 +105,31 @@ class ReviewGateTests(unittest.TestCase):
                 statuses = [row["status"] for row in conn.execute("SELECT status FROM items")]
             self.assertEqual(statuses, ["drafted", "drafted"])
 
+    def test_reviewed_low_score_paper_is_included_after_semantic_review(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            db_path = root / "digest.db"
+            init_db(db_path)
+            with connect(db_path) as conn:
+                conn.execute(
+                    """
+                    INSERT INTO items (
+                        url, title, source, venue, category, published_at, fetched_at,
+                        status, score, summary, why_relevant, content_hash
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        "https://example.test/trust", "Screening method", "Test source", "Test journal",
+                        "paper", "2026-07-31T10:00:00+00:00", "2026-07-31T10:00:00+00:00",
+                        "reviewed", 0.0, "A clinically targeted screening method.", "semantic review", "trust",
+                    ),
+                )
+
+            with patch.object(drafts, "datetime", FixedDatetime):
+                html = drafts.generate_template_draft(db_path, root / "drafts").read_text()
+
+            self.assertIn("Screening method", html)
+
 
 if __name__ == "__main__":
     unittest.main()
