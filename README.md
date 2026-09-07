@@ -88,11 +88,11 @@ The digest automation should:
 
 1. Run `python3 -m digest.cli run-digest` to collect keyword-filtered candidates and write [review_queue.md](/Users/gao05/Documents/Playground/ai-early-cancer-digest/review_queue.md).
 2. Codex reads each candidate's title, abstract, or job description, then marks it `reviewed` or `rejected`.
-3. Generate `drafts/YYYY-MM-DD.html` and `drafts/YYYY-MM-DD.txt` from `reviewed` items only, using the editable templates and item limits in the setup page.
+3. Generate `drafts/YYYY-MM-DD.html` and `drafts/YYYY-MM-DD.txt`: reviewed papers appear once, while reviewed or previously drafted Funding and Jobs remain eligible during their configured windows.
 4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html).
 5. Keep factual statements tied to the linked sources, and do not send anything automatically.
 
-Paper selection uses the preceding seven days. Funding and jobs use the preceding 30 days. The item cap for each category comes from the editable configuration; it is not silently changed by the command line.
+Paper selection uses the preceding seven days and does not repeat an already drafted paper. Funding and Jobs use the preceding 30 days and repeat in each digest while their source still lists them and they remain inside that window. The item cap for each category comes from the editable configuration; it is not silently changed by the command line.
 
 ## Notes on source quality
 

@@ -324,7 +324,10 @@ def generate_template_draft(
             f"""
             SELECT id, title, source, venue, category, summary, why_relevant, url, score
             FROM items
-            WHERE status = 'reviewed'
+            WHERE (
+                    (category = 'paper' AND status = 'reviewed')
+                    OR (category IN ('funding', 'job') AND status IN ('reviewed', 'drafted'))
+                  )
               AND ({category_filter_sql})
             ORDER BY category, score DESC, COALESCE(published_at, fetched_at) DESC
             """,

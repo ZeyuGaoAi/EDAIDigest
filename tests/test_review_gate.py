@@ -130,6 +130,38 @@ class ReviewGateTests(unittest.TestCase):
 
             self.assertIn("Screening method", html)
 
+    def test_drafted_funding_and_jobs_repeat_within_their_window_but_papers_do_not(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            db_path = root / "digest.db"
+            init_db(db_path)
+            with connect(db_path) as conn:
+                for category, title in (
+                    ("paper", "Previously sent paper"),
+                    ("funding", "Open early cancer funding"),
+                    ("job", "Open early cancer job"),
+                ):
+                    conn.execute(
+                        """
+                        INSERT INTO items (
+                            url, title, source, venue, category, published_at, fetched_at,
+                            status, score, summary, why_relevant, content_hash
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            f"https://example.test/{category}", title, "Test source", "Test venue", category,
+                            "2026-07-31T10:00:00+00:00", "2026-07-31T10:00:00+00:00",
+                            "drafted", 10.0, "Cancer early detection opportunity.", "test", category,
+                        ),
+                    )
+
+            with patch.object(drafts, "datetime", FixedDatetime):
+                html = drafts.generate_template_draft(db_path, root / "drafts").read_text()
+
+            self.assertNotIn("Previously sent paper", html)
+            self.assertIn("Open early cancer funding", html)
+            self.assertIn("Open early cancer job", html)
+
 
 if __name__ == "__main__":
     unittest.main()

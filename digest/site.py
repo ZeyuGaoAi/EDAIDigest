@@ -167,6 +167,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           <input id="workflow-review" value="{workflow_review}">
         </div>
       </div>
+      <p class="muted">Delivery retention: papers appear once after review; active funding calls and jobs repeat while inside their configured lookback windows.</p>
 
       <label for="body-template">Email Body Template</label>
       <p class="muted">Available placeholders: {{date}}, {{subject}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}, {{sources}}.</p>
