@@ -97,10 +97,8 @@ Paper selection uses the preceding seven days and does not repeat an already dra
 ## Notes on source quality
 
 - The default `paper` sources combine a targeted arXiv feed across `cs.AI`, `cs.LG`, `cs.CV`, and `stat.ML`; medRxiv oncology preprints; broad PubMed-indexed published papers; and a curated PubMed query targeting high-impact journal families such as Nature, Science, Cell, Cancer Discovery, Lancet, and JAMA. The high-impact query searches the preceding 45 issue-publication days, so online-first articles enter when their issue is released even if PubMed ranks them far behind newly indexed records. The digest still applies its configured weekly window before publication. Published sources rank ahead of the combined preprint pool, which is then ordered by relevance and recency within the overall paper limit.
-- `funding` now includes live feeds from Cancer Research UK news, UKRI opportunities, and the NIH Guide for Grants and Contracts.
+- `funding` includes Cancer Research UK news, UKRI opportunities, NIH/NCI cancer opportunities through the public Grants.gov API, and the ACED Manchester and Cambridge funding pages.
 - `job` now includes a Cambridge research-vacancies page scrape, a jobs.ac.uk cancer-and-AI search scrape, and the manual watchlist.
-- The default `funding` feed currently uses Cancer Research UK news as a placeholder source stream.
-- The default `job` source is [data/manual_jobs.json](/Users/gao05/Documents/Playground/ai-early-cancer-digest/data/manual_jobs.json) so the pipeline can already run before a site-specific scraper is added.
 - Heuristic relevance is intentionally strict for `paper` items to avoid false positives like generic AI screening papers that are unrelated to cancer.
 
 ## If you move the folder

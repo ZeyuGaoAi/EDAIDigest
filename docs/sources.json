@@ -49,10 +49,12 @@
     "url": "https://www.ukri.org/opportunity/feed/"
   },
   {
-    "name": "NIH Funding Opportunities",
+    "name": "NIH Cancer Funding Opportunities (Grants.gov)",
     "category": "funding",
-    "kind": "rss",
-    "url": "https://grants.nih.gov/grants/guide/newsfeed/fundingopps.xml"
+    "kind": "grants_gov",
+    "agency": "HHS-NIH11",
+    "term": "cancer",
+    "max_items": 50
   },
   {
     "name": "ACED Manchester Funding Opportunities",

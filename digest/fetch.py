@@ -8,7 +8,9 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from time import sleep
 from typing import Any
+from urllib.error import URLError
 from urllib.parse import urlencode, urljoin
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
@@ -17,7 +19,8 @@ from digest.db import connect
 from digest.relevance import score_relevance, why_relevant
 
 
-USER_AGENT = "ai-early-cancer-digest/0.1"
+USER_AGENT = "ai-early-cancer-digest/0.2"
+REQUEST_ATTEMPTS = 3
 
 
 @dataclass
@@ -41,6 +44,7 @@ class Source:
     issue_search_days: int | None = None
     follow_item_pages: bool = False
     item_title: str | None = None
+    agency: str | None = None
     kind: str = "rss"
 
 
@@ -89,10 +93,31 @@ def _entry_link(entry: ET.Element) -> str | None:
     return None
 
 
+def _request(request: Request) -> str:
+    """Fetch a public endpoint, tolerating short-lived DNS and network failures."""
+    for attempt in range(REQUEST_ATTEMPTS):
+        try:
+            with urlopen(request, timeout=30) as response:
+                return response.read().decode("utf-8")
+        except (URLError, TimeoutError):
+            if attempt == REQUEST_ATTEMPTS - 1:
+                raise
+            sleep(attempt + 1)
+    raise RuntimeError("Request retry loop ended unexpectedly")
+
+
 def _request_text(url: str) -> str:
-    request = Request(url, headers={"User-Agent": USER_AGENT})
-    with urlopen(request, timeout=30) as response:
-        return response.read().decode("utf-8")
+    return _request(Request(url, headers={"User-Agent": USER_AGENT}))
+
+
+def _request_json(url: str, payload: dict[str, Any]) -> dict[str, Any]:
+    request = Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "User-Agent": USER_AGENT},
+    )
+    text = _request(request).strip()
+    return json.loads(text) if text else {}
 
 
 def _html_to_visible_text(html: str) -> str:
@@ -404,7 +429,12 @@ def fetch_biorxiv_api(source: Source) -> list[dict[str, Any]]:
     url = (
         f"https://api.biorxiv.org/details/{source.server}/{start_date.isoformat()}/{end_date.isoformat()}/0/json{query}"
     )
-    payload = json.loads(_request_text(url))
+    # The API returns an empty body rather than an empty collection when a
+    # date range has no records. Treat that response as no results.
+    response_text = _request_text(url).strip()
+    if not response_text:
+        return []
+    payload = json.loads(response_text)
     collection = payload.get("collection", [])
 
     items: list[dict[str, Any]] = []
@@ -424,6 +454,67 @@ def fetch_biorxiv_api(source: Source) -> list[dict[str, Any]]:
         )
         if len(items) >= source.max_items:
             break
+    return items
+
+
+def _grants_gov_date(value: str | None) -> str | None:
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%m/%d/%Y").replace(tzinfo=UTC).isoformat()
+    except ValueError:
+        return _text_or_none(value)
+
+
+def fetch_grants_gov(source: Source) -> list[dict[str, Any]]:
+    """Fetch active NIH opportunities via Grants.gov's public search API."""
+    if not source.agency:
+        raise ValueError(f"Source {source.name} does not define an agency")
+
+    payload: dict[str, Any] = {
+        "rows": source.max_items,
+        "agencies": source.agency,
+        "oppStatuses": "posted|forecasted",
+    }
+    if source.term:
+        payload["keyword"] = source.term
+    search = _request_json("https://api.grants.gov/v1/api/search2", payload)
+    if search.get("errorcode") not in (None, 0):
+        raise ValueError(search.get("msg") or "Grants.gov search failed")
+
+    hits = search.get("data", {}).get("oppHits", [])
+    if not isinstance(hits, list):
+        raise ValueError("Grants.gov returned an invalid opportunity list")
+
+    items: list[dict[str, Any]] = []
+    for hit in hits:
+        opportunity_id = hit.get("id")
+        if not opportunity_id:
+            continue
+        detail = _request_json(
+            "https://api.grants.gov/v1/api/fetchOpportunity",
+            {"opportunityId": opportunity_id},
+        )
+        if detail.get("errorcode") not in (None, 0):
+            continue
+        record = detail.get("data", {})
+        synopsis = record.get("synopsis") or record.get("forecast") or {}
+        title = _text_or_none(record.get("opportunityTitle")) or _text_or_none(hit.get("title"))
+        if not title:
+            continue
+        summary = _text_or_none(synopsis.get("synopsisDesc") or synopsis.get("forecastDesc"))
+        closing_date = _text_or_none(synopsis.get("responseDate"))
+        if closing_date:
+            summary = f"{summary or ''}\n\nClosing date: {closing_date}".strip()
+        items.append(
+            {
+                "title": title,
+                "summary": summary,
+                "url": f"https://www.grants.gov/search-results-detail/{opportunity_id}",
+                "venue": _text_or_none(synopsis.get("agencyName")) or _text_or_none(hit.get("agency")),
+                "published_at": _grants_gov_date(_text_or_none(hit.get("openDate"))),
+            }
+        )
     return items
 
 
@@ -656,6 +747,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_html_sections(source)
             elif source.kind == "biorxiv_api":
                 items = fetch_biorxiv_api(source)
+            elif source.kind == "grants_gov":
+                items = fetch_grants_gov(source)
             elif source.kind == "pubmed":
                 items = fetch_pubmed(source)
             elif source.kind == "manual":

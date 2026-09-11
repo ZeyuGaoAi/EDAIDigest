@@ -9,6 +9,8 @@ from digest.fetch import (
     Source,
     _pubmed_date,
     _pubmed_search_term,
+    fetch_biorxiv_api,
+    fetch_grants_gov,
     fetch_html_page,
     fetch_html_sections,
     upsert_items,
@@ -131,6 +133,47 @@ class HtmlPageSourceTests(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["title"], "ACED Clinical Research Training Fellowship 2027")
         self.assertIn("three-year PhD", items[0]["summary"])
+
+
+class ExternalSourceTests(unittest.TestCase):
+    def test_empty_medrxiv_response_means_no_recent_preprints(self):
+        source = Source(
+            name="medRxiv",
+            category="paper",
+            kind="biorxiv_api",
+            server="medrxiv",
+            recent_days=30,
+        )
+        with patch("digest.fetch._request_text", return_value=""):
+            self.assertEqual(fetch_biorxiv_api(source), [])
+
+    def test_grants_gov_fetches_nih_opportunity_details(self):
+        source = Source(
+            name="NIH",
+            category="funding",
+            kind="grants_gov",
+            agency="HHS-NIH11",
+            term="cancer",
+        )
+        search = {"errorcode": 0, "data": {"oppHits": [{"id": "123", "title": "Fallback title", "openDate": "09/01/2026", "agency": "NIH"}]}}
+        detail = {
+            "errorcode": 0,
+            "data": {
+                "opportunityTitle": "AI for Early Cancer Detection",
+                "synopsis": {
+                    "agencyName": "National Institutes of Health",
+                    "synopsisDesc": "Funds AI methods for cancer screening.",
+                    "responseDate": "Oct 1, 2026",
+                },
+            },
+        }
+        with patch("digest.fetch._request_json", side_effect=[search, detail]):
+            items = fetch_grants_gov(source)
+
+        self.assertEqual(items[0]["title"], "AI for Early Cancer Detection")
+        self.assertEqual(items[0]["published_at"], "2026-09-01T00:00:00+00:00")
+        self.assertIn("Closing date: Oct 1, 2026", items[0]["summary"])
+        self.assertEqual(items[0]["url"], "https://www.grants.gov/search-results-detail/123")
 
 
 if __name__ == "__main__":
