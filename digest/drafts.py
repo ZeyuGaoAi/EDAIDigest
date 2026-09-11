@@ -44,7 +44,9 @@ def _category_cutoff(
     now: datetime | None = None,
 ) -> str:
     days = lookback_days.get(category, DEFAULT_LOOKBACK_DAYS[category])
-    return ((now or datetime.now(UTC)) - timedelta(days=days)).isoformat()
+    # Publication feeds often provide a calendar date without a time. Compare
+    # whole dates so the first day of a weekly window is not lost lexically.
+    return ((now or datetime.now(UTC)) - timedelta(days=days)).date().isoformat()
 
 
 def _category_filter_sql(
@@ -54,10 +56,10 @@ def _category_filter_sql(
     clauses: list[str] = []
     params: list[str] = []
     now = now or datetime.now(UTC)
-    window_end = now + timedelta(days=1)
+    window_end = now.date().isoformat()
     for category in ("paper", "funding", "job"):
-        clauses.append("(category = ? AND COALESCE(published_at, fetched_at) >= ? AND COALESCE(published_at, fetched_at) <= ?)")
-        params.extend([category, _category_cutoff(category, lookback_days, now), window_end.isoformat()])
+        clauses.append("(category = ? AND date(COALESCE(published_at, fetched_at)) >= ? AND date(COALESCE(published_at, fetched_at)) <= ?)")
+        params.extend([category, _category_cutoff(category, lookback_days, now), window_end])
     return " OR ".join(clauses), params
 
 
