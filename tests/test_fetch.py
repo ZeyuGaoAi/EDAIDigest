@@ -10,6 +10,7 @@ from digest.fetch import (
     _pubmed_date,
     _pubmed_search_term,
     fetch_biorxiv_api,
+    fetch_crossref,
     fetch_grants_gov,
     fetch_html_page,
     fetch_html_sections,
@@ -174,6 +175,42 @@ class ExternalSourceTests(unittest.TestCase):
         self.assertEqual(items[0]["published_at"], "2026-09-01T00:00:00+00:00")
         self.assertIn("Closing date: Oct 1, 2026", items[0]["summary"])
         self.assertEqual(items[0]["url"], "https://www.grants.gov/search-results-detail/123")
+
+    def test_crossref_keeps_only_the_configured_conference(self):
+        source = Source(
+            name="CVPR",
+            category="paper",
+            kind="crossref",
+            term="cancer machine learning",
+            container_title="CVPR",
+            container_regex=r"CVPR|Computer Vision and Pattern Recognition",
+            recent_days=30,
+        )
+        payload = {
+            "message": {
+                "items": [
+                    {
+                        "title": ["AI for early lung cancer screening"],
+                        "DOI": "10.1234/cvpr.1",
+                        "container-title": ["2026 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)"],
+                        "abstract": "A screening method.",
+                        "published": {"date-parts": [[2026, 6, 10]]},
+                    },
+                    {
+                        "title": ["Unrelated conference paper"],
+                        "DOI": "10.1234/other.1",
+                        "container-title": ["Other Conference"],
+                        "published": {"date-parts": [[2026, 6, 10]]},
+                    },
+                ]
+            }
+        }
+        with patch("digest.fetch._request_text", return_value=__import__("json").dumps(payload)):
+            items = fetch_crossref(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["venue"], "2026 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)")
+        self.assertEqual(items[0]["url"], "https://doi.org/10.1234/cvpr.1")
 
 
 if __name__ == "__main__":

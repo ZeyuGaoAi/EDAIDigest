@@ -45,6 +45,9 @@ class Source:
     follow_item_pages: bool = False
     item_title: str | None = None
     agency: str | None = None
+    container_title: str | None = None
+    container_regex: str | None = None
+    event_regex: str | None = None
     kind: str = "rss"
 
 
@@ -518,6 +521,78 @@ def fetch_grants_gov(source: Source) -> list[dict[str, Any]]:
     return items
 
 
+def _crossref_date(item: dict[str, Any]) -> str | None:
+    for key in ("published", "published-print", "published-online", "issued"):
+        date_parts = item.get(key, {}).get("date-parts", [])
+        if not date_parts or not date_parts[0]:
+            continue
+        values = date_parts[0]
+        try:
+            year = int(values[0])
+            month = int(values[1]) if len(values) > 1 else 1
+            day = int(values[2]) if len(values) > 2 else 1
+            return datetime(year, month, day, tzinfo=UTC).isoformat()
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def fetch_crossref(source: Source) -> list[dict[str, Any]]:
+    """Fetch recent, venue-validated proceedings metadata from Crossref."""
+    if not source.recent_days:
+        raise ValueError(f"Source {source.name} does not define recent_days")
+
+    end_date = datetime.now(UTC).date()
+    start_date = end_date - timedelta(days=source.recent_days)
+    params: dict[str, str | int] = {
+        "filter": (
+            f"from-pub-date:{start_date.isoformat()},"
+            f"until-pub-date:{end_date.isoformat()},type:proceedings-article"
+        ),
+        "rows": source.max_items,
+        "sort": "published",
+        "order": "desc",
+    }
+    if source.term:
+        params["query.bibliographic"] = source.term
+    if source.container_title:
+        params["query.container-title"] = source.container_title
+    payload = json.loads(_request_text("https://api.crossref.org/works?" + urlencode(params)))
+    records = payload.get("message", {}).get("items", [])
+    if not isinstance(records, list):
+        raise ValueError("Crossref returned an invalid works list")
+
+    container_pattern = re.compile(source.container_regex, re.IGNORECASE) if source.container_regex else None
+    event_pattern = re.compile(source.event_regex, re.IGNORECASE) if source.event_regex else None
+    items: list[dict[str, Any]] = []
+    for record in records:
+        title_values = record.get("title") or []
+        title = _text_or_none(title_values[0] if title_values else None)
+        doi = _text_or_none(record.get("DOI"))
+        container_values = record.get("container-title") or []
+        venue = _text_or_none(container_values[0] if container_values else None)
+        event_name = _text_or_none((record.get("event") or {}).get("name"))
+        if not title or not doi:
+            continue
+        if container_pattern and not container_pattern.search(venue or ""):
+            continue
+        if event_pattern and not event_pattern.search(event_name or ""):
+            continue
+        abstract = _text_or_none(record.get("abstract"))
+        if event_name:
+            abstract = f"{abstract or ''}\n\nConference: {event_name}".strip()
+        items.append(
+            {
+                "title": title,
+                "summary": abstract,
+                "url": f"https://doi.org/{doi}",
+                "venue": venue or event_name or source.name,
+                "published_at": _crossref_date(record),
+            }
+        )
+    return items
+
+
 def fetch_manual_file(source: Source, config_path: Path) -> list[dict[str, Any]]:
     if not source.path:
         raise ValueError(f"Source {source.name} does not define a path")
@@ -749,6 +824,8 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_biorxiv_api(source)
             elif source.kind == "grants_gov":
                 items = fetch_grants_gov(source)
+            elif source.kind == "crossref":
+                items = fetch_crossref(source)
             elif source.kind == "pubmed":
                 items = fetch_pubmed(source)
             elif source.kind == "manual":
