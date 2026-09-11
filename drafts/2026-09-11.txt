@@ -1,0 +1,35 @@
+Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+AI for Early Cancer Digest - 2026-09-11
+
+Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+
+Papers
+
+• Artificial Intelligence Algorithms for the Detection of Pathologies Related to Lung Cancer through Image Analysis using Convolutional Neural Networks and Data Augmentation: a systematic mapping of the literature
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2609.10652v1 · HTML
+
+• GRIPNet: Gaussian Radial Intensity Prior Guided Architecture for Pulmonary Nodule Detection in CT
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2609.11312v1 · HTML
+
+Funding
+
+• ACED Clinical Research Training Fellowship (2027)
+
+Source: ACED Manchester Funding Opportunities · View opportunity
+
+Jobs
+
+• Principal Bioinformatician
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+• PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints | Funding: Cancer Research UK News, UKRI Opportunities, NIH Funding Opportunities, ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist
