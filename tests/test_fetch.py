@@ -2,13 +2,16 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+from urllib.error import URLError
+import socket
 
 from digest.db import connect, init_db
 from digest.fetch import (
     Source,
     _pubmed_date,
     _pubmed_search_term,
+    _request,
     fetch_biorxiv_api,
     fetch_crossref,
     fetch_grants_gov,
@@ -137,6 +140,18 @@ class HtmlPageSourceTests(unittest.TestCase):
 
 
 class ExternalSourceTests(unittest.TestCase):
+    def test_request_retries_a_dns_failure_through_public_dns(self):
+        response = MagicMock()
+        response.read.return_value = b"resolved"
+        response.__enter__.return_value = response
+        response.__exit__.return_value = False
+        with (
+            patch("digest.fetch.urlopen", side_effect=[URLError(socket.gaierror()), response]),
+            patch("digest.fetch._request_via_public_dns", return_value="resolved") as fallback,
+        ):
+            self.assertEqual(_request(__import__("urllib.request", fromlist=["Request"]).Request("https://example.test")), "resolved")
+        fallback.assert_called_once()
+
     def test_empty_medrxiv_response_means_no_recent_preprints(self):
         source = Source(
             name="medRxiv",

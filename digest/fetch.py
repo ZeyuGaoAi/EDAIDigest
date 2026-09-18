@@ -4,6 +4,7 @@ import hashlib
 from html.parser import HTMLParser
 import json
 import re
+import socket
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
@@ -11,7 +12,7 @@ from pathlib import Path
 from time import sleep
 from typing import Any
 from urllib.error import URLError
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode, urljoin, urlparse
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
@@ -102,11 +103,63 @@ def _request(request: Request) -> str:
         try:
             with urlopen(request, timeout=30) as response:
                 return response.read().decode("utf-8")
-        except (URLError, TimeoutError):
+        except URLError as exc:
+            if isinstance(exc.reason, socket.gaierror):
+                fallback = _request_via_public_dns(request)
+                if fallback is not None:
+                    return fallback
+            if attempt == REQUEST_ATTEMPTS - 1:
+                raise
+            sleep(attempt + 1)
+        except TimeoutError:
             if attempt == REQUEST_ATTEMPTS - 1:
                 raise
             sleep(attempt + 1)
     raise RuntimeError("Request retry loop ended unexpectedly")
+
+
+def _public_dns_ipv4(hostname: str) -> str | None:
+    """Resolve a temporarily failing host through Google's public DoH endpoint."""
+    query = urlencode({"name": hostname, "type": "A"})
+    request = Request(
+        f"https://dns.google/resolve?{query}",
+        headers={"Accept": "application/dns-json", "User-Agent": USER_AGENT},
+    )
+    try:
+        with urlopen(request, timeout=15) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (URLError, TimeoutError, json.JSONDecodeError):
+        return None
+    for answer in payload.get("Answer", []):
+        if answer.get("type") == 1 and isinstance(answer.get("data"), str):
+            return answer["data"]
+    return None
+
+
+def _request_via_public_dns(request: Request) -> str | None:
+    """Retry HTTPS with a public DNS answer while retaining Host and TLS SNI."""
+    hostname = urlparse(request.full_url).hostname
+    if not hostname:
+        return None
+    address = _public_dns_ipv4(hostname)
+    if not address:
+        return None
+
+    original_getaddrinfo = socket.getaddrinfo
+
+    def resolve(name, port, *args, **kwargs):
+        if name == hostname:
+            return original_getaddrinfo(address, port, *args, **kwargs)
+        return original_getaddrinfo(name, port, *args, **kwargs)
+
+    socket.getaddrinfo = resolve
+    try:
+        with urlopen(request, timeout=30) as response:
+            return response.read().decode("utf-8")
+    except (URLError, TimeoutError):
+        return None
+    finally:
+        socket.getaddrinfo = original_getaddrinfo
 
 
 def _request_text(url: str) -> str:

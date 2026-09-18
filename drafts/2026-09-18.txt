@@ -1,0 +1,51 @@
+Selected updates on AI for early cancer detection, screening, funding, and jobs.
+
+AI for Early Cancer Digest - 2026-09-18
+
+Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+
+Papers
+
+• Advancing cancer detection and treatment using longitudinal routine clinical data.
+
+Published in: Cell · DOI / ID: PMID:42508404 · HTML
+
+• Development and validation of a serum peptidomic signature for early detection of asymptomatic ovarian cancer: A multi-center prospective study.
+
+Published in: Cell reports. Medicine · DOI / ID: PMID:42664958 · HTML
+
+• A Dual Cross-Attention Framework for Colposcopic CIN Grading and Swede Score Prediction Using a New Multi-Center Dataset
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2609.12827v1 · HTML
+
+• ProtoCAM: Interpretable Few-Shot Mask-Guided Prototypical Learning for Breast Lesion Classification in Ultrasound Imaging
+
+Published in: arXiv (preprint) · DOI / ID: arXiv:2609.13340v1 · HTML
+
+Funding
+
+• ACED Clinical Research Training Fellowship (2027)
+
+Source: ACED Manchester Funding Opportunities · View opportunity
+
+• Advancing innovation in accelerated cancer diagnosis
+
+Source: UKRI Opportunities · View opportunity
+
+Jobs
+
+• PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+• Principal Bioinformatician
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+• Research Associate (Fixed Term)
+
+Source: jobs.ac.uk - Cancer AI Jobs · View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist
