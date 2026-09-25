@@ -1,50 +1,59 @@
+Early detection briefing   /   2026-09-25
+
+AI for Early Cancer
+Digest
+
+Selected papers, funding calls and research roles for the early detection community.
+
 This digest is based on an automated search supported by the ESAC Early Detection Working Group.
 
-AI for Early Cancer Digest - 2026-09-25
+🔬 Papers
 
-Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days
+Published in the past 7 days
 
-Papers
+Large-scale esophageal cancer screening through noncontrast computed tomography and artificial intelligence.
 
-• Large-scale esophageal cancer screening through noncontrast computed tomography and artificial intelligence.
+↳ Nature medicine  ·  PMID:42773211  ·  HTML
 
-Published in: Nature medicine · DOI / ID: PMID:42773211 · HTML
+Foundation model embeddings capture pre-diagnostic changes on screening mammograms
 
-• Foundation model embeddings capture pre-diagnostic changes on screening mammograms
+↳ arXiv (preprint)  ·  arXiv:2609.26605v1  ·  HTML
 
-Published in: arXiv (preprint) · DOI / ID: arXiv:2609.26605v1 · HTML
+💡 Funding
 
-Funding
+Opportunities from the past 30 days
 
-• ACED Clinical Research Training Fellowship (2027)
+ACED Clinical Research Training Fellowship (2027)
 
-Source: ACED Manchester Funding Opportunities · View opportunity
+↳ ACED Manchester Funding Opportunities  ·  View opportunity
 
-• Apply AI: Piloting AI-based image screening in medical centres
+Apply AI: Piloting AI-based image screening in medical centres
 
-Source: EU Funding & Tenders - Open Cancer and Screening Calls · View opportunity
+↳ EU Funding & Tenders - Open Cancer and Screening Calls  ·  View opportunity
 
-Jobs
+💼 Jobs
 
-• PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
+Roles from the past 30 days
 
-Source: jobs.ac.uk - Cancer AI Jobs · View role
+PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data
 
-• PhD candidate 'Multimodal and Agentic AI for Precision Prostate Cancer Care'
+↳ jobs.ac.uk - Cancer AI Jobs  ·  View role
 
-Source: AcademicTransfer - Netherlands Cancer Research Jobs · View role
+PhD candidate 'Multimodal and Agentic AI for Precision Prostate Cancer Care'
 
-• Principal Bioinformatician
+↳ AcademicTransfer - Netherlands Cancer Research Jobs  ·  View role
 
-Source: jobs.ac.uk - Cancer AI Jobs · View role
+Principal Bioinformatician
 
-• Research Associate (Fixed Term)
+↳ jobs.ac.uk - Cancer AI Jobs  ·  View role
 
-Source: jobs.ac.uk - Cancer AI Jobs · View role
+Research Associate (Fixed Term)
 
-• Postdoctoral Researcher - Computational & Translational Analysis of Pulmonary Nodules
+↳ jobs.ac.uk - Cancer AI Jobs  ·  View role
 
-Source: DKFZ - German Cancer Research Center Jobs · View role
+Postdoctoral Researcher - Computational & Translational Analysis of Pulmonary Nodules
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
 
 Reply this email for any feedback!
 

@@ -6,6 +6,43 @@ from pathlib import Path
 from typing import Any
 
 
+DEFAULT_EMAIL_TEMPLATE = {
+    "body_template": '''<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;">
+<tr><td align="center" style="padding: 24px 12px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620" style="width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;">
+<tr><td style="padding: 28px 34px 14px;">
+<a href="https://esac-network.eu/" style="text-decoration: none;"><img src="https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png" width="132" height="74" alt="ESAC" style="display: block; width: 132px; height: 74px; border: 0;"></a>
+<p style="margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Early detection briefing &nbsp; / &nbsp; {date}</p>
+<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">AI for Early Cancer<br>Digest</h1>
+<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">Selected papers, funding calls and research roles for the early detection community.</p>
+<p style="margin: 0; color: #696273; font-size: 12px; line-height: 1.6;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
+</td></tr>
+<tr><td style="padding: 8px 34px 30px;">
+<h2 style="margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">🔬 Papers</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Published in the past {paper_days} days</p>
+{papers}
+<h2 style="margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">💡 Funding</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Opportunities from the past {funding_days} days</p>
+{funding}
+<h2 style="margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">💼 Jobs</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Roles from the past {job_days} days</p>
+{jobs}
+</td></tr>
+<tr><td style="padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;">
+<p style="margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;">Reply this email for any feedback!</p>
+<p style="margin: 0; color: #817987; font-size: 11px; line-height: 1.6;"><em>Sources monitored: {sources}</em></p>
+</td></tr>
+</table>
+</td></tr>
+</table>''',
+    "item_templates": {
+        "paper": '<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">\n<a href="{html}" style="color: #292537; font-family: Georgia, \'Times New Roman\', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">{title}</a><br>\n<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ {venue} &nbsp;·&nbsp; {doi_or_id} &nbsp;·&nbsp; <a href="{html}" style="color: #7b4d89;">HTML</a></span>\n</div>',
+        "funding": '<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">\n<a href="{link}" style="color: #292537; font-family: Georgia, \'Times New Roman\', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">{title}</a><br>\n<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ {source} &nbsp;·&nbsp; <a href="{link}" style="color: #7b4d89;">View opportunity</a></span>\n</div>',
+        "job": '<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">\n<a href="{link}" style="color: #292537; font-family: Georgia, \'Times New Roman\', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">{title}</a><br>\n<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ {source} &nbsp;·&nbsp; <a href="{link}" style="color: #7b4d89;">View role</a></span>\n</div>',
+    },
+}
+
+
 DEFAULT_SETTINGS: dict[str, Any] = {
     "cadence": {
         "paper": {
@@ -41,14 +78,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "recipient_emails": ["zg323@cam.ac.uk"],
         "email_subject": "AI for Early Cancer Digest | {date}",
     },
-    "email_template": {
-        "body_template": '<p style="color: #5b6470; margin: 0 0 8px;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>\n<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - {date}</h1>\n<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days</p>\n\n<h2 style="margin: 24px 0 12px;">Papers</h2>\n{papers}\n\n<h2 style="margin: 24px 0 12px;">Funding</h2>\n{funding}\n\n<h2 style="margin: 24px 0 12px;">Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>\n<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: {sources}</em></p>',
-        "item_templates": {
-            "paper": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{html}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: {venue} · DOI / ID: {doi_or_id} · <a href="{html}">HTML</a></span>\n</div>',
-            "funding": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View opportunity</a></span>\n</div>',
-            "job": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View role</a></span>\n</div>',
-        },
-    },
+    "email_template": deepcopy(DEFAULT_EMAIL_TEMPLATE),
 }
 
 

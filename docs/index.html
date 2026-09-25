@@ -303,7 +303,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">319</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">306</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">694</span></div></div>
       <div class="status-row"><span class="chip">drafted: 54</span><span class="chip">expired: 226</span><span class="chip">new: 1016</span><span class="chip">rejected: 23</span></div>
-      <p class="muted">Last generated: 2026-09-25 10:48 UTC</p>
+      <p class="muted">Last generated: 2026-09-25 11:18 UTC</p>
     </section>
 
     <section class="panel">
@@ -356,38 +356,51 @@
       <h2>Email Body Template</h2>
       <p class="muted">Current draft structure for reviewer-facing email generation.</p>
       <pre class="template-block">Email body template:
-&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
-&lt;h1 style=&quot;margin: 0 0 8px;&quot;&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
-&lt;p style=&quot;color: #5b6470; margin: 0 0 24px;&quot;&gt;Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days&lt;/p&gt;
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Papers&lt;/h2&gt;
+&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot; style=&quot;background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;&quot;&gt;
+&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding: 24px 12px;&quot;&gt;
+&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;620&quot; style=&quot;width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 28px 34px 14px;&quot;&gt;
+&lt;a href=&quot;https://esac-network.eu/&quot; style=&quot;text-decoration: none;&quot;&gt;&lt;img src=&quot;https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png&quot; width=&quot;132&quot; height=&quot;74&quot; alt=&quot;ESAC&quot; style=&quot;display: block; width: 132px; height: 74px; border: 0;&quot;&gt;&lt;/a&gt;
+&lt;p style=&quot;margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;&quot;&gt;Early detection briefing &amp;nbsp; / &amp;nbsp; {date}&lt;/p&gt;
+&lt;h1 style=&quot;margin: 0 0 16px; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 34px; line-height: 1.16; font-weight: 700;&quot;&gt;AI for Early Cancer&lt;br&gt;Digest&lt;/h1&gt;
+&lt;p style=&quot;margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;&quot;&gt;Selected papers, funding calls and research roles for the early detection community.&lt;/p&gt;
+&lt;p style=&quot;margin: 0; color: #696273; font-size: 12px; line-height: 1.6;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 8px 34px 30px;&quot;&gt;
+&lt;h2 style=&quot;margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;🔬 Papers&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Published in the past {paper_days} days&lt;/p&gt;
 {papers}
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Funding&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💡 Funding&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Opportunities from the past {funding_days} days&lt;/p&gt;
 {funding}
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Jobs&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💼 Jobs&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Roles from the past {job_days} days&lt;/p&gt;
 {jobs}
-
-&lt;p style=&quot;color: #a33d2f; margin-top: 28px;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
-&lt;p style=&quot;color: #5b6470; font-size: 12px; margin-top: 18px;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;&quot;&gt;
+&lt;p style=&quot;margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
+&lt;p style=&quot;margin: 0; color: #817987; font-size: 11px; line-height: 1.6;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
 
 Paper item template:
-&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{html}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Published in: {venue} · DOI / ID: {doi_or_id} · &lt;a href=&quot;{html}&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
+&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{html}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {venue} &amp;nbsp;·&amp;nbsp; {doi_or_id} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{html}&quot; style=&quot;color: #7b4d89;&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;
 
 Funding item template:
-&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
+&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;
 
 Job item template:
-&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
+&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;</pre>
     </section>
 
@@ -531,62 +544,75 @@ Job item template:
         <details class="draft-card" open>
           <summary>
             <span>2026-09-25</span>
-            <span>AI for Early Cancer Digest - 2026-09-25</span>
+            <span>AI for Early Cancer Digest</span>
           </summary>
-          <div class="draft-body"><p style="color: #5b6470; margin: 0 0 8px;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
-<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - 2026-09-25</h1>
-<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days</p>
-
-<h2 style="margin: 24px 0 12px;">Papers</h2>
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://pubmed.ncbi.nlm.nih.gov/42773211/" style="color: #16212b;">Large-scale esophageal cancer screening through noncontrast computed tomography and artificial intelligence.</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: Nature medicine · DOI / ID: PMID:42773211 · <a href="https://pubmed.ncbi.nlm.nih.gov/42773211/">HTML</a></span>
+          <div class="draft-body"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;">
+<tr><td align="center" style="padding: 24px 12px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620" style="width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;">
+<tr><td style="padding: 28px 34px 14px;">
+<a href="https://esac-network.eu/" style="text-decoration: none;"><img src="https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png" width="132" height="74" alt="ESAC" style="display: block; width: 132px; height: 74px; border: 0;"></a>
+<p style="margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Early detection briefing &nbsp; / &nbsp; 2026-09-25</p>
+<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">AI for Early Cancer<br>Digest</h1>
+<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">Selected papers, funding calls and research roles for the early detection community.</p>
+<p style="margin: 0; color: #696273; font-size: 12px; line-height: 1.6;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
+</td></tr>
+<tr><td style="padding: 8px 34px 30px;">
+<h2 style="margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">🔬 Papers</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Published in the past 7 days</p>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://pubmed.ncbi.nlm.nih.gov/42773211/" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Large-scale esophageal cancer screening through noncontrast computed tomography and artificial intelligence.</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ Nature medicine &nbsp;·&nbsp; PMID:42773211 &nbsp;·&nbsp; <a href="https://pubmed.ncbi.nlm.nih.gov/42773211/" style="color: #7b4d89;">HTML</a></span>
 </div>
 
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://arxiv.org/abs/2609.26605v1" style="color: #16212b;">Foundation model embeddings capture pre-diagnostic changes on screening mammograms</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: arXiv (preprint) · DOI / ID: arXiv:2609.26605v1 · <a href="https://arxiv.org/abs/2609.26605v1">HTML</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://arxiv.org/abs/2609.26605v1" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Foundation model embeddings capture pre-diagnostic changes on screening mammograms</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ arXiv (preprint) &nbsp;·&nbsp; arXiv:2609.26605v1 &nbsp;·&nbsp; <a href="https://arxiv.org/abs/2609.26605v1" style="color: #7b4d89;">HTML</a></span>
+</div>
+<h2 style="margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">💡 Funding</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Opportunities from the past 30 days</p>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">ACED Clinical Research Training Fellowship (2027)</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ ACED Manchester Funding Opportunities &nbsp;·&nbsp; <a href="https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/" style="color: #7b4d89;">View opportunity</a></span>
 </div>
 
-<h2 style="margin: 24px 0 12px;">Funding</h2>
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/" style="color: #16212b;">ACED Clinical Research Training Fellowship (2027)</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: ACED Manchester Funding Opportunities · <a href="https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/">View opportunity</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Apply AI: Piloting AI-based image screening in medical centres</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ EU Funding &amp; Tenders - Open Cancer and Screening Calls &nbsp;·&nbsp; <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING" style="color: #7b4d89;">View opportunity</a></span>
+</div>
+<h2 style="margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">💼 Jobs</h2>
+<p style="margin: 0 0 14px; color: #817987; font-size: 11px;">Roles from the past 30 days</p>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ jobs.ac.uk - Cancer AI Jobs &nbsp;·&nbsp; <a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" style="color: #7b4d89;">View role</a></span>
 </div>
 
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING" style="color: #16212b;">Apply AI: Piloting AI-based image screening in medical centres</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: EU Funding &amp; Tenders - Open Cancer and Screening Calls · <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING">View opportunity</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">PhD candidate &#x27;Multimodal and Agentic AI for Precision Prostate Cancer Care&#x27;</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ AcademicTransfer - Netherlands Cancer Research Jobs &nbsp;·&nbsp; <a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/" style="color: #7b4d89;">View role</a></span>
 </div>
 
-<h2 style="margin: 24px 0 12px;">Jobs</h2>
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" style="color: #16212b;">PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data">View role</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://www.jobs.ac.uk/job/DSW191/principal-bioinformatician" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Principal Bioinformatician</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ jobs.ac.uk - Cancer AI Jobs &nbsp;·&nbsp; <a href="https://www.jobs.ac.uk/job/DSW191/principal-bioinformatician" style="color: #7b4d89;">View role</a></span>
 </div>
 
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/" style="color: #16212b;">PhD candidate &#x27;Multimodal and Agentic AI for Precision Prostate Cancer Care&#x27;</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: AcademicTransfer - Netherlands Cancer Research Jobs · <a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/">View role</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://www.jobs.ac.uk/job/DSX724/research-associate-fixed-term" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Research Associate (Fixed Term)</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ jobs.ac.uk - Cancer AI Jobs &nbsp;·&nbsp; <a href="https://www.jobs.ac.uk/job/DSX724/research-associate-fixed-term" style="color: #7b4d89;">View role</a></span>
 </div>
 
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://www.jobs.ac.uk/job/DSW191/principal-bioinformatician" style="color: #16212b;">Principal Bioinformatician</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DSW191/principal-bioinformatician">View role</a></span>
+<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">
+<a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules" style="color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">Postdoctoral Researcher - Computational &amp; Translational Analysis of Pulmonary Nodules</a><br>
+<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ DKFZ - German Cancer Research Center Jobs &nbsp;·&nbsp; <a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules" style="color: #7b4d89;">View role</a></span>
 </div>
-
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://www.jobs.ac.uk/job/DSX724/research-associate-fixed-term" style="color: #16212b;">Research Associate (Fixed Term)</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DSX724/research-associate-fixed-term">View role</a></span>
-</div>
-
-<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
-<span style="color: #a33d2f;">•</span> <a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules" style="color: #16212b;">Postdoctoral Researcher - Computational &amp; Translational Analysis of Pulmonary Nodules</a><br>
-<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: DKFZ - German Cancer Research Center Jobs · <a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules">View role</a></span>
-</div>
-
-<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>
-<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding &amp; Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist</em></p></div>
+</td></tr>
+<tr><td style="padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;">
+<p style="margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;">Reply this email for any feedback!</p>
+<p style="margin: 0; color: #817987; font-size: 11px; line-height: 1.6;"><em>Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding &amp; Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist</em></p>
+</td></tr>
+</table>
+</td></tr>
+</table></div>
         </details>
 
         <details class="draft-card" >

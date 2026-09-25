@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 
 from digest.db import connect
+from digest.settings import DEFAULT_EMAIL_TEMPLATE
 
 
 VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected", "expired")
@@ -19,14 +20,6 @@ DEFAULT_EMPTY_TEXT = "<p><em>No shortlisted items yet.</em></p>"
 DEFAULT_SUBJECT_PREFIX = "AI for Early Cancer Digest"
 DEFAULT_PREHEADER = "Selected updates on AI for early cancer detection, screening, funding, and jobs."
 DEFAULT_EDITOR_NOTE = "Draft for review. This issue covers papers from the past {paper_days} days, plus funding and jobs from the past {funding_days} days."
-DEFAULT_EMAIL_TEMPLATE = {
-    "body_template": '<p style="color: #5b6470; margin: 0 0 8px;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>\n<h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - {date}</h1>\n<p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days</p>\n\n<h2 style="margin: 24px 0 12px;">Papers</h2>\n{papers}\n\n<h2 style="margin: 24px 0 12px;">Funding</h2>\n{funding}\n\n<h2 style="margin: 24px 0 12px;">Jobs</h2>\n{jobs}\n\n<p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>\n<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: {sources}</em></p>',
-    "item_templates": {
-        "paper": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{html}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Published in: {venue} · DOI / ID: {doi_or_id} · <a href="{html}">HTML</a></span>\n</div>',
-        "funding": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View opportunity</a></span>\n</div>',
-        "job": '<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">\n<span style="color: #a33d2f;">•</span> <a href="{link}" style="color: #16212b;">{title}</a><br>\n<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: {source} · <a href="{link}">View role</a></span>\n</div>',
-    },
-}
 
 
 class _SafeDict(dict):
@@ -80,7 +73,7 @@ def _canonical_title(title: str | None) -> str:
 
 
 class _HTMLToTextParser(HTMLParser):
-    block_tags = {"article", "br", "div", "h1", "h2", "h3", "h4", "li", "p", "section"}
+    block_tags = {"article", "br", "div", "h1", "h2", "h3", "h4", "li", "p", "section", "td", "tr"}
 
     def __init__(self) -> None:
         super().__init__()
@@ -116,7 +109,7 @@ def _markdownish_to_html(text: str) -> str:
         line = raw_line.strip()
         if not line:
             lines.append("")
-        elif re.search(r"</?(h[1-6]|p|article|div|section|ul|ol|li|a|strong|em)\b", line, re.IGNORECASE):
+        elif re.search(r"</?(h[1-6]|p|article|div|section|ul|ol|li|a|strong|em|table|tbody|thead|tr|td|th|img|span|br|hr)\b", line, re.IGNORECASE):
             lines.append(line)
         elif line.startswith("### "):
             lines.append(f"<h3>{escape(line[4:])}</h3>")

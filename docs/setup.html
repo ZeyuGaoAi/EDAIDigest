@@ -300,7 +300,7 @@
       <div class="hero-links">
         <a class="hero-link primary" href="./index.html">Back to Digest Archive</a>
       </div>
-      <p class="muted">Last generated: 2026-09-25 10:48 UTC</p>
+      <p class="muted">Last generated: 2026-09-25 11:18 UTC</p>
     </section>
 
     <section class="panel">
@@ -366,42 +366,55 @@
 
       <label for="body-template">Email Body Template</label>
       <p class="muted">Available placeholders: {date}, {subject}, {paper_days}, {funding_days}, {job_days}, {papers}, {funding}, {jobs}, {sources}.</p>
-      <textarea id="body-template" class="json-editor">&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
-&lt;h1 style=&quot;margin: 0 0 8px;&quot;&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
-&lt;p style=&quot;color: #5b6470; margin: 0 0 24px;&quot;&gt;Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days&lt;/p&gt;
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Papers&lt;/h2&gt;
+      <textarea id="body-template" class="json-editor">&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot; style=&quot;background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;&quot;&gt;
+&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding: 24px 12px;&quot;&gt;
+&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;620&quot; style=&quot;width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 28px 34px 14px;&quot;&gt;
+&lt;a href=&quot;https://esac-network.eu/&quot; style=&quot;text-decoration: none;&quot;&gt;&lt;img src=&quot;https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png&quot; width=&quot;132&quot; height=&quot;74&quot; alt=&quot;ESAC&quot; style=&quot;display: block; width: 132px; height: 74px; border: 0;&quot;&gt;&lt;/a&gt;
+&lt;p style=&quot;margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;&quot;&gt;Early detection briefing &amp;nbsp; / &amp;nbsp; {date}&lt;/p&gt;
+&lt;h1 style=&quot;margin: 0 0 16px; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 34px; line-height: 1.16; font-weight: 700;&quot;&gt;AI for Early Cancer&lt;br&gt;Digest&lt;/h1&gt;
+&lt;p style=&quot;margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;&quot;&gt;Selected papers, funding calls and research roles for the early detection community.&lt;/p&gt;
+&lt;p style=&quot;margin: 0; color: #696273; font-size: 12px; line-height: 1.6;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 8px 34px 30px;&quot;&gt;
+&lt;h2 style=&quot;margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;🔬 Papers&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Published in the past {paper_days} days&lt;/p&gt;
 {papers}
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Funding&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💡 Funding&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Opportunities from the past {funding_days} days&lt;/p&gt;
 {funding}
-
-&lt;h2 style=&quot;margin: 24px 0 12px;&quot;&gt;Jobs&lt;/h2&gt;
+&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💼 Jobs&lt;/h2&gt;
+&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Roles from the past {job_days} days&lt;/p&gt;
 {jobs}
-
-&lt;p style=&quot;color: #a33d2f; margin-top: 28px;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
-&lt;p style=&quot;color: #5b6470; font-size: 12px; margin-top: 18px;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;</textarea>
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;&quot;&gt;
+&lt;p style=&quot;margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
+&lt;p style=&quot;margin: 0; color: #817987; font-size: 11px; line-height: 1.6;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</textarea>
 
       <div class="config-grid">
         <div class="config-card">
           <h3>Paper Item Template</h3>
-          <textarea id="paper-item-template" class="json-editor">&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{html}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Published in: {venue} · DOI / ID: {doi_or_id} · &lt;a href=&quot;{html}&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
+          <textarea id="paper-item-template" class="json-editor">&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{html}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {venue} &amp;nbsp;·&amp;nbsp; {doi_or_id} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{html}&quot; style=&quot;color: #7b4d89;&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;</textarea>
         </div>
         <div class="config-card">
           <h3>Funding Item Template</h3>
-          <textarea id="funding-item-template" class="json-editor">&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
+          <textarea id="funding-item-template" class="json-editor">&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;</textarea>
         </div>
         <div class="config-card">
           <h3>Job Item Template</h3>
-          <textarea id="job-item-template" class="json-editor">&lt;div style=&quot;margin: 0 0 16px; padding-left: 18px; text-indent: -18px;&quot;&gt;
-&lt;span style=&quot;color: #a33d2f;&quot;&gt;•&lt;/span&gt; &lt;a href=&quot;{link}&quot; style=&quot;color: #16212b;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;&quot;&gt;Source: {source} · &lt;a href=&quot;{link}&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
+          <textarea id="job-item-template" class="json-editor">&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
+&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
+&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
 &lt;/div&gt;</textarea>
         </div>
       </div>
@@ -692,11 +705,11 @@ giovanni.scoazec@esac-network.eu</textarea>
     "email_subject": "AI for Early Cancer Digest | {date}"
   },
   "email_template": {
-    "body_template": "\u003cp style=\"color: #5b6470; margin: 0 0 8px;\"\u003eThis digest is based on an automated search supported by the ESAC Early Detection Working Group.\u003c/p\u003e\n\u003ch1 style=\"margin: 0 0 8px;\"\u003eAI for Early Cancer Digest - {date}\u003c/h1\u003e\n\u003cp style=\"color: #5b6470; margin: 0 0 24px;\"\u003eDraft for review \u00b7 Papers cover the past {paper_days} days \u00b7 Funding and jobs cover the past {funding_days} days\u003c/p\u003e\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003ePapers\u003c/h2\u003e\n{papers}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eFunding\u003c/h2\u003e\n{funding}\n\n\u003ch2 style=\"margin: 24px 0 12px;\"\u003eJobs\u003c/h2\u003e\n{jobs}\n\n\u003cp style=\"color: #a33d2f; margin-top: 28px;\"\u003eReply this email for any feedback!\u003c/p\u003e\n\u003cp style=\"color: #5b6470; font-size: 12px; margin-top: 18px;\"\u003e\u003cem\u003eSources monitored: {sources}\u003c/em\u003e\u003c/p\u003e",
+    "body_template": "\u003ctable role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;\"\u003e\n\u003ctr\u003e\u003ctd align=\"center\" style=\"padding: 24px 12px;\"\u003e\n\u003ctable role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"620\" style=\"width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;\"\u003e\n\u003ctr\u003e\u003ctd style=\"padding: 28px 34px 14px;\"\u003e\n\u003ca href=\"https://esac-network.eu/\" style=\"text-decoration: none;\"\u003e\u003cimg src=\"https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png\" width=\"132\" height=\"74\" alt=\"ESAC\" style=\"display: block; width: 132px; height: 74px; border: 0;\"\u003e\u003c/a\u003e\n\u003cp style=\"margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;\"\u003eEarly detection briefing &nbsp; / &nbsp; {date}\u003c/p\u003e\n\u003ch1 style=\"margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;\"\u003eAI for Early Cancer\u003cbr\u003eDigest\u003c/h1\u003e\n\u003cp style=\"margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;\"\u003eSelected papers, funding calls and research roles for the early detection community.\u003c/p\u003e\n\u003cp style=\"margin: 0; color: #696273; font-size: 12px; line-height: 1.6;\"\u003eThis digest is based on an automated search supported by the ESAC Early Detection Working Group.\u003c/p\u003e\n\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd style=\"padding: 8px 34px 30px;\"\u003e\n\u003ch2 style=\"margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;\"\u003e\ud83d\udd2c Papers\u003c/h2\u003e\n\u003cp style=\"margin: 0 0 14px; color: #817987; font-size: 11px;\"\u003ePublished in the past {paper_days} days\u003c/p\u003e\n{papers}\n\u003ch2 style=\"margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;\"\u003e\ud83d\udca1 Funding\u003c/h2\u003e\n\u003cp style=\"margin: 0 0 14px; color: #817987; font-size: 11px;\"\u003eOpportunities from the past {funding_days} days\u003c/p\u003e\n{funding}\n\u003ch2 style=\"margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;\"\u003e\ud83d\udcbc Jobs\u003c/h2\u003e\n\u003cp style=\"margin: 0 0 14px; color: #817987; font-size: 11px;\"\u003eRoles from the past {job_days} days\u003c/p\u003e\n{jobs}\n\u003c/td\u003e\u003c/tr\u003e\n\u003ctr\u003e\u003ctd style=\"padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;\"\u003e\n\u003cp style=\"margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;\"\u003eReply this email for any feedback!\u003c/p\u003e\n\u003cp style=\"margin: 0; color: #817987; font-size: 11px; line-height: 1.6;\"\u003e\u003cem\u003eSources monitored: {sources}\u003c/em\u003e\u003c/p\u003e\n\u003c/td\u003e\u003c/tr\u003e\n\u003c/table\u003e\n\u003c/td\u003e\u003c/tr\u003e\n\u003c/table\u003e",
     "item_templates": {
-      "paper": "\u003cdiv style=\"margin: 0 0 16px; padding-left: 18px; text-indent: -18px;\"\u003e\n\u003cspan style=\"color: #a33d2f;\"\u003e\u2022\u003c/span\u003e \u003ca href=\"{html}\" style=\"color: #16212b;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;\"\u003ePublished in: {venue} \u00b7 DOI / ID: {doi_or_id} \u00b7 \u003ca href=\"{html}\"\u003eHTML\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",
-      "funding": "\u003cdiv style=\"margin: 0 0 16px; padding-left: 18px; text-indent: -18px;\"\u003e\n\u003cspan style=\"color: #a33d2f;\"\u003e\u2022\u003c/span\u003e \u003ca href=\"{link}\" style=\"color: #16212b;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;\"\u003eSource: {source} \u00b7 \u003ca href=\"{link}\"\u003eView opportunity\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",
-      "job": "\u003cdiv style=\"margin: 0 0 16px; padding-left: 18px; text-indent: -18px;\"\u003e\n\u003cspan style=\"color: #a33d2f;\"\u003e\u2022\u003c/span\u003e \u003ca href=\"{link}\" style=\"color: #16212b;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;\"\u003eSource: {source} \u00b7 \u003ca href=\"{link}\"\u003eView role\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e"
+      "paper": "\u003cdiv style=\"padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;\"\u003e\n\u003ca href=\"{html}\" style=\"color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;\"\u003e\u21b3 {venue} &nbsp;\u00b7&nbsp; {doi_or_id} &nbsp;\u00b7&nbsp; \u003ca href=\"{html}\" style=\"color: #7b4d89;\"\u003eHTML\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",
+      "funding": "\u003cdiv style=\"padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;\"\u003e\n\u003ca href=\"{link}\" style=\"color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;\"\u003e\u21b3 {source} &nbsp;\u00b7&nbsp; \u003ca href=\"{link}\" style=\"color: #7b4d89;\"\u003eView opportunity\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e",
+      "job": "\u003cdiv style=\"padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;\"\u003e\n\u003ca href=\"{link}\" style=\"color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.4; text-decoration: none;\"\u003e{title}\u003c/a\u003e\u003cbr\u003e\n\u003cspan style=\"display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;\"\u003e\u21b3 {source} &nbsp;\u00b7&nbsp; \u003ca href=\"{link}\" style=\"color: #7b4d89;\"\u003eView role\u003c/a\u003e\u003c/span\u003e\n\u003c/div\u003e"
     }
   }
 }</script>

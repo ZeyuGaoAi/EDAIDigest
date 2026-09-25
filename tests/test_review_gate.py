@@ -70,7 +70,23 @@ class ReviewGateTests(unittest.TestCase):
                     {"paper": 14, "funding": 30, "job": 30},
                 )
 
-            self.assertIn("Papers cover the past 14 days", path.read_text())
+            self.assertIn("Published in the past 14 days", path.read_text())
+
+    def test_email_layout_preserves_logo_and_emoji_sections(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            db_path = root / "digest.db"
+            init_db(db_path)
+            with patch.object(drafts, "datetime", FixedDatetime):
+                path = drafts.generate_template_draft(db_path, root / "drafts")
+
+            html = path.read_text()
+            self.assertIn('<table role="presentation"', html)
+            self.assertIn('<img src="https://esac-network.eu/', html)
+            self.assertIn("🔬 Papers", html)
+            self.assertIn("💡 Funding", html)
+            self.assertIn("💼 Jobs", html)
+            self.assertNotIn("&lt;table", html)
 
     def test_draft_deduplicates_mirrored_opportunities_by_title(self):
         with TemporaryDirectory() as directory:
