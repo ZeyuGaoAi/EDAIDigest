@@ -68,6 +68,8 @@ def _source_detail(source: dict) -> str:
             detail += f" Searches the last {source['issue_search_days']} issue days."
     elif kind == "biorxiv_api":
         detail = f"{source.get('server', 'bioRxiv')} API, recent {source.get('recent_days', 'configured')} days."
+    elif kind == "eu_funding":
+        detail = f"EU Funding & Tenders open grant topics: {', '.join(source.get('terms', []))}. Expired deadlines are excluded."
     elif kind == "html_links":
         detail = f"HTML link scraper: {source.get('url', 'configured URL')}."
         if source.get("follow_item_pages"):
@@ -76,6 +78,8 @@ def _source_detail(source: dict) -> str:
         detail = f"Monitors the page itself as one opportunity: {source.get('url', 'configured URL')}."
     elif kind == "html_sections":
         detail = f"Extracts matching opportunity sections from: {source.get('url', 'configured URL')}."
+    elif kind == "html_open_sections":
+        detail = f"Tracks only the open-for-application call sections at: {source.get('url', 'configured URL')}."
     elif kind == "manual":
         detail = f"Manual file: {source.get('path', 'configured path')}."
     else:

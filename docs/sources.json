@@ -127,6 +127,27 @@
     "url": "https://www.ukri.org/opportunity/feed/"
   },
   {
+    "name": "EU Funding & Tenders - Open Cancer and Screening Calls",
+    "category": "funding",
+    "kind": "eu_funding",
+    "url": "https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA",
+    "terms": [
+      "cancer",
+      "screening",
+      "early detection"
+    ],
+    "max_items": 50,
+    "priority": 1
+  },
+  {
+    "name": "KWF Dutch Cancer Society - Open Funding Calls",
+    "category": "funding",
+    "kind": "html_open_sections",
+    "url": "https://www.kwf.nl/en/forresearchers/funding",
+    "max_items": 15,
+    "priority": 2
+  },
+  {
     "name": "NIH Cancer Funding Opportunities (Grants.gov)",
     "category": "funding",
     "kind": "grants_gov",
@@ -168,6 +189,25 @@
     "include_regex": "/job/[A-Z0-9]+/",
     "follow_item_pages": true,
     "max_items": 30
+  },
+  {
+    "name": "AcademicTransfer - Netherlands Cancer Research Jobs",
+    "category": "job",
+    "kind": "html_links",
+    "url": "https://www.academictransfer.com/en/jobs/?q=cancer",
+    "include_regex": "/en/jobs/[0-9]+/",
+    "follow_item_pages": true,
+    "max_items": 20
+  },
+  {
+    "name": "DKFZ - German Cancer Research Center Jobs",
+    "category": "job",
+    "kind": "html_links",
+    "url": "https://jobs.dkfz.de/en/jobs",
+    "include_regex": "/en/jobs/[0-9]+/",
+    "exclude_regex": "/apply(?:[/?#]|\\s|$)",
+    "follow_item_pages": true,
+    "max_items": 50
   },
   {
     "name": "Manual Jobs Watchlist",

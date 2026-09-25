@@ -301,9 +301,9 @@
         <a class="hero-link primary" href="./setup.html">Open Setup</a>
         <a class="hero-link primary" href="./items.html">Browse Historical Database</a>
       </div>
-      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">309</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">277</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">694</span></div></div>
-      <div class="status-row"><span class="chip">drafted: 51</span><span class="chip">expired: 226</span><span class="chip">new: 980</span><span class="chip">rejected: 23</span></div>
-      <p class="muted">Last generated: 2026-09-25 09:43 UTC</p>
+      <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">319</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">306</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">694</span></div></div>
+      <div class="status-row"><span class="chip">drafted: 54</span><span class="chip">expired: 226</span><span class="chip">new: 1016</span><span class="chip">rejected: 23</span></div>
+      <p class="muted">Last generated: 2026-09-25 10:48 UTC</p>
     </section>
 
     <section class="panel">
@@ -356,7 +356,7 @@
       <h2>Email Body Template</h2>
       <p class="muted">Current draft structure for reviewer-facing email generation.</p>
       <pre class="template-block">Email body template:
-&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;Selected updates on AI for early cancer detection, screening, funding, and jobs.&lt;/p&gt;
+&lt;p style=&quot;color: #5b6470; margin: 0 0 8px;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
 &lt;h1 style=&quot;margin: 0 0 8px;&quot;&gt;AI for Early Cancer Digest - {date}&lt;/h1&gt;
 &lt;p style=&quot;color: #5b6470; margin: 0 0 24px;&quot;&gt;Draft for review · Papers cover the past {paper_days} days · Funding and jobs cover the past {funding_days} days&lt;/p&gt;
 
@@ -467,6 +467,16 @@ Job item template:
             </div>
 
             <div class="source-item">
+              <strong>EU Funding &amp; Tenders - Open Cancer and Screening Calls</strong>
+              EU Funding &amp; Tenders open grant topics: cancer, screening, early detection. Expired deadlines are excluded. Digest priority 1.
+            </div>
+
+            <div class="source-item">
+              <strong>KWF Dutch Cancer Society - Open Funding Calls</strong>
+              Tracks only the open-for-application call sections at: https://www.kwf.nl/en/forresearchers/funding. Digest priority 2.
+            </div>
+
+            <div class="source-item">
               <strong>NIH Cancer Funding Opportunities (Grants.gov)</strong>
               RSS/feed source: configured URL.
             </div>
@@ -498,6 +508,16 @@ Job item template:
             </div>
 
             <div class="source-item">
+              <strong>AcademicTransfer - Netherlands Cancer Research Jobs</strong>
+              HTML link scraper: https://www.academictransfer.com/en/jobs/?q=cancer. Follows item pages for relevance scoring.
+            </div>
+
+            <div class="source-item">
+              <strong>DKFZ - German Cancer Research Center Jobs</strong>
+              HTML link scraper: https://jobs.dkfz.de/en/jobs. Follows item pages for relevance scoring.
+            </div>
+
+            <div class="source-item">
               <strong>Manual Jobs Watchlist</strong>
               Manual file: manual_jobs.json.
             </div>
@@ -513,7 +533,7 @@ Job item template:
             <span>2026-09-25</span>
             <span>AI for Early Cancer Digest - 2026-09-25</span>
           </summary>
-          <div class="draft-body"><p style="color: #5b6470; margin: 0 0 8px;">Selected updates on AI for early cancer detection, screening, funding, and jobs.</p>
+          <div class="draft-body"><p style="color: #5b6470; margin: 0 0 8px;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
 <h1 style="margin: 0 0 8px;">AI for Early Cancer Digest - 2026-09-25</h1>
 <p style="color: #5b6470; margin: 0 0 24px;">Draft for review · Papers cover the past 7 days · Funding and jobs cover the past 30 days</p>
 
@@ -534,10 +554,20 @@ Job item template:
 <span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: ACED Manchester Funding Opportunities · <a href="https://www.crukcentre.manchester.ac.uk/aced/funding-opportunities/">View opportunity</a></span>
 </div>
 
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING" style="color: #16212b;">Apply AI: Piloting AI-based image screening in medical centres</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: EU Funding &amp; Tenders - Open Cancer and Screening Calls · <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/DIGITAL-2026-AI-PILOTING-10-SCREENING">View opportunity</a></span>
+</div>
+
 <h2 style="margin: 24px 0 12px;">Jobs</h2>
 <div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
 <span style="color: #a33d2f;">•</span> <a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data" style="color: #16212b;">PhD Studentship: Developing Fair and Robust Cancer Risk Prediction Models Using Health Data</a><br>
 <span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DSY297/phd-studentship-developing-fair-and-robust-cancer-risk-prediction-models-using-health-data">View role</a></span>
+</div>
+
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/" style="color: #16212b;">PhD candidate &#x27;Multimodal and Agentic AI for Precision Prostate Cancer Care&#x27;</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: AcademicTransfer - Netherlands Cancer Research Jobs · <a href="https://www.academictransfer.com/en/jobs/363733/phd-candidate-multimodal-and-agentic-ai-for-precision-prostate-cancer-care/">View role</a></span>
 </div>
 
 <div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
@@ -550,8 +580,13 @@ Job item template:
 <span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: jobs.ac.uk - Cancer AI Jobs · <a href="https://www.jobs.ac.uk/job/DSX724/research-associate-fixed-term">View role</a></span>
 </div>
 
+<div style="margin: 0 0 16px; padding-left: 18px; text-indent: -18px;">
+<span style="color: #a33d2f;">•</span> <a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules" style="color: #16212b;">Postdoctoral Researcher - Computational &amp; Translational Analysis of Pulmonary Nodules</a><br>
+<span style="display: inline-block; margin-left: 18px; color: #5b6470; text-indent: 0;">Source: DKFZ - German Cancer Research Center Jobs · <a href="https://jobs.dkfz.de/en/jobs/168860/postdoctoral-researcher-computational-translational-analysis-of-pulmonary-nodules">View role</a></span>
+</div>
+
 <p style="color: #a33d2f; margin-top: 28px;">Reply this email for any feedback!</p>
-<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, Manual Jobs Watchlist</em></p></div>
+<p style="color: #5b6470; font-size: 12px; margin-top: 18px;"><em>Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding &amp; Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist</em></p></div>
         </details>
 
         <details class="draft-card" >

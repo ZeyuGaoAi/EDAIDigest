@@ -1,5 +1,6 @@
 import unittest
 import xml.etree.ElementTree as ET
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
@@ -14,9 +15,13 @@ from digest.fetch import (
     _request,
     fetch_biorxiv_api,
     fetch_crossref,
+    fetch_eu_funding,
     fetch_grants_gov,
+    fetch_html_links,
     fetch_html_page,
     fetch_html_sections,
+    fetch_open_call_sections,
+    expire_missing_html_items,
     upsert_items,
 )
 
@@ -62,6 +67,41 @@ class PubmedDateTests(unittest.TestCase):
 
 
 class HtmlPageSourceTests(unittest.TestCase):
+    def test_open_call_sections_exclude_completed_calls(self):
+        source = Source(
+            name="KWF", category="funding", kind="html_open_sections",
+            url="https://example.test/funding",
+        )
+        html = """
+        <h2>Open for application</h2>
+        <h3>AI cancer screening grant 2027</h3><p>Funds early detection.</p>
+        <h2>Completed calls</h2>
+        <h3>AI cancer screening grant 2025</h3><p>Closed.</p>
+        """
+        with patch("digest.fetch._request_text", return_value=html):
+            items = fetch_open_call_sections(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "AI cancer screening grant 2027")
+
+    def test_empty_listing_link_reads_job_title_from_detail_page(self):
+        source = Source(
+            name="AcademicTransfer",
+            category="job",
+            kind="html_links",
+            url="https://example.test/jobs/?q=cancer",
+            include_regex=r"/jobs/[0-9]+/",
+            follow_item_pages=True,
+        )
+        listing = '<article><a href="/jobs/123/cancer-ai/"></a></article>'
+        detail = '<h1>AI for Cancer Screening</h1><p>Develop screening models.</p>'
+        with patch("digest.fetch._request_text", side_effect=[listing, detail]):
+            items = fetch_html_links(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "AI for Cancer Screening")
+        self.assertIn("Develop screening models", items[0]["summary"])
+
     def test_html_page_uses_page_text_as_the_opportunity_summary(self):
         source = Source(
             name="ACED",
@@ -140,6 +180,62 @@ class HtmlPageSourceTests(unittest.TestCase):
 
 
 class ExternalSourceTests(unittest.TestCase):
+    def test_empty_live_eu_results_expire_an_old_call(self):
+        source = Source(name="EU Funding", category="funding", kind="eu_funding")
+        item = {
+            "title": "AI cancer screening grant",
+            "summary": "Funding for AI in early cancer screening.",
+            "url": "https://example.test/topic/1",
+        }
+        with TemporaryDirectory() as directory:
+            db_path = Path(directory) / "digest.db"
+            init_db(db_path)
+            upsert_items(db_path, source, [item])
+            expire_missing_html_items(db_path, source, [], allow_empty=True)
+            with connect(db_path) as conn:
+                status = conn.execute("SELECT status FROM items").fetchone()["status"]
+
+        self.assertEqual(status, "expired")
+
+    def test_eu_funding_keeps_live_relevant_calls_only(self):
+        source = Source(
+            name="EU Funding",
+            category="funding",
+            kind="eu_funding",
+            url="https://example.test/search?apiKey=SEDIA",
+            terms=["screening", "cancer"],
+        )
+        def result(identifier, title, deadline, description):
+            return {
+                "metadata": {
+                    "identifier": [identifier],
+                    "title": [title],
+                    "deadlineDate": [deadline],
+                    "descriptionByte": [description],
+                }
+            }
+        relevant = result(
+            "SCREEN-1", "AI image screening", "2099-10-01T00:00:00.000+0000",
+            "<p>Research grants for early cancer detection using AI.</p>",
+        )
+        expired = result(
+            "SCREEN-OLD", "Cancer screening", "2000-01-01T00:00:00.000+0000",
+            "<p>AI funding.</p>",
+        )
+        unrelated = result(
+            "CYBER-1", "Cybersecurity screening", "2099-10-01T00:00:00.000+0000",
+            "<p>AI funding.</p>",
+        )
+        response = json.dumps({"results": [relevant, expired, unrelated]})
+        with patch("digest.fetch._request", return_value=response) as request:
+            items = fetch_eu_funding(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "AI image screening")
+        self.assertIn("Deadline: 2099-10-01", items[0]["summary"])
+        self.assertIn("early cancer detection", items[0]["summary"])
+        self.assertEqual(request.call_count, 2)
+
     def test_request_retries_a_dns_failure_through_public_dns(self):
         response = MagicMock()
         response.read.return_value = b"resolved"

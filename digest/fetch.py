@@ -33,6 +33,7 @@ class Source:
     include_regex: str | None = None
     exclude_regex: str | None = None
     term: str | None = None
+    terms: list[str] | None = None
     server: str | None = None
     recent_days: int | None = None
     api_category: str | None = None
@@ -215,7 +216,7 @@ class AnchorParser(HTMLParser):
         if tag != "a" or self._current_href is None:
             return
         text = " ".join(" ".join(self._current_text).split())
-        if self._current_href and text:
+        if self._current_href:
             self.anchors.append((self._current_href, text))
         self._current_href = None
         self._current_text = []
@@ -646,6 +647,79 @@ def fetch_crossref(source: Source) -> list[dict[str, Any]]:
     return items
 
 
+def fetch_eu_funding(source: Source) -> list[dict[str, Any]]:
+    """Read live grant topics from the European Commission's public search API."""
+    if not source.url or not source.terms:
+        raise ValueError(f"Source {source.name} needs a URL and search terms")
+
+    query = {
+        "bool": {
+            "must": [
+                {"terms": {"type": ["1"]}},
+                {"terms": {"status": ["31094502"]}},
+                {"term": {"language": "en"}},
+            ]
+        }
+    }
+    boundary = "digest-eu-funding"
+    body = (
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="query"\r\n'
+        "Content-Type: application/json\r\n\r\n"
+        f"{json.dumps(query)}\r\n"
+        f"--{boundary}--\r\n"
+    ).encode("utf-8")
+    today = datetime.now(UTC).date().isoformat()
+    seen: set[str] = set()
+    items: list[dict[str, Any]] = []
+
+    for term in source.terms:
+        separator = "&" if "?" in source.url else "?"
+        url = f"{source.url}{separator}{urlencode({'text': term, 'pageSize': source.max_items})}"
+        request = Request(
+            url,
+            data=body,
+            headers={
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "Accept": "application/json",
+                "User-Agent": USER_AGENT,
+            },
+        )
+        payload = json.loads(_request(request))
+        results = payload.get("results")
+        if not isinstance(results, list):
+            raise ValueError(f"Unexpected EU funding response for {term!r}")
+        for result in results:
+            metadata = result.get("metadata") or {}
+            identifier = (metadata.get("identifier") or [None])[0]
+            title = (metadata.get("title") or [None])[0] or result.get("summary")
+            deadline = (metadata.get("deadlineDate") or [None])[0]
+            if not identifier or not title or not deadline or deadline[:10] < today:
+                continue
+            if identifier in seen:
+                continue
+            description = _html_to_visible_text((metadata.get("descriptionByte") or [""])[0])
+            summary = f"EU funding call. Deadline: {deadline[:10]}. {description}"[:8000]
+            if score_relevance("funding", title, summary) <= 0:
+                continue
+            seen.add(identifier)
+            items.append(
+                {
+                    "title": title,
+                    "summary": summary,
+                    "url": (
+                        "https://ec.europa.eu/info/funding-tenders/opportunities/portal/"
+                        f"screen/opportunities/topic-details/{identifier}"
+                    ),
+                    "venue": source.name,
+                    # An open call stays eligible while listed, even if it opened
+                    # before the digest's 30-day review window.
+                    "published_at": None,
+                }
+            )
+    return items
+
+
 def fetch_manual_file(source: Source, config_path: Path) -> list[dict[str, Any]]:
     if not source.path:
         raise ValueError(f"Source {source.name} does not define a path")
@@ -679,25 +753,35 @@ def fetch_html_links(source: Source) -> list[dict[str, Any]]:
     include = re.compile(source.include_regex) if source.include_regex else None
     exclude = re.compile(source.exclude_regex) if source.exclude_regex else None
 
-    seen: set[str] = set()
-    items: list[dict[str, Any]] = []
+    candidates: dict[str, str] = {}
     for href, text in parser.anchors:
+        if not text and not source.follow_item_pages:
+            continue
         absolute_url = urljoin(source.url, href)
         haystack = f"{href} {absolute_url} {text}"
         if include and not include.search(haystack):
             continue
         if exclude and exclude.search(haystack):
             continue
-        if absolute_url in seen:
-            continue
-        seen.add(absolute_url)
+        if absolute_url not in candidates or (text and not candidates[absolute_url]):
+            candidates[absolute_url] = text
+
+    items: list[dict[str, Any]] = []
+    for absolute_url, text in candidates.items():
         summary = None
         if source.follow_item_pages:
             try:
-                summary = _html_to_visible_text(_request_text(absolute_url))
+                page_html = _request_text(absolute_url)
+                summary = _html_to_visible_text(page_html)
+                if not text:
+                    heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", page_html, re.IGNORECASE | re.DOTALL)
+                    if heading:
+                        text = _html_to_visible_text(heading.group(1))
             except Exception:
                 # Retain the listing item when an individual advert page is unavailable.
                 summary = None
+        if not text:
+            text = absolute_url.rstrip("/").rsplit("/", 1)[-1].replace("-", " ")
         items.append(
             {
                 "title": text,
@@ -761,6 +845,34 @@ def fetch_html_sections(source: Source) -> list[dict[str, Any]]:
     return items
 
 
+def fetch_open_call_sections(source: Source) -> list[dict[str, Any]]:
+    """Read calls under a funder's explicit open-for-application heading."""
+    if not source.url:
+        raise ValueError(f"Source {source.name} does not define a URL")
+    html = _request_text(source.url)
+    heading = re.search(
+        r"<h2\b[^>]*>\s*Open for application\s*</h2>", html, re.IGNORECASE
+    )
+    if not heading:
+        raise ValueError(f"Open calls heading not found for {source.name}")
+    remainder = html[heading.end():]
+    next_heading = re.search(r"<h2\b", remainder, re.IGNORECASE)
+    open_html = remainder[:next_heading.start()] if next_heading else remainder
+    parser = HeadingSectionParser()
+    parser.feed(open_html)
+    parser.close()
+    return [
+        {
+            "title": title,
+            "summary": summary,
+            "url": f"{source.url}#{_heading_anchor(title)}",
+            "venue": source.name,
+            "published_at": None,
+        }
+        for title, summary in parser.sections[:source.max_items]
+    ]
+
+
 def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> int:
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
@@ -817,16 +929,18 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
     return inserted
 
 
-def expire_missing_html_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> None:
-    """Retire roles that have disappeared from their source listing.
+def expire_missing_html_items(
+    db_path: Path, source: Source, items: list[dict[str, Any]], *, allow_empty: bool = False
+) -> None:
+    """Retire opportunities that have disappeared from their source listing.
 
-    HTML job listings do not reliably expose publication or closing dates. A
-    retained URL is therefore only eligible while the source still lists it.
+    Listed jobs and open calls remain eligible only while listed. Empty generic
+    job pages are ignored; explicit open-call feeds can expire all old calls.
     """
     urls = [item["url"] for item in items if item.get("url")]
-    if not urls:
+    if not urls and not allow_empty:
         return
-    placeholders = ", ".join("?" for _ in urls)
+    missing_clause = f"AND url NOT IN ({', '.join('?' for _ in urls)})" if urls else ""
     with connect(db_path) as conn:
         conn.execute(
             f"""
@@ -835,7 +949,7 @@ def expire_missing_html_items(db_path: Path, source: Source, items: list[dict[st
             WHERE source = ?
               AND category = ?
               AND status IN ('new', 'reviewed', 'drafted')
-              AND url NOT IN ({placeholders})
+              {missing_clause}
             """,
             [source.name, source.category, *urls],
         )
@@ -873,10 +987,14 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
                 items = fetch_html_page(source)
             elif source.kind == "html_sections":
                 items = fetch_html_sections(source)
+            elif source.kind == "html_open_sections":
+                items = fetch_open_call_sections(source)
             elif source.kind == "biorxiv_api":
                 items = fetch_biorxiv_api(source)
             elif source.kind == "grants_gov":
                 items = fetch_grants_gov(source)
+            elif source.kind == "eu_funding":
+                items = fetch_eu_funding(source)
             elif source.kind == "crossref":
                 items = fetch_crossref(source)
             elif source.kind == "pubmed":
@@ -886,8 +1004,11 @@ def ingest(db_path: Path, config_path: Path) -> tuple[dict[str, int], dict[str, 
             else:
                 raise ValueError(f"Unsupported source kind: {source.kind}")
             stats[source.name] = upsert_items(db_path, source, items)
-            if source.kind == "html_links":
-                expire_missing_html_items(db_path, source, items)
+            if source.kind in {"html_links", "eu_funding", "html_open_sections"}:
+                expire_missing_html_items(
+                    db_path, source, items,
+                    allow_empty=source.kind in {"eu_funding", "html_open_sections"},
+                )
         except Exception as exc:
             errors[source.name] = str(exc)
     rescore_items(db_path)
