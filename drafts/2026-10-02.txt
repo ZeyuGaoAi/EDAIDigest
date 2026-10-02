@@ -1,0 +1,52 @@
+Early detection briefing   /   2026-10-02
+
+AI for Early Cancer
+Digest
+
+Selected papers, funding calls and research roles for the early detection community.
+
+This digest is based on an automated search supported by the ESAC Early Detection Working Group.
+
+🔬 Papers
+
+Published in the past 7 days
+
+Generative AI-Based Data Augmentation for Oral Lesion Classification: The PhotoMOCI Dataset and Benchmark
+
+↳ arXiv (preprint)  ·  arXiv:2609.35226v1  ·  HTML
+
+Detail in Context: A Dual-Scale Machine Learning Framework for Mycosis Fungoides Detection
+
+↳ arXiv (preprint)  ·  arXiv:2609.38560v1  ·  HTML
+
+💡 Funding
+
+Opportunities from the past 30 days
+
+ACED Clinical Research Training Fellowship (2027)
+
+↳ ACED Manchester Funding Opportunities  ·  View opportunity
+
+Pancreatic Cancer Detection Consortium: Research Units (U01 Clinical Trial Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+💼 Jobs
+
+Roles from the past 30 days
+
+Division Head in “Cancer Early Detection Imaging”
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Research Associate (Fixed Term)
+
+↳ jobs.ac.uk - Cancer AI Jobs  ·  View role
+
+Postdoctoral Researcher - Computational & Translational Analysis of Pulmonary Nodules
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding & Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist
