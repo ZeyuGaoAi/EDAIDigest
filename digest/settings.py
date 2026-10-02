@@ -13,9 +13,9 @@ DEFAULT_EMAIL_TEMPLATE = {
 <tr><td style="padding: 28px 34px 14px;">
 <a href="https://esac-network.eu/" style="text-decoration: none;"><img src="https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png" width="132" height="74" alt="ESAC" style="display: block; width: 132px; height: 74px; border: 0;"></a>
 <p style="margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Early detection briefing &nbsp; / &nbsp; {date}</p>
-<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">AI for Early Cancer<br>Digest</h1>
-<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">Selected papers, funding calls and research roles for the early detection community.</p>
-<p style="margin: 0; color: #696273; font-size: 12px; line-height: 1.6;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
+<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">{headline}</h1>
+<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">{intro}</p>
+<p style="margin: 0; color: #696273; font-size: 12px; line-height: 1.6;">{method_note}</p>
 </td></tr>
 <tr><td style="padding: 8px 34px 30px;">
 <h2 style="margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 23px;">🔬 Papers</h2>
@@ -29,7 +29,7 @@ DEFAULT_EMAIL_TEMPLATE = {
 {jobs}
 </td></tr>
 <tr><td style="padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;">
-<p style="margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;">Reply this email for any feedback!</p>
+<p style="margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;">{feedback}</p>
 <p style="margin: 0; color: #817987; font-size: 11px; line-height: 1.6;"><em>Sources monitored: {sources}</em></p>
 </td></tr>
 </table>
@@ -40,6 +40,13 @@ DEFAULT_EMAIL_TEMPLATE = {
         "funding": '<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">\n<a href="{link}" style="color: #292537; font-family: Georgia, \'Times New Roman\', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">{title}</a><br>\n<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ {source} &nbsp;·&nbsp; <a href="{link}" style="color: #7b4d89;">View opportunity</a></span>\n</div>',
         "job": '<div style="padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;">\n<a href="{link}" style="color: #292537; font-family: Georgia, \'Times New Roman\', serif; font-size: 17px; line-height: 1.4; text-decoration: none;">{title}</a><br>\n<span style="display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;">↳ {source} &nbsp;·&nbsp; <a href="{link}" style="color: #7b4d89;">View role</a></span>\n</div>',
     },
+}
+
+DEFAULT_EMAIL_COPY = {
+    "headline": "AI for Early Cancer Digest",
+    "intro": "Papers, funding calls and research jobs for the early detection & AI community, extracted from academic and research sources, with no sponsored or promotional content.",
+    "method_note": "This digest is based on an automated search supported by the ESAC Early Detection Working Group.",
+    "feedback": "Reply this email for any feedback!",
 }
 
 
@@ -79,6 +86,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "email_subject": "AI for Early Cancer Digest | {date}",
     },
     "email_template": deepcopy(DEFAULT_EMAIL_TEMPLATE),
+    "email_copy": deepcopy(DEFAULT_EMAIL_COPY),
 }
 
 

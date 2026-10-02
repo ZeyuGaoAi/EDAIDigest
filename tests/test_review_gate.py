@@ -88,6 +88,23 @@ class ReviewGateTests(unittest.TestCase):
             self.assertIn("💼 Jobs", html)
             self.assertNotIn("&lt;table", html)
 
+    def test_email_copy_is_escaped_without_changing_the_layout(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            db_path = root / "digest.db"
+            init_db(db_path)
+            with patch.object(drafts, "datetime", FixedDatetime):
+                path = drafts.generate_template_draft(
+                    db_path,
+                    root / "drafts",
+                    email_copy={"intro": "Early detection & AI <no sponsors>"},
+                )
+
+            html = path.read_text()
+            self.assertIn("Early detection &amp; AI &lt;no sponsors&gt;", html)
+            self.assertIn("🔬 Papers", html)
+            self.assertIn('src="https://esac-network.eu/', html)
+
     def test_draft_deduplicates_mirrored_opportunities_by_title(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

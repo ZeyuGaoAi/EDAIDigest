@@ -148,10 +148,10 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
 
     workflow_trigger = escape(str(_settings_value(settings, ("workflow", "trigger"))))
     workflow_review = escape(str(_settings_value(settings, ("workflow", "review"))))
-    body_template = escape(str(_settings_value(settings, ("email_template", "body_template"))))
-    paper_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "paper"))))
-    funding_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "funding"))))
-    job_template = escape(str(_settings_value(settings, ("email_template", "item_templates", "job"))))
+    headline = escape(str(_settings_value(settings, ("email_copy", "headline"))))
+    intro = escape(str(_settings_value(settings, ("email_copy", "intro"))))
+    method_note = escape(str(_settings_value(settings, ("email_copy", "method_note"))))
+    feedback = escape(str(_settings_value(settings, ("email_copy", "feedback"))))
     sender_email = escape(str(_settings_value(settings, ("distribution", "sender_email"))))
     recipient_emails = _settings_value(settings, ("distribution", "recipient_emails"), [])
     recipient_text = escape("\n".join(recipient_emails if isinstance(recipient_emails, list) else []))
@@ -173,22 +173,18 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
       </div>
       <p class="muted">Delivery retention: papers appear once after review; active funding calls and jobs repeat while inside their configured lookback windows.</p>
 
-      <label for="body-template">Email Body Template</label>
-      <p class="muted">Available placeholders: {{date}}, {{subject}}, {{paper_days}}, {{funding_days}}, {{job_days}}, {{papers}}, {{funding}}, {{jobs}}, {{sources}}.</p>
-      <textarea id="body-template" class="json-editor">{body_template}</textarea>
-
       <div class="config-grid">
         <div class="config-card">
-          <h3>Paper Item Template</h3>
-          <textarea id="paper-item-template" class="json-editor">{paper_template}</textarea>
-        </div>
-        <div class="config-card">
-          <h3>Funding Item Template</h3>
-          <textarea id="funding-item-template" class="json-editor">{funding_template}</textarea>
-        </div>
-        <div class="config-card">
-          <h3>Job Item Template</h3>
-          <textarea id="job-item-template" class="json-editor">{job_template}</textarea>
+          <h3>Email Copy</h3>
+          <p class="muted">Edit the wording here. The ESAC logo, layout, colours and item formatting are maintained in the backend.</p>
+          <label for="email-headline">Headline</label>
+          <input id="email-headline" value="{headline}">
+          <label for="email-intro">Intro / Editorial Statement</label>
+          <textarea id="email-intro">{intro}</textarea>
+          <label for="email-method-note">Automated Search Note</label>
+          <textarea id="email-method-note">{method_note}</textarea>
+          <label for="email-feedback">Feedback Line</label>
+          <input id="email-feedback" value="{feedback}">
         </div>
       </div>
 
@@ -216,17 +212,19 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         <button id="copy-rich-email" type="button">Copy Rich Email</button>
         <button id="open-email-draft" type="button">Open Email Draft</button>
         <button id="save-browser-draft" class="secondary" type="button">Save Browser Draft</button>
+        <button id="restore-browser-draft" class="secondary" type="button">Restore Browser Draft</button>
         <button id="reset-browser-draft" class="secondary" type="button">Reset Draft</button>
       </div>
       <p id="config-status" class="status-line">Local setup server saves directly to data/. Static GitHub Pages falls back to downloading JSON files.</p>
       <script type="application/json" id="settings-json-data">{_json_for_script(settings)}</script>
       <script>
-        const settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
+        let settingsSeed = JSON.parse(document.getElementById('settings-json-data').textContent);
         const sourceEditor = document.getElementById('sources-json');
         const configStatus = document.getElementById('config-status');
 
         function collectSettings() {{
           const next = JSON.parse(JSON.stringify(settingsSeed));
+          delete next.email_template;
           next.cadence = next.cadence || {{}};
           next.scope = next.scope || {{}};
           document.querySelectorAll('.config-card[data-category]').forEach((card) => {{
@@ -243,13 +241,11 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             trigger: document.getElementById('workflow-trigger').value.trim(),
             review: document.getElementById('workflow-review').value.trim(),
           }};
-          next.email_template = {{
-            body_template: document.getElementById('body-template').value.trim(),
-            item_templates: {{
-              paper: document.getElementById('paper-item-template').value.trim(),
-              funding: document.getElementById('funding-item-template').value.trim(),
-              job: document.getElementById('job-item-template').value.trim(),
-            }},
+          next.email_copy = {{
+            headline: document.getElementById('email-headline').value.trim(),
+            intro: document.getElementById('email-intro').value.trim(),
+            method_note: document.getElementById('email-method-note').value.trim(),
+            feedback: document.getElementById('email-feedback').value.trim(),
           }};
           next.distribution = {{
             sender_email: document.getElementById('sender-email').value.trim(),
@@ -260,6 +256,25 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             email_subject: document.getElementById('email-subject').value.trim(),
           }};
           return next;
+        }}
+
+        function changedFields(base, edited) {{
+          const changes = {{}};
+          Object.keys(edited).forEach((key) => {{
+            const before = base[key];
+            const after = edited[key];
+            if (after && typeof after === 'object' && !Array.isArray(after) && before && typeof before === 'object') {{
+              const nested = changedFields(before, after);
+              if (Object.keys(nested).length) changes[key] = nested;
+            }} else if (JSON.stringify(after) !== JSON.stringify(before)) {{
+              changes[key] = after;
+            }}
+          }});
+          return changes;
+        }}
+
+        function settingsUpdate() {{
+          return {{ base: settingsSeed, changes: changedFields(settingsSeed, collectSettings()) }};
         }}
 
         function applySettingsDraft(draft) {{
@@ -281,12 +296,11 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             document.getElementById('workflow-trigger').value = draft.workflow.trigger || '';
             document.getElementById('workflow-review').value = draft.workflow.review || '';
           }}
-          if (draft.email_template) {{
-            document.getElementById('body-template').value = draft.email_template.body_template || '';
-            const itemTemplates = draft.email_template.item_templates || {{}};
-            document.getElementById('paper-item-template').value = itemTemplates.paper || '';
-            document.getElementById('funding-item-template').value = itemTemplates.funding || '';
-            document.getElementById('job-item-template').value = itemTemplates.job || '';
+          if (draft.email_copy) {{
+            document.getElementById('email-headline').value = draft.email_copy.headline || '';
+            document.getElementById('email-intro').value = draft.email_copy.intro || '';
+            document.getElementById('email-method-note').value = draft.email_copy.method_note || '';
+            document.getElementById('email-feedback').value = draft.email_copy.feedback || '';
           }}
           if (draft.distribution) {{
             document.getElementById('sender-email').value = draft.distribution.sender_email || '';
@@ -323,8 +337,13 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             }});
             if (response.ok) {{
               const result = await response.json();
-              localStorage.removeItem('edaidigest.settingsDraft');
-              localStorage.removeItem('edaidigest.sourcesDraft');
+              if (filename === 'settings.json' && result.settings) {{
+                settingsSeed = result.settings;
+                applySettingsDraft(settingsSeed);
+                localStorage.removeItem('edaidigest.settingsDraft');
+              }} else if (filename === 'sources.json') {{
+                localStorage.removeItem('edaidigest.sourcesDraft');
+              }}
               configStatus.textContent = result.message || `Saved ${{filename}}.`;
               return;
             }}
@@ -337,7 +356,8 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
             // Static hosts do not expose the local save API; download remains the fallback.
           }}
 
-          const text = JSON.stringify(payload, null, 2) + '\\n';
+          const filePayload = filename === 'settings.json' ? collectSettings() : payload;
+          const text = JSON.stringify(filePayload, null, 2) + '\\n';
           if ('showSaveFilePicker' in window) {{
             try {{
               const handle = await window.showSaveFilePicker({{
@@ -356,7 +376,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
               }}
             }}
           }}
-          downloadJson(filename, payload);
+          downloadJson(filename, filePayload);
           configStatus.textContent = `Downloaded ${{filename}}. Start python3 -m digest.cli serve-setup for automatic data/ writes.`;
         }}
 
@@ -378,12 +398,12 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
 
         async function fetchHtmlDraft() {{
           return postJson('/api/html-draft', {{
-            settings: collectSettings(),
+            settings: settingsUpdate(),
           }});
         }}
 
         document.getElementById('save-settings').addEventListener('click', async () => {{
-          await saveJson('settings.json', collectSettings());
+          await saveJson('settings.json', settingsUpdate());
         }});
 
         document.getElementById('save-sources').addEventListener('click', async () => {{
@@ -398,7 +418,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           try {{
             configStatus.textContent = 'Collecting candidates for Codex review...';
             const result = await postJson('/api/collect', {{
-              settings: collectSettings(),
+              settings: settingsUpdate(),
               sources: parseSources(),
             }});
             configStatus.textContent = result.message;
@@ -410,7 +430,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         document.getElementById('generate-reviewed-digest').addEventListener('click', async () => {{
           try {{
             configStatus.textContent = 'Generating reviewed digest...';
-            const result = await postJson('/api/generate-reviewed', {{ settings: collectSettings() }});
+            const result = await postJson('/api/generate-reviewed', {{ settings: settingsUpdate() }});
             configStatus.textContent = result.message;
             window.location.href = `./index.html?updated=${{Date.now()}}`;
           }} catch (error) {{
@@ -422,7 +442,7 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
           try {{
             configStatus.textContent = 'Preparing email draft...';
             const result = await postJson('/api/email-draft', {{
-              settings: collectSettings(),
+              settings: settingsUpdate(),
             }});
             configStatus.textContent = result.message;
             window.location.href = result.mailto;
@@ -471,9 +491,24 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
 
         document.getElementById('save-browser-draft').addEventListener('click', () => {{
           try {{
-            localStorage.setItem('edaidigest.settingsDraft', JSON.stringify(collectSettings()));
+            localStorage.setItem('edaidigest.settingsDraft', JSON.stringify({{ base: settingsSeed, settings: collectSettings() }}));
             localStorage.setItem('edaidigest.sourcesDraft', sourceEditor.value);
             configStatus.textContent = 'Browser draft saved locally.';
+          }} catch (error) {{
+            configStatus.textContent = error.message;
+          }}
+        }});
+
+        document.getElementById('restore-browser-draft').addEventListener('click', () => {{
+          try {{
+            const saved = localStorage.getItem('edaidigest.settingsDraft');
+            if (saved) {{
+              const draft = JSON.parse(saved);
+              applySettingsDraft(draft.settings || draft);
+            }}
+            const sources = localStorage.getItem('edaidigest.sourcesDraft');
+            if (sources) sourceEditor.value = sources;
+            configStatus.textContent = saved || sources ? 'Browser draft restored. Review changes before saving.' : 'No browser draft saved.';
           }} catch (error) {{
             configStatus.textContent = error.message;
           }}
@@ -489,14 +524,19 @@ def _build_config_editor(settings: dict, sources: list[dict]) -> str:
         const sourcesDraft = localStorage.getItem('edaidigest.sourcesDraft');
         if (settingsDraft) {{
           try {{
-            applySettingsDraft(JSON.parse(settingsDraft));
+            const draft = JSON.parse(settingsDraft);
+            if (draft.base && JSON.stringify(draft.base) === JSON.stringify(settingsSeed)) {{
+              applySettingsDraft(draft.settings);
+              configStatus.textContent = 'Loaded browser draft. Save settings to use these values in future runs.';
+            }} else {{
+              configStatus.textContent = 'An older browser draft was not applied. Use Restore Browser Draft to review it.';
+            }}
           }} catch (error) {{
             configStatus.textContent = error.message;
           }}
         }}
         if (sourcesDraft) {{
           sourceEditor.value = sourcesDraft;
-          configStatus.textContent = 'Loaded browser draft. Save JSON files to use these values in future runs.';
         }}
       </script>
     """
@@ -759,15 +799,6 @@ def _shared_styles() -> str:
       display: block;
       margin-bottom: 4px;
     }
-    .template-block {
-      margin: 0;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--paper);
-      white-space: pre-wrap;
-      font: 13px/1.55 "Courier New", Courier, monospace;
-    }
     .config-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -897,7 +928,6 @@ def _build_archive_page(
     cadence = settings.get("cadence", {})
     scope = settings.get("scope", {})
     workflow = settings.get("workflow", {})
-    email_template = settings.get("email_template", {})
     workflow_html = """
       <div class="source-list">
         <div class="source-item">
@@ -947,18 +977,6 @@ def _build_archive_page(
         workflow_trigger=escape(workflow.get("trigger", "")),
         workflow_review=escape(workflow.get("review", "")),
     )
-    configured_item_templates = email_template.get("item_templates", {})
-    template_html = f"""Email body template:
-{email_template.get("body_template", "")}
-
-Paper item template:
-{configured_item_templates.get("paper", "")}
-
-Funding item template:
-{configured_item_templates.get("funding", "")}
-
-Job item template:
-{configured_item_templates.get("job", "")}"""
     drafts_html = "".join(
         f"""
         <details class="draft-card" {"open" if index == 0 else ""}>
@@ -1006,12 +1024,6 @@ Job item template:
       <h2>Update Cadence</h2>
       <p class="muted">Papers are reviewed on a weekly window; funding and jobs stay broader and slower.</p>
       {cadence_html}
-    </section>
-
-    <section class="panel">
-      <h2>Email Body Template</h2>
-      <p class="muted">Current draft structure for reviewer-facing email generation.</p>
-      <pre class="template-block">{escape(template_html)}</pre>
     </section>
 
     <section class="panel">

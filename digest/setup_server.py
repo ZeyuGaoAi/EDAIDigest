@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -22,9 +23,29 @@ def _write_json(path: Path, payload: Any) -> None:
 
 
 def _save_settings_payload(payload: Any) -> dict[str, Any]:
-    if not isinstance(payload, dict):
-        raise ValueError("settings.json must be a JSON object")
-    _write_json(SETTINGS_PATH, payload)
+    if not isinstance(payload, dict) or not isinstance(payload.get("base"), dict) or not isinstance(payload.get("changes"), dict):
+        raise ValueError("Outdated Setup page. Reload it before saving settings.")
+    if "email_template" in payload["changes"]:
+        raise ValueError("Email styling is maintained in the backend, not in Setup.")
+    current = load_settings(SETTINGS_PATH)
+    merged = deepcopy(current)
+
+    def apply_changes(target: dict[str, Any], old: dict[str, Any], changes: dict[str, Any], path: str = "") -> None:
+        for key, value in changes.items():
+            field = f"{path}.{key}" if path else key
+            previous = old.get(key)
+            actual = target.get(key)
+            if isinstance(value, dict) and isinstance(previous, dict) and isinstance(actual, dict):
+                apply_changes(actual, previous, value, field)
+            else:
+                if actual != previous and actual != value:
+                    raise ValueError(f"{field} changed since this page loaded. Reload Setup and try again.")
+                target[key] = value
+
+    apply_changes(merged, payload["base"], payload["changes"])
+    if payload["changes"]:
+        merged.pop("email_template", None)
+        _write_json(SETTINGS_PATH, merged)
     return load_settings(SETTINGS_PATH)
 
 
@@ -61,6 +82,7 @@ def _generate_reviewed_digest() -> dict[str, Any]:
         max_items_from_settings(settings),
         settings.get("distribution", {}).get("email_subject"),
         SOURCES_PATH,
+        settings.get("email_copy"),
     )
     site_path = build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
     return {
@@ -87,6 +109,7 @@ def _latest_draft_stem() -> str:
             max_items_from_settings(settings),
             settings.get("distribution", {}).get("email_subject"),
             SOURCES_PATH,
+            settings.get("email_copy"),
         )
         stems = sorted({path.stem for path in DRAFTS_DIR.glob("*.html")} | {path.stem for path in DRAFTS_DIR.glob("*.txt")}, reverse=True)
     if not stems:
@@ -118,6 +141,7 @@ def _latest_html_draft_path() -> Path:
         max_items_from_settings(settings),
         settings.get("distribution", {}).get("email_subject"),
         SOURCES_PATH,
+        settings.get("email_copy"),
     )
     path = DRAFTS_DIR / f"{_latest_draft_stem()}.html"
     if not path.exists():
@@ -167,11 +191,11 @@ class SetupRequestHandler(SimpleHTTPRequestHandler):
         try:
             if self.path == "/api/settings":
                 payload = self._read_json_body()
-                _save_settings_payload(payload)
+                settings = _save_settings_payload(payload)
                 build_site(DB_PATH, DRAFTS_DIR, SITE_DIR, SETTINGS_PATH, SOURCES_PATH)
                 self._send_json(
                     HTTPStatus.OK,
-                    {"message": "Saved to data/settings.json and rebuilt the setup page."},
+                    {"message": "Saved to data/settings.json and rebuilt the setup page.", "settings": settings},
                 )
                 return
 

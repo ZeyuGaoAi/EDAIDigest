@@ -141,6 +141,7 @@ def main() -> int:
             max_items_config(args, settings),
             settings.get("distribution", {}).get("email_subject"),
             args.sources,
+            settings.get("email_copy"),
         )
         print(path)
         return 0

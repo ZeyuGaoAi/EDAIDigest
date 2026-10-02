@@ -182,15 +182,6 @@
       display: block;
       margin-bottom: 4px;
     }
-    .template-block {
-      margin: 0;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--paper);
-      white-space: pre-wrap;
-      font: 13px/1.55 "Courier New", Courier, monospace;
-    }
     .config-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -303,7 +294,7 @@
       </div>
       <div class="stats"><div class="stat"><span class="stat-label">Funding</span><span class="stat-value">332</span></div><div class="stat"><span class="stat-label">Job</span><span class="stat-value">329</span></div><div class="stat"><span class="stat-label">Paper</span><span class="stat-value">732</span></div></div>
       <div class="status-row"><span class="chip">drafted: 54</span><span class="chip">expired: 248</span><span class="chip">new: 1038</span><span class="chip">rejected: 53</span></div>
-      <p class="muted">Last generated: 2026-10-02 08:18 UTC</p>
+      <p class="muted">Last generated: 2026-10-02 10:35 UTC</p>
     </section>
 
     <section class="panel">
@@ -350,58 +341,6 @@
         </div>
       </div>
 
-    </section>
-
-    <section class="panel">
-      <h2>Email Body Template</h2>
-      <p class="muted">Current draft structure for reviewer-facing email generation.</p>
-      <pre class="template-block">Email body template:
-&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot; style=&quot;background: #f5f1ec; font-family: Verdana, Geneva, sans-serif; color: #292537;&quot;&gt;
-&lt;tr&gt;&lt;td align=&quot;center&quot; style=&quot;padding: 24px 12px;&quot;&gt;
-&lt;table role=&quot;presentation&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;620&quot; style=&quot;width: 100%; max-width: 620px; background: #ffffff; border-top: 6px solid #7b4d89;&quot;&gt;
-&lt;tr&gt;&lt;td style=&quot;padding: 28px 34px 14px;&quot;&gt;
-&lt;a href=&quot;https://esac-network.eu/&quot; style=&quot;text-decoration: none;&quot;&gt;&lt;img src=&quot;https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png&quot; width=&quot;132&quot; height=&quot;74&quot; alt=&quot;ESAC&quot; style=&quot;display: block; width: 132px; height: 74px; border: 0;&quot;&gt;&lt;/a&gt;
-&lt;p style=&quot;margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;&quot;&gt;Early detection briefing &amp;nbsp; / &amp;nbsp; {date}&lt;/p&gt;
-&lt;h1 style=&quot;margin: 0 0 16px; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 34px; line-height: 1.16; font-weight: 700;&quot;&gt;AI for Early Cancer&lt;br&gt;Digest&lt;/h1&gt;
-&lt;p style=&quot;margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;&quot;&gt;Selected papers, funding calls and research roles for the early detection community.&lt;/p&gt;
-&lt;p style=&quot;margin: 0; color: #696273; font-size: 12px; line-height: 1.6;&quot;&gt;This digest is based on an automated search supported by the ESAC Early Detection Working Group.&lt;/p&gt;
-&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style=&quot;padding: 8px 34px 30px;&quot;&gt;
-&lt;h2 style=&quot;margin: 22px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;🔬 Papers&lt;/h2&gt;
-&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Published in the past {paper_days} days&lt;/p&gt;
-{papers}
-&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💡 Funding&lt;/h2&gt;
-&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Opportunities from the past {funding_days} days&lt;/p&gt;
-{funding}
-&lt;h2 style=&quot;margin: 34px 0 4px; padding: 0 0 10px; border-bottom: 2px solid #7b4d89; color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 23px;&quot;&gt;💼 Jobs&lt;/h2&gt;
-&lt;p style=&quot;margin: 0 0 14px; color: #817987; font-size: 11px;&quot;&gt;Roles from the past {job_days} days&lt;/p&gt;
-{jobs}
-&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td style=&quot;padding: 22px 34px 26px; background: #faf7f3; border-top: 1px solid #e8e2df;&quot;&gt;
-&lt;p style=&quot;margin: 0 0 15px; color: #a33d2f; font-size: 13px; font-weight: 700;&quot;&gt;Reply this email for any feedback!&lt;/p&gt;
-&lt;p style=&quot;margin: 0; color: #817987; font-size: 11px; line-height: 1.6;&quot;&gt;&lt;em&gt;Sources monitored: {sources}&lt;/em&gt;&lt;/p&gt;
-&lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;
-
-Paper item template:
-&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
-&lt;a href=&quot;{html}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {venue} &amp;nbsp;·&amp;nbsp; {doi_or_id} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{html}&quot; style=&quot;color: #7b4d89;&quot;&gt;HTML&lt;/a&gt;&lt;/span&gt;
-&lt;/div&gt;
-
-Funding item template:
-&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
-&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View opportunity&lt;/a&gt;&lt;/span&gt;
-&lt;/div&gt;
-
-Job item template:
-&lt;div style=&quot;padding: 12px 0 15px; border-bottom: 1px solid #ece7e3;&quot;&gt;
-&lt;a href=&quot;{link}&quot; style=&quot;color: #292537; font-family: Georgia, &#x27;Times New Roman&#x27;, serif; font-size: 17px; line-height: 1.4; text-decoration: none;&quot;&gt;{title}&lt;/a&gt;&lt;br&gt;
-&lt;span style=&quot;display: inline-block; padding: 7px 0 0 14px; color: #696273; font-size: 11px; line-height: 1.6;&quot;&gt;↳ {source} &amp;nbsp;·&amp;nbsp; &lt;a href=&quot;{link}&quot; style=&quot;color: #7b4d89;&quot;&gt;View role&lt;/a&gt;&lt;/span&gt;
-&lt;/div&gt;</pre>
     </section>
 
     <section class="panel">
@@ -552,8 +491,8 @@ Job item template:
 <tr><td style="padding: 28px 34px 14px;">
 <a href="https://esac-network.eu/" style="text-decoration: none;"><img src="https://esac-network.eu/wp-content/uploads/2025/04/ESAC-LOGO-LARGE-300x169.png" width="132" height="74" alt="ESAC" style="display: block; width: 132px; height: 74px; border: 0;"></a>
 <p style="margin: 22px 0 9px; color: #7b4d89; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Early detection briefing &nbsp; / &nbsp; 2026-10-02</p>
-<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">AI for Early Cancer<br>Digest</h1>
-<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">Selected papers, funding calls and research roles for the early detection community.</p>
+<h1 style="margin: 0 0 16px; color: #292537; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 1.16; font-weight: 700;">AI for Early Cancer Digest</h1>
+<p style="margin: 0 0 12px; color: #4f4b58; font-size: 15px; line-height: 1.65;">Papers, funding calls and research jobs for the early detection &amp; AI community, extracted from academic and research sources, with no sponsored or promotional content.</p>
 <p style="margin: 0; color: #696273; font-size: 12px; line-height: 1.6;">This digest is based on an automated search supported by the ESAC Early Detection Working Group.</p>
 </td></tr>
 <tr><td style="padding: 8px 34px 30px;">

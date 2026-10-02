@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 from digest.db import connect
-from digest.settings import DEFAULT_EMAIL_TEMPLATE
+from digest.settings import DEFAULT_EMAIL_COPY, DEFAULT_EMAIL_TEMPLATE
 
 
 VALID_STATUSES = ("new", "reviewed", "drafted", "approved", "sent", "rejected", "expired")
@@ -297,11 +297,13 @@ def generate_template_draft(
     max_items: dict[str, int] | None = None,
     email_subject_template: str | None = None,
     source_config_path: Path | None = None,
+    email_copy: dict[str, str] | None = None,
 ) -> Path:
     lookback_days = lookback_days or DEFAULT_LOOKBACK_DAYS
     min_scores = min_scores or DEFAULT_MIN_SCORES
     max_items = max_items or DEFAULT_MAX_ITEMS
     email_template = {**DEFAULT_EMAIL_TEMPLATE, **(email_template or {})}
+    email_copy = {**DEFAULT_EMAIL_COPY, **(email_copy or {})}
     item_templates = {
         **DEFAULT_EMAIL_TEMPLATE["item_templates"],
         **email_template.get("item_templates", {}),
@@ -415,6 +417,7 @@ def generate_template_draft(
                 "funding": rendered_sections["funding"],
                 "jobs": rendered_sections["job"],
                 "sources": escape(_source_attribution(source_config_path)),
+                **{key: escape(str(value)) for key, value in email_copy.items()},
             },
         )
     )
