@@ -15,6 +15,11 @@ class FixedDatetime(datetime):
 
 
 class ReviewGateTests(unittest.TestCase):
+    def test_paper_identifier_prefers_doi_and_falls_back_to_pmid(self):
+        url = "https://pubmed.ncbi.nlm.nih.gov/123/"
+        self.assertEqual(drafts._paper_identifier("PubMed", url, "10.1234/example"), "DOI:10.1234/example")
+        self.assertEqual(drafts._paper_identifier("PubMed", url), "PMID:123")
+
     def test_draft_uses_reviewed_items_and_leaves_new_candidates_out(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

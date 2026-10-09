@@ -43,6 +43,7 @@ class Source:
     priority: int = 100
     max_digest_items: int | None = None
     date_preference: str = "online"
+    search_days: int | None = None
     issue_search_days: int | None = None
     follow_item_pages: bool = False
     item_title: str | None = None
@@ -375,20 +376,19 @@ def _pubmed_date(article: ET.Element, date_preference: str = "online") -> str | 
 
 
 def _pubmed_search_term(source: Source, today: datetime | None = None) -> str:
-    """Scope issue-date sources before requesting PubMed candidates."""
-    if source.date_preference != "issue" or not source.issue_search_days:
+    """Scope PubMed candidates by publication date before applying retmax."""
+    days = source.search_days or (source.issue_search_days if source.date_preference == "issue" else None)
+    if not days:
         return source.term or ""
     end_date = (today or datetime.now(UTC)).date()
-    start_date = end_date - timedelta(days=source.issue_search_days)
+    start_date = end_date - timedelta(days=days)
     return f"({source.term}) AND ({start_date:%Y/%m/%d}:{end_date:%Y/%m/%d}[dp])"
 
 
 def fetch_feed(source: Source) -> list[dict[str, Any]]:
     if not source.url:
         raise ValueError(f"Source {source.name} does not define a URL")
-    request = Request(source.url, headers={"User-Agent": USER_AGENT})
-    with urlopen(request, timeout=30) as response:
-        payload = response.read()
+    payload = _request_text(source.url)
     root = ET.fromstring(payload)
     items: list[dict[str, Any]] = []
 
@@ -467,6 +467,8 @@ def fetch_pubmed(source: Source) -> list[dict[str, Any]]:
                 "summary": summary,
                 "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
                 "venue": _child_text(article, ".//Journal/Title"),
+                "doi": _child_text(article, ".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
+                or _child_text(article, ".//Article/ELocationID[@EIdType='doi']"),
                 "published_at": _pubmed_date(article, source.date_preference),
             }
         )
@@ -887,13 +889,14 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
             cursor = conn.execute(
                 """
                 INSERT INTO items (
-                    url, title, source, venue, category, published_at, fetched_at,
+                    url, title, source, venue, doi, category, published_at, fetched_at,
                     score, summary, why_relevant, content_hash
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(url) DO UPDATE SET
                     title=excluded.title,
                     source=excluded.source,
                     venue=COALESCE(excluded.venue, items.venue),
+                    doi=COALESCE(excluded.doi, items.doi),
                     category=excluded.category,
                     published_at=COALESCE(excluded.published_at, items.published_at),
                     fetched_at=excluded.fetched_at,
@@ -914,6 +917,7 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     item["title"],
                     source.name,
                     item.get("venue"),
+                    item.get("doi"),
                     source.category,
                     item.get("published_at"),
                     fetched_at,

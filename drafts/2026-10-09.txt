@@ -1,0 +1,59 @@
+Early detection briefing   /   2026-10-09
+
+AI for Early Cancer Digest
+
+Papers, funding calls and research jobs for the early detection & AI community, extracted from academic and research sources, with no sponsored or promotional content.
+
+This digest is based on an automated search supported by the ESAC Early Detection Working Group.
+
+🔬 Papers
+
+Published in the past 7 days
+
+Efficacy of artificial intelligence in detecting precancerous lesions among a colorectal cancer screening population undergoing surveillance colonoscopies in Italy: a randomized control trial (GENIAL-CO Follow-Up study).
+
+↳ Digestive and liver disease : official journal of the Italian Society of Gastroenterology and the Italian Association for the Study of the Liver  ·  DOI:10.1016/j.dld.2026.08.031  ·  HTML
+
+Radiomics machine learning models for lung cancer early diagnosis in heterogenous multicentre chest CT data: LIBRA study results.
+
+↳ European radiology experimental  ·  DOI:10.1186/s41747-026-00791-2  ·  HTML
+
+An Artificial Intelligence-Based Blood Test using protein and miRNA biomarkers for Colorectal Cancer Screening.
+
+↳ Clinical and translational gastroenterology  ·  DOI:10.14309/ctg.0000000000001109  ·  HTML
+
+Effect of a Computer-Aided Device on Endoscopists' Biopsy Practice for Gastric Neoplasms: A Secondary Analysis of a Randomized Controlled Trial.
+
+↳ Digestive endoscopy : official journal of the Japan Gastroenterological Endoscopy Society  ·  DOI:10.1111/den.70302  ·  HTML
+
+Healthy Counterfactual Generation via Diffusion Inpainting for Mammography Classification
+
+↳ arXiv (preprint)  ·  arXiv:2610.12147v1  ·  HTML
+
+💡 Funding
+
+Opportunities from the past 30 days
+
+ACED Clinical Research Training Fellowship (2027)
+
+↳ ACED Manchester Funding Opportunities  ·  View opportunity
+
+Pancreatic Cancer Detection Consortium: Research Units (U01 Clinical Trial Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+💼 Jobs
+
+Roles from the past 30 days
+
+Division Head in “Cancer Early Detection Imaging”
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Postdoctoral Researcher - Computational & Translational Analysis of Pulmonary Nodules
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding & Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist

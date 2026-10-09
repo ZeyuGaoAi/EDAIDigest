@@ -21,6 +21,7 @@ from digest.fetch import (
     fetch_html_page,
     fetch_html_sections,
     fetch_open_call_sections,
+    fetch_pubmed,
     expire_missing_html_items,
     upsert_items,
 )
@@ -45,6 +46,22 @@ ARTICLE = ET.fromstring(
 
 
 class PubmedDateTests(unittest.TestCase):
+    def test_recent_pubmed_source_scopes_before_retmax(self):
+        source = Source(name="Broad", category="paper", term="cancer", search_days=14)
+        today = __import__("datetime").datetime(2026, 10, 9)
+        self.assertEqual(_pubmed_search_term(source, today), "(cancer) AND (2026/09/25:2026/10/09[dp])")
+
+    def test_pubmed_fetch_keeps_article_doi(self):
+        source = Source(name="Broad", category="paper", term="cancer")
+        search = "<eSearchResult><IdList><Id>123</Id></IdList></eSearchResult>"
+        article = """<PubmedArticleSet><PubmedArticle>
+          <MedlineCitation><PMID>123</PMID><Article><ArticleTitle>Screening AI</ArticleTitle></Article></MedlineCitation>
+          <PubmedData><ArticleIdList><ArticleId IdType="doi">10.1234/example</ArticleId></ArticleIdList></PubmedData>
+        </PubmedArticle></PubmedArticleSet>"""
+        with patch("digest.fetch._request_text", side_effect=[search, article]):
+            items = fetch_pubmed(source)
+        self.assertEqual(items[0]["doi"], "10.1234/example")
+
     def test_issue_preference_uses_issue_date_over_online_first_date(self):
         self.assertEqual(_pubmed_date(ARTICLE, "issue"), "2026-07-01")
 

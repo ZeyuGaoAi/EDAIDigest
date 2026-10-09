@@ -158,7 +158,11 @@ def _passes_score(category: str, score: float | None, min_scores: dict[str, floa
     return (score or 0.0) >= threshold
 
 
-def _paper_identifier(source: str, url: str) -> str:
+def _paper_identifier(source: str, url: str, doi: str | None = None) -> str:
+    if doi:
+        return f"DOI:{doi}"
+    if "doi.org/" in url:
+        return f"DOI:{url.split('doi.org/', 1)[1]}"
     if "arxiv.org/abs/" in url:
         return f"arXiv:{url.rsplit('/', 1)[-1]}"
     if "medrxiv.org/content/" in url:
@@ -319,7 +323,7 @@ def generate_template_draft(
     with connect(db_path) as conn:
         rows = conn.execute(
             f"""
-            SELECT id, title, source, venue, category, summary, why_relevant, url, score
+            SELECT id, title, source, venue, doi, category, summary, why_relevant, url, score
             FROM items
             WHERE (
                     (category = 'paper' AND status = 'reviewed')
@@ -391,7 +395,7 @@ def generate_template_draft(
                     "title": escape(row["title"] or ""),
                     "source": escape(row["source"] or ""),
                     "venue": escape(row["venue"] or row["source"] or ""),
-                    "doi_or_id": escape(_paper_identifier(row["source"] or "", row["url"] or "")),
+                    "doi_or_id": escape(_paper_identifier(row["source"] or "", row["url"] or "", row["doi"])),
                     "html": escape(row["url"] or "", quote=True),
                     "link": escape(row["url"] or "", quote=True),
                     "summary": escape(_clean_summary(row["summary"])),

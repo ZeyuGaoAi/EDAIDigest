@@ -11,8 +11,9 @@
     "category": "paper",
     "kind": "pubmed",
     "term": "((\"early detection\"[Title/Abstract] OR screening[Title/Abstract] OR \"early diagnosis\"[Title/Abstract] OR \"liquid biopsy\"[Title/Abstract]) AND (cancer[Title/Abstract] OR oncology[Title/Abstract] OR neoplasm*[Title/Abstract] OR carcinoma[Title/Abstract]) AND (\"artificial intelligence\"[Title/Abstract] OR \"machine learning\"[Title/Abstract] OR \"deep learning\"[Title/Abstract] OR \"computer vision\"[Title/Abstract]))",
-    "retmax": 20,
+    "retmax": 100,
     "sort": "pub date",
+    "search_days": 7,
     "priority": 1
   },
   {

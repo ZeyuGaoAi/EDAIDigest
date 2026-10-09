@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS items (
     title TEXT NOT NULL,
     source TEXT NOT NULL,
     venue TEXT,
+    doi TEXT,
     category TEXT NOT NULL,
     published_at TEXT,
     fetched_at TEXT NOT NULL,
@@ -57,4 +58,6 @@ def init_db(db_path: Path) -> None:
         columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
         if "venue" not in columns:
             conn.execute("ALTER TABLE items ADD COLUMN venue TEXT")
+        if "doi" not in columns:
+            conn.execute("ALTER TABLE items ADD COLUMN doi TEXT")
         conn.commit()
