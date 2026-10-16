@@ -1,0 +1,59 @@
+Early detection briefing   /   2026-10-16
+
+AI for Early Cancer Digest
+
+Papers, funding calls and research jobs for the early detection & AI community, extracted from academic and research sources, with no sponsored or promotional content.
+
+This digest is based on an automated search supported by the ESAC Early Detection Working Group.
+
+🔬 Papers
+
+Published in the past 7 days
+
+Impact of AI-Assisted Endoscopy on Secondary Review and Referral Decisions in Gastric Cancer Screening: A Multicenter Real-World Study.
+
+↳ Journal of gastroenterology and hepatology  ·  DOI:10.1111/jgh.70823  ·  HTML
+
+Early detection of gastric cancer using DNA features in red blood cells, with multicenter validation.
+
+↳ Med (New York, N.Y.)  ·  DOI:10.1016/j.medj.2026.101325  ·  HTML
+
+Optimizing AI-assisted decision-making in mammography screening: focusing on uncertainties.
+
+↳ Insights into imaging  ·  DOI:10.1186/s13244-026-02411-4  ·  HTML
+
+GraphBEAT: Graph-based Bucketized Event Aggregation Over Time for Early Risk Stratification of Gastrointestinal Cancers
+
+↳ arXiv (preprint)  ·  arXiv:2610.22014v1  ·  HTML
+
+Explicitly Aligned Multi-View Breast Cancer Risk Prediction from Variable-Length Screening Histories
+
+↳ arXiv (preprint)  ·  arXiv:2610.16329v1  ·  HTML
+
+💡 Funding
+
+Opportunities from the past 30 days
+
+Pancreatic Cancer Detection Consortium: Research Units (U01 Clinical Trial Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+💼 Jobs
+
+Roles from the past 30 days
+
+Division Head in “Cancer Early Detection Imaging”
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Postdoctoral Researcher - Computational & Translational Analysis of Pulmonary Nodules
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Finding the environmental causes of childhood and early-onset cancer (CUE-CAN)
+
+↳ AcademicTransfer - Netherlands Cancer Research Jobs  ·  View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding & Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist
