@@ -1,0 +1,55 @@
+Early detection briefing   /   2026-10-23
+
+AI for Early Cancer Digest
+
+Papers, funding calls and research jobs for the early detection & AI community, extracted from academic and research sources, with no sponsored or promotional content.
+
+This digest is based on an automated search supported by the ESAC Early Detection Working Group.
+
+🔬 Papers
+
+Published in the past 7 days
+
+Mobile AI-Assisted Oral Lesion Triage for Community Oral Cancer Screening: Prospective Field Evaluation Study.
+
+↳ JMIR mHealth and uHealth  ·  DOI:10.2196/101721  ·  HTML
+
+FMCerNet: Frequency-Aware Multi-Label Learning for Fine-Grained Cervical Cytology Screening.
+
+↳ Bioinformatics (Oxford, England)  ·  DOI:10.1093/bioinformatics/btag759  ·  HTML
+
+Enhanced detection of bladder cancer using machine learning analysis of routine urinary sediment data.
+
+↳ Clinical chemistry and laboratory medicine  ·  DOI:10.1515/cclm-2026-1514  ·  HTML
+
+💡 Funding
+
+Opportunities from the past 30 days
+
+Pancreatic Cancer Detection Consortium: Research Units (U01 Clinical Trial Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+Early-Onset Cancers: Investigating Etiology, Mechanisms, and Early Detection Strategies (RP1 Clinical Trials Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+💼 Jobs
+
+Roles from the past 30 days
+
+Division Head in “Cancer Early Detection Imaging”
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+PhD candidate 'Development of an integrated system for breast cancer imaging | focus point ultrasound'
+
+↳ AcademicTransfer - Netherlands Cancer Research Jobs  ·  View role
+
+Finding the environmental causes of childhood and early-onset cancer (CUE-CAN)
+
+↳ AcademicTransfer - Netherlands Cancer Research Jobs  ·  View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding & Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist

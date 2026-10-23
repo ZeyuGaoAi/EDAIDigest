@@ -154,6 +154,26 @@ class HtmlPageSourceTests(unittest.TestCase):
 
         self.assertEqual(status, "new")
 
+    def test_unchanged_expired_page_does_not_reopen_a_closed_call(self):
+        source = Source(name="ACED", category="funding", kind="html_page")
+        item = {
+            "title": "ACED Fellowship",
+            "summary": "Expression of interest closed on 12 October 2026.",
+            "url": "https://example.test/aced",
+        }
+        with TemporaryDirectory() as directory:
+            db_path = Path(directory) / "digest.db"
+            init_db(db_path)
+            upsert_items(db_path, source, [item])
+            with connect(db_path) as conn:
+                conn.execute("UPDATE items SET status = 'expired'")
+                conn.commit()
+            upsert_items(db_path, source, [item])
+            with connect(db_path) as conn:
+                status = conn.execute("SELECT status FROM items").fetchone()["status"]
+
+        self.assertEqual(status, "expired")
+
     def test_changed_listing_detail_does_not_redraft_an_existing_job(self):
         source = Source(name="Jobs", category="job", kind="html_links")
         first_item = {

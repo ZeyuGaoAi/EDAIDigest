@@ -879,6 +879,7 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
     inserted = 0
     fetched_at = datetime.now(UTC).isoformat()
     reset_on_content_change = source.kind in {"html_page", "html_sections"}
+    revive_on_reappearance = source.kind in {"html_links", "eu_funding", "html_open_sections"}
     with connect(db_path) as conn:
         for item in items:
             summary = item.get("summary")
@@ -906,9 +907,11 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     content_hash=excluded.content_hash,
                     -- A monitored page can be republished with a new call at the
                     -- same URL; changed content must return to human review.
+                    -- A manually expired call must not revive just because its
+                    -- still-visible page is fetched again after the deadline.
                     status=CASE
-                        WHEN items.status = 'expired'
-                          OR (? = 1 AND items.content_hash != excluded.content_hash) THEN 'new'
+                        WHEN items.status = 'expired' AND ? = 1 THEN 'new'
+                        WHEN ? = 1 AND items.content_hash != excluded.content_hash THEN 'new'
                         ELSE items.status
                     END
                 """,
@@ -925,6 +928,7 @@ def upsert_items(db_path: Path, source: Source, items: list[dict[str, Any]]) -> 
                     summary,
                     why_relevant(item["title"], summary),
                     content_hash,
+                    int(revive_on_reappearance),
                     int(reset_on_content_change),
                 ),
             )
