@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from digest.friday import ESAC_LOGO_URL, eligible_issue, launch_agent_data, prepare_compose_html, run
+from digest.friday import eligible_issue, launch_agent_data, run
 
 
 class FridayLauncherTests(unittest.TestCase):
@@ -29,28 +29,30 @@ class FridayLauncherTests(unittest.TestCase):
         self.assertEqual(agent["WorkingDirectory"], "/tmp")
         self.assertNotIn("PYTHONPATH", agent["EnvironmentVariables"])
 
-    def test_compose_copy_uses_cached_logo(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            directory = Path(temp)
-            draft = directory / "draft.html"
-            output = directory / "compose.html"
-            logo = directory / "logo.png"
-            draft.write_text(f'<img src="{ESAC_LOGO_URL}"><strong>Digest</strong>')
-            logo.write_bytes(b"\x89PNG\r\n\x1a\n")
-            prepare_compose_html(draft, output, logo)
-            self.assertIn(f'src="{logo.as_uri()}"', output.read_text())
-            self.assertIn("<strong>Digest</strong>", output.read_text())
-            self.assertIn(ESAC_LOGO_URL, draft.read_text())
-
-    def test_existing_friday_marker_prevents_duplicate_compose(self) -> None:
+    def test_existing_friday_marker_prevents_duplicate_update(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / "data").mkdir()
-            (root / "data" / ".friday-mail-opened-2026-11-06").touch()
+            (root / "site-updated-2026-11-06").touch()
             with patch("digest.friday.ROOT", root), patch("digest.friday.STATE_DIR", root), \
-                 patch("digest.friday.open_outlook_draft") as compose:
+                 patch("digest.friday.subprocess.run") as generate:
                 run(datetime(2026, 11, 6, 9, tzinfo=ZoneInfo("Europe/London")))
-            compose.assert_not_called()
+            generate.assert_not_called()
+
+    def test_successful_run_marks_site_updated_without_opening_mail(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "drafts").mkdir()
+            (root / "docs").mkdir()
+            (root / "drafts" / "2026-11-06.html").write_text("<p>Digest</p>")
+            (root / "docs" / "index.html").write_text("2026-11-06")
+            with patch("digest.friday.ROOT", root), patch("digest.friday.STATE_DIR", root), \
+                 patch("digest.friday.DRAFTS_DIR", root / "drafts"), \
+                 patch("digest.friday.subprocess.run") as generate, \
+                 patch("digest.friday.notify"):
+                generate.return_value.returncode = 0
+                run(datetime(2026, 11, 6, 9, tzinfo=ZoneInfo("Europe/London")))
+            self.assertTrue((root / "site-updated-2026-11-06").exists())
+            self.assertEqual(generate.call_count, 1)
 
 
 if __name__ == "__main__":
