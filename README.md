@@ -92,6 +92,25 @@ The digest automation should:
 4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html).
 5. Keep factual statements tied to the linked sources, and do not send anything automatically.
 
+### Friday login launcher (macOS)
+
+`python3 -m digest.friday install` installs a LaunchAgent for Fridays at 09:00
+Europe/London. It also runs when you log in; if the Mac starts later on Friday,
+the launcher catches up. It does nothing on other days. It invokes the locally
+logged-in Codex CLI for semantic review, then uses its computer-use tool to
+paste the resulting rich HTML into an **unsent** Outlook compose window. It
+uses the School profile and verifies the configured Cambridge From account,
+recipients, subject, formatting, links, and embedded ESAC logo. Apple Mail is
+only a fallback if Outlook cannot be used. You must review the message and
+click Send yourself. The launcher records a verified open draft so logging in
+twice does not open two compose windows.
+
+Check installation with `python3 -m digest.friday check`. Logs are in
+`~/Library/Application Support/AI Early Cancer Digest/`. The Mac must be on
+and logged in for the local Codex run and Apple Mail window to appear. If it
+stays off for the entire Friday, run the digest manually when you return.
+Moving the repository requires reinstalling the LaunchAgent from its new path.
+
 Paper selection uses the preceding seven days and does not repeat an already drafted paper. Funding and Jobs use the preceding 30 days and repeat in each digest while their source still lists them and they remain inside that window. The item cap for each category comes from the editable configuration; it is not silently changed by the command line.
 
 ## Notes on source quality
