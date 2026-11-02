@@ -7,6 +7,7 @@ import fcntl
 import os
 import plistlib
 import re
+import shlex
 import subprocess
 import sys
 from datetime import datetime
@@ -40,10 +41,16 @@ def eligible_issue(now: datetime) -> str | None:
 
 
 def launch_agent_data(python: str, repo: Path) -> bytes:
+    terminal_command = f"cd {shlex.quote(str(repo))} && {shlex.quote(python)} -m digest.friday run"
+    apple_script = ('on run argv\n tell application "Terminal"\n activate\n'
+                    ' do script (item 1 of argv)\n end tell\nend run')
+    friday = '[ "$(TZ=Europe/London date +%u)" = 5 ] && [ "$(TZ=Europe/London date +%H)" -ge 9 ]'
+    command = (f"if {friday}; then /usr/bin/osascript -e {shlex.quote(apple_script)} "
+               f"{shlex.quote(terminal_command)}; fi")
     data = {
         "Label": LABEL,
-        "ProgramArguments": [python, "-m", "digest.friday", "run"],
-        "WorkingDirectory": str(repo),
+        "ProgramArguments": ["/bin/bash", "-c", command],
+        "WorkingDirectory": "/tmp",
         "RunAtLoad": True,
         "StartCalendarInterval": {"Weekday": 5, "Hour": 9, "Minute": 0},
         "StandardOutPath": str(STATE_DIR / "friday.log"),
@@ -92,7 +99,7 @@ def prepare_compose_html(draft: Path, output: Path, logo: Path) -> Path:
     return output
 
 
-def open_outlook_draft(issue: str, draft: Path, marker: Path) -> None:
+def open_outlook_draft(issue: str, draft: Path, marker: Path, *, test_only: bool = False) -> None:
     settings = load_settings(SETTINGS_PATH)
     distribution = settings.get("distribution", {})
     recipients = distribution.get("recipient_emails", [])
@@ -101,6 +108,9 @@ def open_outlook_draft(issue: str, draft: Path, marker: Path) -> None:
     sender = distribution.get("sender_email", "zg323@cam.ac.uk")
     subject = distribution.get("email_subject", "AI for Early Cancer Digest | {date}")
     subject = subject.replace("{date}", issue)
+    if test_only:
+        recipients = [sender]
+        subject = f"[TEST - DO NOT SEND] {subject}"
     compose_html = prepare_compose_html(
         draft, STATE_DIR / f"compose-{issue}.html", STATE_DIR / "esac-logo.png"
     )
@@ -112,11 +122,13 @@ To: {', '.join(recipients)}. Subject: {subject}.
 The HTML references a local ESAC logo; verify the compose body has an actual image, headings,
 and working links, not literal HTML tags or just the word ESAC. Leave the compose window open.
 NEVER click Send or transmit the email. If Outlook is unavailable, try Apple Mail only if it can
-preserve the same rich body and sender. Only after inspecting the filled compose window, write
+preserve the same rich body and sender. If computer-use access is denied by policy or approval,
+stop immediately; do not try another app or method to bypass that denial. Only after inspecting
+the filled compose window, write
 the text 'opened' to {marker} using a shell command. If you cannot verify it, do not write the
 marker; report the problem instead.
 """
-    log = STATE_DIR / f"outlook-{issue}.log"
+    log = STATE_DIR / f"outlook-{'test-' if test_only else ''}{issue}.log"
     with log.open("w") as output:
         result = subprocess.run(
             ["codex", "exec", "-m", "gpt-6-sol", "--approve-for-me",
@@ -161,13 +173,21 @@ def run(now: datetime | None = None) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("install", "run", "check"))
+    parser.add_argument("command", choices=("install", "run", "check", "test"))
     args = parser.parse_args()
     if args.command == "install":
         install()
     elif args.command == "check":
         print(f"LaunchAgent: {'installed' if LAUNCH_AGENT.exists() else 'not installed'}")
         print(f"This Friday: {eligible_issue(datetime.now().astimezone()) or 'not eligible yet'}")
+    elif args.command == "test":
+        latest = max(DRAFTS_DIR.glob("????-??-??.html"), default=None)
+        if latest is None:
+            parser.error("No HTML draft exists for a safe self-addressed test")
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        issue = latest.stem
+        marker = ROOT / "data" / f".friday-mail-opened-test-{issue}"
+        open_outlook_draft(issue, latest, marker, test_only=True)
     else:
         run()
     return 0

@@ -96,7 +96,7 @@ The digest automation should:
 
 `python3 -m digest.friday install` installs a LaunchAgent for Fridays at 09:00
 Europe/London. It also runs when you log in; if the Mac starts later on Friday,
-the launcher catches up. It does nothing on other days. It invokes the locally
+the launcher catches up. It does nothing on other days. It opens Terminal to run the locally
 logged-in Codex CLI for semantic review, then uses its computer-use tool to
 paste the resulting rich HTML into an **unsent** Outlook compose window. It
 uses the School profile and verifies the configured Cambridge From account,
@@ -104,6 +104,10 @@ recipients, subject, formatting, links, and embedded ESAC logo. Apple Mail is
 only a fallback if Outlook cannot be used. You must review the message and
 click Send yourself. The launcher records a verified open draft so logging in
 twice does not open two compose windows.
+If background Codex is denied Computer Use access to Outlook, it does not
+switch apps or send anything; the HTML draft remains available in Setup and
+the launcher raises a local notification. Approve that access before relying
+on the automatic compose step.
 
 Check installation with `python3 -m digest.friday check`. Logs are in
 `~/Library/Application Support/AI Early Cancer Digest/`. The Mac must be on

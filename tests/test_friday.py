@@ -23,7 +23,11 @@ class FridayLauncherTests(unittest.TestCase):
         self.assertTrue(agent["RunAtLoad"])
         self.assertEqual(agent["StartCalendarInterval"],
                          {"Weekday": 5, "Hour": 9, "Minute": 0})
-        self.assertEqual(agent["ProgramArguments"][-2:], ["digest.friday", "run"])
+        self.assertEqual(agent["ProgramArguments"][:2], ["/bin/bash", "-c"])
+        self.assertIn("Terminal", agent["ProgramArguments"][2])
+        self.assertIn("TZ=Europe/London", agent["ProgramArguments"][2])
+        self.assertEqual(agent["WorkingDirectory"], "/tmp")
+        self.assertNotIn("PYTHONPATH", agent["EnvironmentVariables"])
 
     def test_compose_copy_uses_cached_logo(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
