@@ -92,22 +92,18 @@ The digest automation should:
 4. Refresh the public archive in [docs/index.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/index.html) and the historical database in [docs/items.html](/Users/gao05/Documents/Playground/ai-early-cancer-digest/docs/items.html).
 5. Keep factual statements tied to the linked sources, and do not send anything automatically.
 
-### Friday login launcher (macOS)
+### Weekly catch-up automation
 
-`python3 -m digest.friday install` installs a LaunchAgent for Fridays at 09:00
-Europe/London. It also runs when you log in; if the Mac starts later on Friday,
-the launcher catches up. It does nothing on other days. It opens Terminal to run the locally
-logged-in Codex CLI for semantic review, generates the HTML and text drafts,
-updates the web archive, and shows a local notification. It does not open a
-mail client or send email. Review the updated page and prepare the email
-manually. The launcher records a successful site update so logging in twice
-does not regenerate the same Friday issue.
+The active Codex automation checks hourly after the Friday 09:00 Europe/London
+issue becomes due. If the issue is not yet published, it retries when this
+computer and the network are available. It generates the HTML and text drafts,
+updates the web archive, and notifies the organizer. It does not open a mail
+client or send email; review the page and prepare the email manually.
 
-Check installation with `python3 -m digest.friday check`. Logs are in
-`~/Library/Application Support/AI Early Cancer Digest/`. The Mac must be on
-and logged in for the local Codex run. If it
-stays off for the entire Friday, run the digest manually when you return.
-Moving the repository requires reinstalling the LaunchAgent from its new path.
+The older macOS LaunchAgent is disabled because its Terminal handoff timed out.
+`python3 -m digest.friday run` remains a manual fallback for a due Friday issue.
+Its logs and successful-run marker are in
+`~/Library/Application Support/AI Early Cancer Digest/`.
 
 Paper selection uses the preceding seven days and does not repeat an already drafted paper. Funding and Jobs use the preceding 30 days and repeat in each digest while their source still lists them and they remain inside that window. The item cap for each category comes from the editable configuration; it is not silently changed by the command line.
 
