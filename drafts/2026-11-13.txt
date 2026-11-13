@@ -1,0 +1,59 @@
+Early detection briefing   /   2026-11-13
+
+AI for Early Cancer Digest
+
+Papers, funding calls and research jobs for the early detection & AI community, extracted from academic and research sources, with no sponsored or promotional content.
+
+This digest is based on an automated search supported by the ESAC Early Detection Working Group.
+
+🔬 Papers
+
+Published in the past 7 days
+
+Artificial Intelligence-Assisted Detection and Characterization of Colorectal Polyps during Colonoscopy: Evidence and Future Perspectives.
+
+↳ Gut and liver  ·  DOI:10.5009/gnl260381  ·  HTML
+
+Artificial intelligence for automated lung nodule detection in chest computed tomography scans.
+
+↳ Breathe (Sheffield, England)  ·  DOI:10.1183/20734735.0145-2026  ·  HTML
+
+HDFF-Net: A Hybrid Dual-Feature Fusion Network with Bidirectional Gated Fusion for Colposcopic Transformation Zone Classification, Evaluated under a Leakage-Audited Cluster-Level Protocol.
+
+↳ Journal of imaging informatics in medicine  ·  DOI:10.1007/s10278-026-02497-8  ·  HTML
+
+Detection of early-stage cancer using similarity-based classification of cell-free DNA fragmentation patterns
+
+↳ medRxiv (preprint)  ·  DOI:10.64898/2026.11.08.26366892  ·  HTML
+
+LUCQUE: A lung cancer screening dataset from Québec for reliable AI evaluation
+
+↳ arXiv (preprint)  ·  arXiv:2611.12817v1  ·  HTML
+
+💡 Funding
+
+Opportunities from the past 30 days
+
+Assay Validation of High Quality Markers for Clinical Studies in Cancer (UH2/UH3 Clinical Trial Not Allowed)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+Early-Onset Cancers: Investigating Etiology, Mechanisms, and Early Detection Strategies (RP1 Clinical Trials Optional)
+
+↳ NIH Cancer Funding Opportunities (Grants.gov)  ·  View opportunity
+
+💼 Jobs
+
+Roles from the past 30 days
+
+PhD Positions in Agentic AI for Medical Image Analysis
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Data Scientist / Data Manager (m/w/d)
+
+↳ DKFZ - German Cancer Research Center Jobs  ·  View role
+
+Reply this email for any feedback!
+
+Sources monitored: Papers: arXiv - AI/ML Early Cancer Preprints, PubMed - Early Cancer AI, PubMed - Selected High-Impact Journals, medRxiv - Oncology AI Preprints, Crossref - CVPR Proceedings, Crossref - MICCAI Proceedings, Crossref - MIDL Proceedings, Crossref - ML4H Proceedings, Crossref - NeurIPS Proceedings, Crossref - ICLR Proceedings, Crossref - ISBI Proceedings | Funding: Cancer Research UK News, UKRI Opportunities, EU Funding & Tenders - Open Cancer and Screening Calls, KWF Dutch Cancer Society - Open Funding Calls, NIH Cancer Funding Opportunities (Grants.gov), ACED Manchester Funding Opportunities, Cambridge ACED Funding Opportunities | Jobs: University of Cambridge Research Jobs, jobs.ac.uk - Cancer AI Jobs, AcademicTransfer - Netherlands Cancer Research Jobs, DKFZ - German Cancer Research Center Jobs, Manual Jobs Watchlist
